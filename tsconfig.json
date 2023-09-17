@@ -1,12 +1,16 @@
 {
 	"compilerOptions": {
 		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
 		"target": "ES2020",
 		"outDir": "./extension/runtime",
 		"lib": ["ES2020", "DOM"],
-		"sourceMap": true,
+		"sourceMap": false,
 		"rootDir": "src",
 		"strict": true,
-		"noUncheckedIndexedAccess": true
+		"noUncheckedIndexedAccess": true,
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact",
+		"skipLibCheck": true
 	}
 }

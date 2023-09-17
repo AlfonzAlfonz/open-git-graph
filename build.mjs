@@ -7,19 +7,54 @@ import path from "path";
 import { rollup } from "rollup";
 import { createProcessor } from "tailwindcss/lib/cli/build/plugin.js";
 
+const prod = process.argv[2] === "-p";
+
+prod && console.log("production build");
+
+/** @type {import("@rollup/plugin-swc/src").Options} */
+const swcOptions = {
+	swc: {
+		jsc: {
+			parser: {
+				syntax: "typescript",
+				tsx: true,
+			},
+			transform: {
+				react: {
+					runtime: "automatic",
+					importSource: "preact",
+				},
+			},
+			minify: {
+				compress: true,
+				mangle: true,
+			},
+		},
+		minify: prod,
+	},
+};
+
+/** @type {import("rollup").RollupOptions} */
 const webview = {
 	input: "src/webview/webview.ts",
 	output: {
 		file: "./dist/webview.js",
+		compact: prod,
 		format: /** @type {"cjs"} */ ("cjs"),
 	},
-	plugins: [nodeResolve({ extensions: [".js", ".jsx", ".ts", ".tsx"] }), swc()],
+	plugins: [
+		nodeResolve({ extensions: [".js", ".jsx", ".ts", ".tsx"] }),
+		swc(swcOptions),
+	],
 };
 
+/** @returns {import("rollup").RollupOptions} */
 const runtime = () => ({
 	input: "src/runtime/runtime.ts",
+	external: ["vscode"],
 	output: {
 		file: "dist/runtime.js",
+		compact: prod,
 		format: /** @type {"cjs"} */ ("cjs"),
 	},
 	plugins: [
@@ -34,7 +69,7 @@ const runtime = () => ({
 				).toString("base64"),
 			},
 		}),
-		swc(),
+		swc(swcOptions),
 	],
 });
 
@@ -50,6 +85,7 @@ fs.cpSync(
 			"--input": "./src/webview/styles/index.css",
 			"--output": "./dist/output.css",
 			"--postcss": "./postcss.config.js",
+			...(prod ? { "--minify": true } : {}),
 		},
 		path.resolve("./tailwind.config.js"),
 	)
@@ -60,13 +96,15 @@ fs.cpSync(
 		process.exit(1);
 	});
 
-await build(webview).catch(() => {
+await build(webview).catch((e) => {
 	console.log("failed webview");
+	console.error(e);
 	process.exit(1);
 });
 
-await build(runtime()).catch(() => {
+await build(runtime()).catch((e) => {
 	console.log("failed runtime");
+	console.error(e);
 	process.exit(1);
 });
 

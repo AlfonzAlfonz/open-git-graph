@@ -22,7 +22,7 @@ export class Rails {
 
 		if (children.length === 0) {
 			// If commit does not have any children create a new rail
-			const rail = { next: commit.parents[0], id: this.id() };
+			const rail = { next: commit.parents[0]!, id: this.id() };
 
 			this.rails.push(rail);
 
@@ -31,13 +31,13 @@ export class Rails {
 		} else {
 			// If commit does have any child assign it to first child rail and mark rest as forks
 			let first: RailId;
-			[first, ...forks] = children;
+			[first, ...forks] = children as [RailId, ...RailId[]];
 
 			const newRails: Rail[] = [];
 
 			for (const r of this.rails) {
 				if (r.id === first) {
-					newRails.push({ next: commit.parents[0], id: first });
+					newRails.push({ next: commit.parents[0]!, id: first });
 				} else if (!forks.includes(r.id)) {
 					// Discard forked rails
 					newRails.push(r);

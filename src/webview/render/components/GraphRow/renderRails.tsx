@@ -1,20 +1,18 @@
-import { GraphNode } from "../state/createGraphNodes.js";
-import { createSVG, getColor } from "./utils.js";
+import { ComponentChild } from "preact";
+import { GraphNode } from "../../../state/createGraphNodes.js";
+import { getColor } from "../../utils.js";
 
 const WIDTH = 16;
 const HEIGHT = 26;
-const CENTER = 1 - 1 / 3;
+const CENTER = 0.5;
 
-export const renderNode = (n: GraphNode, width: number) => {
-	const row = createSVG("svg", {
-		width: (width + 1) * WIDTH,
-		height: HEIGHT,
-	});
-
+export const renderRails = (n: GraphNode, width: number) => {
 	const absoluteCoords = (x: number, y: number): [number, number] => [
 		WIDTH / 2 + x * WIDTH,
 		y * HEIGHT,
 	];
+
+	const rails: ComponentChild[] = [];
 
 	let shift = 0;
 	let activeIndex = n.rails.findIndex((r) => n.position === r);
@@ -33,9 +31,7 @@ export const renderNode = (n: GraphNode, width: number) => {
 			shift++;
 		}
 
-		row.appendChild(
-			createSVG("path", { d: toBezier(x1, y1, x2, y2), class: color }),
-		);
+		rails.push(<path d={toBezier(x1, y1, x2, y2)} class={color} />);
 	}
 
 	// Render new rail
@@ -45,9 +41,7 @@ export const renderNode = (n: GraphNode, width: number) => {
 		const [x1, y1] = absoluteCoords(n.rails.length, CENTER);
 		const [x2, y2] = absoluteCoords(n.rails.length, 1);
 
-		row.appendChild(
-			createSVG("path", { d: toBezier(x1, y1, x2, y2), class: color }),
-		);
+		rails.push(<path d={toBezier(x1, y1, x2, y2)} class={color} />);
 	}
 
 	const color = getColor(n.position);
@@ -59,22 +53,16 @@ export const renderNode = (n: GraphNode, width: number) => {
 		const [x1, y1] = absoluteCoords(activeIndex, CENTER);
 		const [x2, y2] = absoluteCoords(x, 1);
 
-		row.appendChild(
-			createSVG("path", { d: toBezier(x1, y1, x2, y2), class: getColor(m) }),
-		);
+		rails.push(<path d={toBezier(x1, y1, x2, y2)} class={getColor(m)} />);
 	}
 
-	// Render commit circle
-	row.appendChild(
-		createSVG("circle", {
-			cx,
-			cy,
-			r: 3.5,
-			class: color,
-		}),
+	return (
+		<svg width={(width + 1) * WIDTH} height={HEIGHT}>
+			{rails}
+			{/* Commit circle */}
+			<circle cx={cx} cy={cy} r={3.5} class={color} />
+		</svg>
 	);
-
-	return row;
 };
 
 const toBezier = (x1: number, y1: number, x2: number, y2: number) =>

@@ -31,7 +31,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 			html = html.replace("${styleUri}", styleUri.toString());
 			html = html.replace("${scriptUri}", scriptUri.toString());
-			console.log(styleUri.toString(), html);
 
 			panel.webview.html = html;
 
