@@ -5,12 +5,11 @@
 		"ecmaVersion": "latest",
 		"sourceType": "module"
 	},
-	"plugins": ["@typescript-eslint"],
+	"plugins": ["@typescript-eslint", "prettier"],
 	"rules": {
-		"@typescript-eslint/semi": "warn",
 		"eqeqeq": "warn",
 		"no-throw-literal": "warn",
-		"semi": "off"
+		"prettier/prettier": "warn"
 	},
 	"ignorePatterns": ["dist", "**/*.d.ts"]
 }
