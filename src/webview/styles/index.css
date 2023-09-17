@@ -1,0 +1,176 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+	font-family: "codicon";
+	font-display: block;
+	src: url("./codicon.ttf") format("truetype");
+}
+
+@layer base {
+	* {
+		margin: 0;
+		padding: 0;
+	}
+
+	html {
+		--text-primary: var(--vscode-editor-foreground);
+		--bg-primary: var(--vscode-editor-background);
+		--bg-p-light: var(--vscode-notebook-cellBorderColor);
+
+		font-size: var(--vscode-font-size);
+	}
+}
+
+@layer utilities {
+	.white {
+		--rail-color: white;
+	}
+
+	.indigo {
+		--rail-color: #4338ca;
+	}
+
+	.pink {
+		--rail-color: #be185d;
+	}
+
+	.emerald {
+		--rail-color: #065f46;
+	}
+
+	.sky {
+		--rail-color: #0369a1;
+	}
+
+	.amber {
+		--rail-color: #b45309;
+	}
+
+	.red {
+		--rail-color: #b91c1c;
+	}
+
+	.yellow {
+		--rail-color: #fde68a;
+	}
+
+	.codicon {
+		font-family: codicon;
+		display: inline-block;
+		text-decoration: none;
+		text-rendering: auto;
+		text-align: center;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		-moz-user-select: none;
+		user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+}
+
+@layer components {
+	#graph {
+		& thead {
+			position: sticky;
+			top: 0;
+			background: var(--bg-primary);
+			z-index: 90;
+
+			& th {
+				@apply py-2;
+			}
+		}
+
+		& tr:hover {
+			background: rgba(255, 255, 255, 0.05);
+		}
+
+		& tr.merge {
+			color: var(--vscode-disabledForeground);
+		}
+
+		& tr.head {
+			font-weight: 700;
+		}
+
+		& td {
+			border: none;
+			line-height: 0;
+
+			&:first-child {
+				max-width: 200px;
+				margin: 0;
+				padding: 0;
+			}
+
+			&:nth-child(2) {
+				width: 100%;
+			}
+		}
+
+		& svg {
+			overflow: hidden;
+			margin: 0;
+			padding: 0;
+			fill: transparent;
+			position: relative;
+			top: -4px;
+
+			circle {
+				fill: var(--rail-color, white);
+				z-index: 10;
+			}
+
+			& line,
+			& path {
+				stroke: var(--rail-color, white);
+				stroke-width: 2px;
+				filter: drop-shadow(2px 2px 2px rgb(0 0 0 / 0.4));
+			}
+		}
+	}
+
+	.graph-tag {
+		@apply rounded-md flex items-center;
+
+		color: var(--text-primary);
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--rail-color, white);
+		height: 18px;
+		font-size: 0.9rem;
+
+		&::before {
+			@apply flex items-center justify-center codicon;
+			width: 18px;
+			height: 18px;
+			background: var(--rail-color, white);
+			line-height: 1.5;
+			font-weight: 700;
+			flex-shrink: 0;
+		}
+
+		&.tag::before {
+			content: "\ea66";
+		}
+
+		&.branch::before {
+			content: "\ea68";
+		}
+
+		&.head::before {
+			content: "\ea68";
+		}
+
+		& .content {
+			@apply px-1 h-full flex items-center;
+		}
+
+		& .end-decorator {
+			@apply px-1 h-full flex items-center;
+			border-left: 1px solid var(--rail-color, white);
+		}
+	}
+}

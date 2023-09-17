@@ -1,0 +1,22 @@
+.vscode/**
+.vscode-test/**
+# dist
+node_modules/**
+src/**
+.eslintrc.json
+.gitignore
+.npmrc
+.prettierignore
+.prettierrc.json
+build.mjs
+# CHANGELOG.md
+jest.config.js
+# package.json
+.pnpm-lock.yaml
+postcss.config.js
+# README.md
+tailwind.config.js
+tsconfig.json
+
+**/*.map
+**/*.ts
