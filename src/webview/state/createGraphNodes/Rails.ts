@@ -1,5 +1,5 @@
-import { GitCommit } from "../../types/git.js";
-import { GraphNode } from "./createGraphNodes.js";
+import { GitCommit } from "../../../types/git.js";
+import { GraphNode } from "./index.js";
 
 export type Rail = {
 	id: RailId;
@@ -78,3 +78,6 @@ export class Rails {
 		}
 	}
 }
+
+const colors = ["indigo", "pink", "emerald", "amber", "sky", "yellow", "red"];
+export const getColor = (x: RailId) => colors[x % colors.length]!;

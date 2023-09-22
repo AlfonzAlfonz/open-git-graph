@@ -1,12 +1,14 @@
 import { ComponentChild } from "preact";
-import { GraphNode } from "../../../state/createGraphNodes.js";
-import { getColor } from "../../utils.js";
+import { GraphNode } from "../../../state/createGraphNodes/index.js";
+import { getColor } from "../../../state/createGraphNodes/Rails.js";
 
 const WIDTH = 16;
 const HEIGHT = 26;
 const CENTER = 0.5;
 
-export const renderRails = (n: GraphNode, width: number) => {
+export const renderRails = (n: GraphNode) => {
+	const width = n.rails.length + 1 + n.merges.length;
+
 	const absoluteCoords = (x: number, y: number): [number, number] => [
 		WIDTH / 2 + x * WIDTH,
 		y * HEIGHT,
@@ -61,6 +63,40 @@ export const renderRails = (n: GraphNode, width: number) => {
 			{rails}
 			{/* Commit circle */}
 			<circle cx={cx} cy={cy} r={3.5} class={color} />
+		</svg>
+	);
+};
+
+export const renderEmptyRails = (node: GraphNode, height: number) => {
+	const absoluteCoords = (x: number, y: number): [number, number] => [
+		WIDTH / 2 + x * WIDTH,
+		y * height,
+	];
+
+	const toRender = [...node.rails.filter((r) => node.forks.includes(r))];
+
+	const newRail = node.forks.find((f) => !node.rails.includes(f));
+	const width = node.rails.length + +!!newRail;
+
+	const rails: ComponentChild[] = [];
+
+	for (const [x, r] of node.rails.entries()) {
+		const color = getColor(r);
+
+		const [x1, y1] = absoluteCoords(x, 0);
+		const [x2, y2] = absoluteCoords(x, 1);
+
+		rails.push(<path d={toBezier(x1, y1, x2, y2)} class={color} />);
+	}
+	if (!!newRail) {
+		const [x1, y1] = absoluteCoords(node.rails.length, 0);
+		const [x2, y2] = absoluteCoords(node.rails.length, 1);
+		rails.push(<path d={toBezier(x1, y1, x2, y2)} class={getColor(newRail)} />);
+	}
+
+	return (
+		<svg width={(width + 1) * WIDTH} height={height}>
+			{rails}
 		</svg>
 	);
 };

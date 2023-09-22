@@ -25,7 +25,7 @@ export function* toGraphTags(refs: Iterable<[string, GitRef[]]>) {
 				}
 				return acc;
 			}, [] as GraphTag[]),
-		];
+		] as const;
 	}
 }
 

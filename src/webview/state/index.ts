@@ -1,95 +1,67 @@
-import { FromRuntimeMessage } from "../../types/messages";
-import { Graph, createGraphNodes } from "./createGraphNodes";
-import { groupBy } from "./groupBy";
-import { GraphTag, toGraphTags } from "./toGraphTags";
-
-export interface WebviewState {
-	graph?: Graph;
-	refs: Record<string, GraphTag[]>;
-}
+import { create } from "../zustand.js";
+import { GitCommit } from "../../types/git.js";
+import {
+	FromRuntimeMessage,
+	FromWebviewMessage,
+} from "../../types/messages.js";
+import { Graph, createGraphNodes } from "./createGraphNodes/index.js";
+import { groupBy } from "./groupBy.js";
+import { GraphTag, toGraphTags } from "./toGraphTags.js";
+import { Request, req } from "./req.js";
 
 const api = acquireVsCodeApi();
 
-export const createState = () => {
-	const eventTarget = new StateEventTarget();
+interface Store {
+	graph: Request<Graph>;
+	tags: Request<Record<string, GraphTag[]>>;
 
-	let state = api.getState() ?? {
-		graph: undefined,
-		refs: {},
-	};
+	commits: Record<string, Request<GitCommit>>;
 
-	const setState = (s: WebviewState) => {
-		state = s;
-		api.setState(state);
-		console.log("setState called");
-	};
+	dispatch: (msg: FromWebviewMessage) => unknown;
+}
 
+export const useStore = create<Store>((set) => {
+	const state = api.getState();
 	return {
-		eventTarget,
-		dispatchMessage: (msg: FromRuntimeMessage) => {
-			let dispatch = true;
+		graph: state?.graph ?? req.empty(),
+		tags: state?.tags ?? req.empty(),
+		commits: state?.commits ?? {},
 
+		dispatch: (msg) => {
 			switch (msg.type) {
-				case "GET_COMMITS": {
-					setState({
-						...state,
-						graph: createGraphNodes(msg.commits),
-					});
-					break;
-				}
-				case "GET_REFS": {
-					setState({
-						...state,
-						refs: Object.fromEntries(
-							toGraphTags(groupBy(msg.refs, (r) => r.hash)),
-						),
-					});
-					break;
-				}
-				default:
-					dispatch = false;
-			}
-
-			if (dispatch) {
-				eventTarget.dispatchEvent(new RenderEvent(state));
-			}
-		},
-		dispatchEvent: (event: { type: "INIT" }) => {
-			let dispatch = true;
-
-			switch (event.type) {
 				case "INIT":
-					api.postMessage({ type: "INIT" });
+					set({ graph: req.waiting(), tags: req.waiting() });
 					break;
 			}
-
-			if (dispatch) {
-				eventTarget.dispatchEvent(new RenderEvent(state));
-			}
+			api.postMessage(msg);
 		},
 	};
+});
+
+export const receive = (msg: FromRuntimeMessage) => {
+	switch (msg.type) {
+		case "APPEND_COMMITS": {
+			useStore.setState((s) => ({
+				graph: req.done(createGraphNodes(msg.commits, s.graph.data)),
+			}));
+			break;
+		}
+		case "GET_REFS": {
+			useStore.setState({
+				tags: req.done(
+					Object.fromEntries(toGraphTags(groupBy(msg.refs, (r) => r.hash))),
+				),
+			});
+			break;
+		}
+		default: {
+			msg satisfies never;
+		}
+	}
 };
 
-class StateEventTarget extends EventTarget {
-	addEventListener(
-		type: "render",
-		callback:
-			| ((e: RenderEvent) => void)
-			| { handleEvent(e: RenderEvent): void }
-			| null,
-		options?: boolean | AddEventListenerOptions | undefined,
-	): void;
-	addEventListener(
-		type: string,
-		callback: EventListenerOrEventListenerObject | null,
-		options?: boolean | AddEventListenerOptions | undefined,
-	): void {
-		super.addEventListener(type, callback, options);
-	}
-}
-
-class RenderEvent extends Event {
-	constructor(public state: WebviewState) {
-		super("render");
-	}
-}
+declare function acquireVsCodeApi(): {
+	getState: () => Omit<Store, "dispatch"> | null;
+	postMessage: (message: FromWebviewMessage) => void;
+	setState: (state: Omit<Store, "dispatch">) => void;
+};

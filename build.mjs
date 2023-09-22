@@ -1,15 +1,17 @@
 // @ts-check
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import replace from "@rollup/plugin-replace";
+import commonjs from "@rollup/plugin-commonjs";
 import swc from "@rollup/plugin-swc";
 import fs from "fs";
 import path from "path";
 import { rollup } from "rollup";
 import { createProcessor } from "tailwindcss/lib/cli/build/plugin.js";
+import alias from "@rollup/plugin-alias";
 
 const prod = process.argv[2] === "-p";
 
-prod && console.log("production build");
+prod && console.info("production build");
 
 /** @type {import("@rollup/plugin-swc/src").Options} */
 const swcOptions = {
@@ -43,6 +45,17 @@ const webview = {
 		format: /** @type {"cjs"} */ ("cjs"),
 	},
 	plugins: [
+		replace({
+			values: {
+				"process.env.NODE_ENV": JSON.stringify(
+					prod ? "production" : "development",
+				),
+			},
+		}),
+		alias({
+			entries: [{ find: "react", replacement: "preact/compat" }],
+		}),
+		commonjs({}),
 		nodeResolve({ extensions: [".js", ".jsx", ".ts", ".tsx"] }),
 		swc(swcOptions),
 	],
@@ -67,6 +80,9 @@ const runtime = () => ({
 				WEBVIEW_HTML: Buffer.from(
 					fs.readFileSync("./src/webview/webview.html").toString("utf-8"),
 				).toString("base64"),
+				"process.env.NODE_ENV": JSON.stringify(
+					prod ? "production" : "development",
+				),
 			},
 		}),
 		swc(swcOptions),
@@ -97,18 +113,18 @@ fs.cpSync(
 	});
 
 await build(webview).catch((e) => {
-	console.log("failed webview");
+	console.info("failed webview");
 	console.error(e);
 	process.exit(1);
 });
 
 await build(runtime()).catch((e) => {
-	console.log("failed runtime");
+	console.info("failed runtime");
 	console.error(e);
 	process.exit(1);
 });
 
-console.log("Success");
+console.info("Success");
 
 /**
  *

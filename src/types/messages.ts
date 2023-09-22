@@ -1,4 +1,4 @@
-import { GitCommit, GitRef } from "./git";
+import { GitCommit, GitRef } from "./git.js";
 
 export type FromWebviewMessage = InitMessage;
 
@@ -9,7 +9,7 @@ export type InitMessage = {
 export type FromRuntimeMessage = GetCommitsMessage | GetRefsMessage;
 
 export type GetCommitsMessage = {
-	type: "GET_COMMITS";
+	type: "APPEND_COMMITS";
 	commits: GitCommit[];
 };
 

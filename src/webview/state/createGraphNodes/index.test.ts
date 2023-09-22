@@ -1,5 +1,5 @@
-import { GitCommit } from "../../types/git.js";
-import { GraphNode, createGraphNodes } from "./createGraphNodes.js";
+import { GitCommit } from "../../../types/git.js";
+import { GraphNode, createGraphNodes } from "./index.js";
 
 const commit = (
 	hash: string,
@@ -12,6 +12,7 @@ const commit = (
 	author: "",
 	authorDate: "",
 	authorEmail: "",
+	files: [],
 });
 
 test("fork", () => {

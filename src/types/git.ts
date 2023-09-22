@@ -5,9 +5,15 @@ export type GitCommit = {
 	author: string;
 	authorEmail: string;
 	authorDate: string;
+	files: GitCommitFile[];
 };
 
 export type GitRef =
 	| { hash: string; type: "tag"; name: string }
 	| { hash: string; type: "branch"; name: string; remote?: string }
 	| { hash: string; type: "head" };
+
+export type GitCommitFile = {
+	filename: string;
+	mode: string;
+};

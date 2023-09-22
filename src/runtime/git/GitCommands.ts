@@ -1,9 +1,9 @@
-import { GitCommit, GitRef } from "../../types/git";
+import { Readable } from "stream";
+import { GitCommit, GitRef } from "../../types/git.js";
+import { toLineGenerator } from "./execGit.js";
 
 export class GitCommands {
-	public constructor() {}
-
-	public getCommits(): GitCommand<Iterable<GitCommit>> {
+	public static getCommits(): GitCommand<AsyncIterable<GitCommit>> {
 		return {
 			args: [
 				"-c",
@@ -11,23 +11,58 @@ export class GitCommands {
 				"log",
 				"--all",
 				`--format=${formatMsg("%H", "%P", "%aN", "%aE", "%at", "%s")}`,
+				"-m",
+				"--raw",
 			],
-			parse: function* (b) {
-				const commits = b.toString("utf-8").split("\n");
+			parse: async function* (stdout) {
+				const lines = toLineGenerator(stdout);
 
-				for (const c of commits) {
-					if (c === "") {
-						continue;
+				let { value: value, done } = await lines.next();
+				while (true) {
+					if (done) {
+						return;
 					}
+
+					if (value === "") {
+						throw new Error(
+							"invalid format, commit line expected, empty line instead",
+						);
+					}
+
+					type SplittedCommitHeader = [
+						string,
+						string,
+						string,
+						string,
+						string,
+						string,
+					];
 					const [hash, parents, author, authorEmail, authorDate, subject] =
-						c.split(FORMAT_SEPARATOR) as [
-							string,
-							string,
-							string,
-							string,
-							string,
-							string,
-						];
+						value!.split(FORMAT_SEPARATOR) as SplittedCommitHeader;
+
+					({ value, done } = await lines.next());
+
+					const files = [];
+					if (value === "" && !done) {
+						while (true) {
+							({ value, done } = await lines.next());
+							if (done || !value!.startsWith(":")) break;
+
+							type SplittedCommitFile = [
+								string,
+								string,
+								string,
+								string,
+								string,
+								string,
+								string,
+							];
+							const [, , , , mode, filename] = value!.split(
+								/\s+/,
+							) as SplittedCommitFile;
+							files.push({ mode, filename });
+						}
+					}
 
 					yield {
 						hash,
@@ -36,23 +71,24 @@ export class GitCommands {
 						author,
 						authorDate,
 						authorEmail,
+						files,
 					};
 				}
 			},
 		};
 	}
 
-	public getRefs(): GitCommand<Iterable<GitRef>> {
+	public static getRefs(): GitCommand<AsyncIterable<GitRef>> {
 		return {
 			args: ["show-ref", "--head", "--dereference"],
-			parse: function* (b) {
-				const str = b.toString("utf-8").split("\n").filter(Boolean);
+			parse: async function* (stdout) {
+				const lines = toLineGenerator(stdout);
 
-				const TAG_PREFIX = "refs/tags/";
-				const BRANCH_PREFIX = "refs/heads/";
-				const REMOTE_BRANCH_PREFIX = "refs/remotes/";
+				while (true) {
+					const { value: ln, done } = await lines.next();
 
-				for (const ln of str) {
+					if (done) return;
+
 					const [hash, name] = ln.split(" ") as [string, string];
 
 					if (name === "HEAD") {
@@ -97,5 +133,9 @@ const formatMsg = (...x: string[]) => x.join(FORMAT_SEPARATOR);
 
 export type GitCommand<T> = {
 	args: string[];
-	parse: (b: Buffer) => T;
+	parse: (b: Readable) => T;
 };
+
+const TAG_PREFIX = "refs/tags/";
+const BRANCH_PREFIX = "refs/heads/";
+const REMOTE_BRANCH_PREFIX = "refs/remotes/";
