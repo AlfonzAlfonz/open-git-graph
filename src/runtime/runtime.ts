@@ -1,30 +1,30 @@
 import * as vscode from "vscode";
-import { FromRuntimeMessage, FromWebviewMessage } from "../types/messages.js";
-import { RuntimeState } from "./RuntimeState.js";
-import { getGraphPanel } from "./getGraphPanel.js";
+import { ShowFileTextDocumentContentProvider } from "./ShowFileTextDocumentContentProvider.js";
+import { createGraphPanel } from "./panel/index.js";
+import { runtimeStore } from "./state/index.js";
+import { ensureGitExtension } from "./vscode.git/index.js";
 
 export function activate(context: vscode.ExtensionContext) {
-	const ch = vscode.window.createOutputChannel("Open git graph");
+	const logger = vscode.window.createOutputChannel("Open git graph");
 
-	ch.appendLine("Starting");
+	const git = ensureGitExtension();
 
-	let disposable = vscode.commands.registerCommand(
-		"open-git-graph.helloWorld",
-		() => {
-			const panel = getGraphPanel(context);
+	const store = runtimeStore({
+		extension: git.exports,
+		repository: {},
+		logger,
+	});
 
-			const state = new RuntimeState((msg: FromRuntimeMessage) =>
-				panel.webview.postMessage(msg),
-			);
-
-			panel.webview.onDidReceiveMessage(async (e: FromWebviewMessage) => {
-				await state.receive(e);
-			});
-		},
+	vscode.workspace.registerTextDocumentContentProvider(
+		ShowFileTextDocumentContentProvider.scheme,
+		new ShowFileTextDocumentContentProvider(store),
 	);
-	ch.appendLine("Command registered");
 
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(
+		vscode.commands.registerCommand("open-git-graph.helloWorld", () => {
+			createGraphPanel(context, store.ensure());
+		}),
+	);
 }
 
 export function deactivate() {}

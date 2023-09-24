@@ -8,6 +8,9 @@ import type {
 } from "zustand/vanilla";
 import { createStore } from "zustand/vanilla";
 
+// Copied from https://github.com/pmndrs/zustand/blob/main/src/react.ts
+// Replaces useSyncExternalStore from use-sync-external-store with preact/compat
+
 type ExtractState<S> = S extends { getState: () => infer T } ? T : never;
 
 type ReadonlyStoreApi<T> = Pick<StoreApi<T>, "getState" | "subscribe">;

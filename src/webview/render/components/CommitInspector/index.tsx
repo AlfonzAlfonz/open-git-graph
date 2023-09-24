@@ -1,7 +1,10 @@
 import { GraphNode } from "../../../state/createGraphNodes/index.js";
+import { useWebviewStore } from "../../../state/index.js";
 import { renderEmptyRails } from "../GraphRow/renderRails.js";
 
 export const CommitInspector = ({ node }: { node: GraphNode }) => {
+	const { dispatch } = useWebviewStore();
+
 	const { commit } = node;
 
 	return (
@@ -17,9 +20,18 @@ export const CommitInspector = ({ node }: { node: GraphNode }) => {
 					<div>
 						<ul>
 							{commit.files.map((f, i) => (
-								<li key={f.filename + ";" + i}>
+								<li
+									key={f.filename}
+									onClick={() =>
+										dispatch({
+											type: "SHOW_DIFF",
+											a: [commit.parents[0]!, f.filename],
+											b: [commit.hash, f.filename],
+										})
+									}
+								>
 									<span>{f.mode}</span>
-									{f.filename}f
+									{f.filename}
 								</li>
 							))}
 						</ul>

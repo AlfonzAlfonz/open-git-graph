@@ -1,3 +1,5 @@
+@import "./graph.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,14 +11,15 @@
 }
 
 @layer base {
-	*, body {
+	*,
+	body {
 		margin: 0;
 		padding: 0;
 	}
 
-  body { 
-    overflow-y: scroll;
-  }
+	body {
+		overflow-y: scroll;
+	}
 
 	html {
 		--text-primary: var(--vscode-editor-foreground);
@@ -72,109 +75,5 @@
 		user-select: none;
 		-webkit-user-select: none;
 		-ms-user-select: none;
-	}
-}
-
-@layer components {
-	#graph {
-		border-collapse: collapse;
-
-		& thead {
-			position: sticky;
-			top: 0;
-			background: var(--bg-primary);
-			z-index: 90;
-
-			& th {
-				@apply py-2;
-			}
-		}
-
-		& tr:hover {
-			background: rgba(255, 255, 255, 0.05);
-		}
-
-		& tr.merge {
-			color: var(--vscode-disabledForeground);
-		}
-
-		& tr.head {
-			font-weight: 700;
-		}
-
-		& td {
-			border: none;
-			line-height: 0;
-
-			&:first-child {
-				max-width: 200px;
-				margin: 0;
-				padding: 0;
-			}
-
-			&:nth-child(2) {
-				width: 100%;
-			}
-		}
-
-		& svg {
-			overflow: hidden;
-			margin: 0;
-			padding: 0;
-			fill: transparent;
-			position: relative;
-
-			circle {
-				fill: var(--rail-color, white);
-			}
-
-			& line,
-			& path {
-				stroke: var(--rail-color, white);
-				stroke-width: 2px;
-				filter: drop-shadow(2px 2px 2px rgb(0 0 0 / 0.4));
-			}
-		}
-	}
-
-	.graph-tag {
-		@apply rounded-md flex items-center;
-
-		color: var(--text-primary);
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid var(--rail-color, white);
-		height: 18px;
-		font-size: 0.9rem;
-
-		&::before {
-			@apply flex items-center justify-center codicon;
-			width: 18px;
-			height: 18px;
-			background: var(--rail-color, white);
-			line-height: 1.5;
-			font-weight: 700;
-			flex-shrink: 0;
-		}
-
-		&.tag::before {
-			content: "\ea66";
-		}
-
-		&.branch::before {
-			content: "\ea68";
-		}
-
-		&.head::before {
-			content: "\ea68";
-		}
-
-		& .content {
-			@apply px-1 h-full flex items-center;
-		}
-
-		& .end-decorator {
-			@apply px-1 h-full flex items-center;
-			border-left: 1px solid var(--rail-color, white);
-		}
 	}
 }

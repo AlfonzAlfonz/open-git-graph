@@ -1,6 +1,11 @@
-import { Readable } from "stream";
+import { Readable } from "node:stream";
 import { GitCommit, GitRef } from "../../types/git.js";
-import { toLineGenerator } from "./execGit.js";
+import { toLineGenerator } from "./toLineGenerator.js";
+
+export type GitCommand<T> = {
+	args: string[];
+	parse: (b: Readable) => T;
+};
 
 export class GitCommands {
 	public static getCommits(): GitCommand<AsyncIterable<GitCommit>> {
@@ -130,11 +135,6 @@ export class GitCommands {
 
 const FORMAT_SEPARATOR = "XX7Nal-YARtTpjCikii9nJxER19D6diSyk-AWkPb";
 const formatMsg = (...x: string[]) => x.join(FORMAT_SEPARATOR);
-
-export type GitCommand<T> = {
-	args: string[];
-	parse: (b: Readable) => T;
-};
 
 const TAG_PREFIX = "refs/tags/";
 const BRANCH_PREFIX = "refs/heads/";

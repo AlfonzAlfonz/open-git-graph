@@ -1,5 +1,5 @@
 import { render as renderPreact } from "preact";
-import { useStore } from "../state/index.js";
+import { useWebviewStore } from "../state/index.js";
 import { GraphRow } from "./components/GraphRow/index.js";
 import { Loading } from "./components/Loading.js";
 import { useEffect } from "preact/hooks";
@@ -11,7 +11,7 @@ export const render = () => {
 };
 
 const App = () => {
-	const { graph, tags, dispatch } = useStore();
+	const { graph, tags, dispatch } = useWebviewStore();
 
 	useEffect(() => {
 		dispatch({ type: "INIT" });
@@ -38,7 +38,7 @@ const App = () => {
 				</table>
 			)}
 
-			{graph?.state === "waiting" && (
+			{!graph?.data && (
 				<div class="w-[100vw] h-[100vh] flex items-center justify-center">
 					<Loading />
 				</div>

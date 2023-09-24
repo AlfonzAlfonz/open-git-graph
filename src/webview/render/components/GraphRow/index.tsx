@@ -19,7 +19,7 @@ export const GraphRow = ({
 		<>
 			<tr
 				onClick={() => setOpen((s) => !s)}
-				class={`${isHead ? "head" : ""} ${
+				class={`graph-row ${isHead ? "head" : ""} ${
 					node.commit.parents.length > 1 ? "merge" : ""
 				} ${getColor(node.position)}`}
 			>

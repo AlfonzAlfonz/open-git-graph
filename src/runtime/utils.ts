@@ -20,3 +20,5 @@ export async function* batch<T>(
 	}
 	return batchArray;
 }
+
+export const only = <T>(x: T | T[]) => (Array.isArray(x) ? x[0] : x);

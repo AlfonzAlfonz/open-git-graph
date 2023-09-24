@@ -1,17 +1,5 @@
-import { spawn } from "child_process";
-import readline from "readline";
-import { Readable } from "stream";
-import { GitCommand } from "./GitCommands.js";
-
-export const execGit = <T>(cmd: GitCommand<T>): T => {
-	console.info(`git ${cmd.args.join(" ")}`);
-
-	const child = spawn("git", cmd.args, {
-		// cwd: "",
-	});
-
-	return cmd.parse(child.stdout);
-};
+import readline from "node:readline";
+import { Readable } from "node:stream";
 
 export async function* toLineGenerator(
 	stream: Readable,
