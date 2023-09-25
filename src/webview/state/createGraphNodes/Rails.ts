@@ -1,6 +1,11 @@
 import { GitCommit } from "../../../types/git.js";
 import { GraphNode } from "./index.js";
 
+export type RailsState = {
+	rails: Rail[];
+	nextId: number;
+};
+
 export type Rail = {
 	id: RailId;
 	next: string;
@@ -10,12 +15,11 @@ declare const idBrand: unique symbol;
 export type RailId = number & { [idBrand]: typeof idBrand };
 
 export class Rails {
-	private rails: Rail[] = [];
-	private nextId = 0;
+	public constructor(public state: RailsState = { rails: [], nextId: 0 }) {}
 
 	add(commit: GitCommit): GraphNode {
 		const children = [...this.getChildren(commit)];
-		const rails = this.rails.map((r) => r.id);
+		const rails = this.state.rails.map((r) => r.id);
 		let position: RailId;
 		let forks: RailId[] = [];
 		let merges: RailId[] = [];
@@ -24,7 +28,7 @@ export class Rails {
 			// If commit does not have any children create a new rail
 			const rail = { next: commit.parents[0]!, id: this.id() };
 
-			this.rails.push(rail);
+			this.state.rails.push(rail);
 
 			forks = [rail.id];
 			position = rail.id;
@@ -35,7 +39,7 @@ export class Rails {
 
 			const newRails: Rail[] = [];
 
-			for (const r of this.rails) {
+			for (const r of this.state.rails) {
 				if (r.id === first) {
 					newRails.push({ next: commit.parents[0]!, id: first });
 				} else if (!forks.includes(r.id)) {
@@ -43,7 +47,7 @@ export class Rails {
 					newRails.push(r);
 				}
 			}
-			this.rails = newRails;
+			this.state.rails = newRails;
 			position = first;
 		}
 
@@ -52,7 +56,7 @@ export class Rails {
 			const [, ...mergedParents] = [...commit.parents];
 			for (const parent of mergedParents) {
 				const rail = { next: parent, id: this.id() };
-				this.rails.push(rail);
+				this.state.rails.push(rail);
 				merges.push(rail.id);
 			}
 		}
@@ -67,11 +71,11 @@ export class Rails {
 	}
 
 	private id() {
-		return this.nextId++ as RailId;
+		return this.state.nextId++ as RailId;
 	}
 
 	*getChildren(commit: GitCommit) {
-		for (const r of this.rails) {
+		for (const r of this.state.rails) {
 			if (r.next === commit.hash) {
 				yield r.id;
 			}

@@ -1,5 +1,5 @@
 import { GitCommit } from "../../../types/git.js";
-import { RailId, Rails } from "./Rails.js";
+import { RailId, Rails, RailsState } from "./Rails.js";
 
 /**
  * Structure representing node ordered by date descending.
@@ -8,7 +8,7 @@ import { RailId, Rails } from "./Rails.js";
  */
 export type Graph = {
 	nodes: GraphNode[];
-	rails: Rails;
+	rails: RailsState;
 };
 
 export type GraphNode = {
@@ -26,13 +26,15 @@ export type GraphNode = {
 };
 
 export const createGraphNodes = (commits: GitCommit[], prev?: Graph): Graph => {
+	const rails = new Rails(prev?.rails);
+
 	const graph: Graph = {
 		nodes: prev?.nodes ?? [],
-		rails: prev?.rails ?? new Rails(),
+		rails: rails.state,
 	};
 
 	for (const c of commits) {
-		const r = graph.rails.add(c);
+		const r = rails.add(c);
 		graph.nodes.push(r);
 	}
 
