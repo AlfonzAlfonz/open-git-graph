@@ -1,3 +1,4 @@
+import { GitCommitFileMode } from "../../../../types/git.js";
 import { GraphNode } from "../../../state/createGraphNodes/index.js";
 import { useWebviewStore } from "../../../state/index.js";
 import { renderEmptyRails } from "../GraphRow/renderRails.js";
@@ -18,7 +19,7 @@ export const CommitInspector = ({ node }: { node: GraphNode }) => {
 						<div>{commit.author}</div>
 					</div>
 					<div>
-						<ul>
+						<ul class="list-none">
 							{commit.files.map((f, i) => (
 								<li
 									key={f.path}
@@ -30,9 +31,10 @@ export const CommitInspector = ({ node }: { node: GraphNode }) => {
 											b: commit.hash,
 										})
 									}
+									class={`flex gap-2 p-1 ${fileModeColors[f.mode] ?? "white"}`}
 								>
 									<span>{f.mode}</span>
-									{f.path}
+									<span>{f.path}</span>
 								</li>
 							))}
 						</ul>
@@ -41,4 +43,12 @@ export const CommitInspector = ({ node }: { node: GraphNode }) => {
 			</td>
 		</tr>
 	);
+};
+
+const fileModeColors: Record<GitCommitFileMode, string> = {
+	A: "text-green-900",
+	D: "text-rose-950",
+	M: "text-yellow-600",
+	R: "text-lime-900",
+	U: "text-stone-500",
 };

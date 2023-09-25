@@ -1,4 +1,4 @@
-import { GitCommit } from "../../../types/git";
+import { GitCommit, GitCommitFileMode } from "../../../types/git";
 import { toLineGenerator } from "../toLineGenerator";
 import { FORMAT_SEPARATOR, GitCommand, formatMsg } from "./utils";
 
@@ -54,8 +54,7 @@ export const getCommits = (): GitCommand<AsyncIterable<GitCommit>> => {
 							string,
 							string,
 							string,
-							string,
-							string,
+							GitCommitFileMode,
 							string,
 						];
 						const [, , , , mode, path] = value!.split(
