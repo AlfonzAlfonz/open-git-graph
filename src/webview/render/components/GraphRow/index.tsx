@@ -33,12 +33,20 @@ export const GraphRow = ({
 				<td>
 					<div class="flex gap-2 items-center">
 						{tags && renderTags(tags)}
-						{node.commit.subject}
+						<p class="inline-block whitespace-nowrap text-ellipsis overflow-hidden leading-tight flex-grow-1">
+							{node.commit.subject}
+						</p>
 					</div>
 				</td>
-				<td>{node.commit.author}</td>
-				<td>{new Date(node.commit.authorDate).toString()}</td>
-				<td>{node.commit.hash.slice(0, 10)}</td>
+				<td class="px-1 whitespace-nowrap text-ellipsis overflow-hidden">
+					{node.commit.author}
+				</td>
+				<td class="px-1 whitespace-nowrap text-ellipsis overflow-hidden">
+					{new Date(node.commit.authorDate).toString()}
+				</td>
+				<td class="px-1 whitespace-nowrap text-ellipsis overflow-hidden">
+					{node.commit.hash.slice(0, 10)}
+				</td>
 			</tr>
 			{open && <CommitInspector node={node} />}
 		</>
