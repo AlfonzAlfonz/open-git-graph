@@ -2,12 +2,22 @@ import { createStore } from "zustand/vanilla";
 import { catchErrors } from "../handleError.js";
 import { Lazy, RuntimeState, RuntimeStore } from "./types.js";
 import { watchGit } from "./watchGit.js";
+import * as vscode from "vscode";
+import { ensureGitExtension } from "../vscode.git/index.js";
 
-export const runtimeStore = (init: RuntimeState): Lazy<RuntimeStore> => {
+export const runtimeStore = (
+	logger: vscode.OutputChannel,
+): Lazy<RuntimeStore> => {
 	let store: RuntimeStore | undefined;
 
 	const create = (): RuntimeStore => {
-		const { setState, ...store } = createStore<RuntimeState>(() => init);
+		const git = ensureGitExtension();
+
+		const { setState, ...store } = createStore<RuntimeState>(() => ({
+			extension: git.exports,
+			repository: {},
+			logger,
+		}));
 
 		return {
 			...store,
