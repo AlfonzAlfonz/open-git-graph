@@ -9,8 +9,9 @@ export type InitMessage = {
 
 export type ShowDiffMessage = {
 	type: "SHOW_DIFF";
-	a: [ref: string, path: string];
-	b: [ref: string, path: string];
+	a?: string;
+	b?: string;
+	path: string;
 };
 
 export type FromRuntimeMessage = GetCommitsMessage | GetRefsMessage;

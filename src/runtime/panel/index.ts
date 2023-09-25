@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { errors, handleError } from "../handleError";
+import { errors } from "../handleError";
 import { RuntimeStore } from "../state/types";
 import { Repository } from "../vscode.git/types";
 import { createBridge } from "./createBridge";
@@ -8,37 +8,39 @@ export const createGraphPanel = async (
 	context: vscode.ExtensionContext,
 	store: RuntimeStore,
 ) => {
-	try {
-		const repo = await selectRepo(store.getState().repository);
+	const repo = await selectRepo(store.getState().repository);
 
-		const panel = vscode.window.createWebviewPanel(
-			"open-git-graph.view",
-			"Open Git Graph",
-			vscode.ViewColumn.One,
-			{
-				enableScripts: true,
-			},
-		);
-		const styleUri = panel.webview.asWebviewUri(
-			vscode.Uri.joinPath(context.extensionUri, "dist", "output.css"),
-		);
-		const scriptUri = panel.webview.asWebviewUri(
-			vscode.Uri.joinPath(context.extensionUri, "dist", "webview.js"),
-		);
+	const panel = vscode.window.createWebviewPanel(
+		"open-git-graph.graph",
+		"Open Git Graph",
+		vscode.ViewColumn.One,
+		{
+			enableScripts: true,
+		},
+	);
+	const styleUri = panel.webview.asWebviewUri(
+		vscode.Uri.joinPath(context.extensionUri, "dist", "output.css"),
+	);
+	const scriptUri = panel.webview.asWebviewUri(
+		vscode.Uri.joinPath(context.extensionUri, "dist", "webview.js"),
+	);
 
-		let html = Buffer.from(webview, "base64").toString("utf-8");
+	let html = Buffer.from(webview, "base64").toString("utf-8");
 
-		html = html.replace("${styleUri}", styleUri.toString());
-		html = html.replace("${scriptUri}", scriptUri.toString());
+	html = html.replace("${styleUri}", styleUri.toString());
+	html = html.replace(
+		"${scripts}",
+		`
+        <script>window.__REPOSITORY = "${repo.rootUri.toString()}"</script>
+        <script src="${scriptUri.toString()}"></script>
+      `,
+	);
 
-		panel.webview.html = html;
+	panel.webview.html = html;
 
-		createBridge(store, repo, panel.webview);
+	createBridge(store, repo, panel.webview);
 
-		return panel;
-	} catch (e) {
-		handleError(store.getState())(e);
-	}
+	return panel;
 };
 
 const webview = `WEBVIEW_HTML`; // Value is replaced at build time

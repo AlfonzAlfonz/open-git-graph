@@ -14,6 +14,6 @@ export type GitRef =
 	| { hash: string; type: "head" };
 
 export type GitCommitFile = {
-	filename: string;
+	path: string;
 	mode: string;
 };

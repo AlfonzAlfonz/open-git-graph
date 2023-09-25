@@ -21,17 +21,18 @@ export const CommitInspector = ({ node }: { node: GraphNode }) => {
 						<ul>
 							{commit.files.map((f, i) => (
 								<li
-									key={f.filename}
+									key={f.path}
 									onClick={() =>
 										dispatch({
 											type: "SHOW_DIFF",
-											a: [commit.parents[0]!, f.filename],
-											b: [commit.hash, f.filename],
+											path: f.path,
+											a: commit.parents[0],
+											b: commit.hash,
 										})
 									}
 								>
 									<span>{f.mode}</span>
-									{f.filename}
+									{f.path}
 								</li>
 							))}
 						</ul>

@@ -7,7 +7,6 @@
 			"request": "launch",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--disable-extensions",
 				"" // Change this to open vscode in different folder
 			],
 			"preLaunchTask": "${defaultBuildTask}"

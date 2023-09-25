@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
 import { FromWebviewMessage } from "../../types/messages";
-import { handleError } from "../handleError";
+import { catchErrors } from "../handleError";
 import { PanelState, RuntimeStore } from "../state/types";
-import { handleInit } from "./handlers/handleInit";
 import { Repository } from "../vscode.git/types";
+import { handleInit } from "./handlers/handleInit";
 import { handleShowDiff } from "./handlers/handleShowDiff";
 
 export const createBridge = (
@@ -18,9 +18,12 @@ export const createBridge = (
 			sendMessage: async (msg) => await webview.postMessage(msg),
 		});
 
-	webview.onDidReceiveMessage(async (msg: FromWebviewMessage) => {
-		store.getState().logger.appendLine(`Received from webview msg ${msg.type}`);
-		try {
+	webview.onDidReceiveMessage(
+		catchErrors(store, async (msg: FromWebviewMessage) => {
+			store
+				.getState()
+				.logger.appendLine(`\nReceived from webview msg ${msg.type}`);
+
 			switch (msg.type) {
 				case "INIT":
 					await handleInit(msg, getState);
@@ -32,8 +35,6 @@ export const createBridge = (
 					msg satisfies never;
 				}
 			}
-		} catch (e) {
-			handleError(store.getState())(e);
-		}
-	});
+		}),
+	);
 };

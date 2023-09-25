@@ -22,6 +22,12 @@ export const GraphRow = ({
 				class={`graph-row ${isHead ? "head" : ""} ${
 					node.commit.parents.length > 1 ? "merge" : ""
 				} ${getColor(node.position)}`}
+				data-vscode-context={JSON.stringify({
+					webviewSection: "commit",
+					preventDefaultContextMenuItems: true,
+					repo: window.__REPOSITORY,
+					ref: node.commit.hash,
+				})}
 			>
 				<td>{renderRails(node)}</td>
 				<td>

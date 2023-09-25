@@ -55,10 +55,42 @@
 		"vscode.git"
 	],
 	"contributes": {
+		"menus": {
+			"webview/context": [
+				{
+					"command": "open-git-graph.merge-head",
+					"when": "webviewId == 'open-git-graph.graph' && webviewSection == 'commit'"
+				},
+				{
+					"command": "open-git-graph.rebase-head",
+					"when": "webviewId == 'open-git-graph.graph' && webviewSection == 'commit'"
+				},
+				{
+					"command": "open-git-graph.reset-head",
+					"when": "webviewId == 'open-git-graph.graph' && webviewSection == 'commit'"
+				}
+			]
+		},
 		"commands": [
 			{
-				"command": "open-git-graph.helloWorld",
-				"title": "Hello World"
+				"command": "open-git-graph.graph",
+				"title": "Open Git Graph",
+				"when": "webviewId == 'open-git-graph.graph' && webviewSection == 'commit'"
+			},
+			{
+				"command": "open-git-graph.merge-head",
+				"title": "Merge into current branch",
+				"when": "webviewId == 'open-git-graph.graph' && webviewSection == 'commit'"
+			},
+			{
+				"command": "open-git-graph.rebase-head",
+				"title": "Rebase current branch on this commit",
+				"when": "webviewId == 'open-git-graph.graph' && webviewSection == 'commit'"
+			},
+			{
+				"command": "open-git-graph.reset-head",
+				"title": "Reset current branch to this commit",
+				"when": "webviewId == 'open-git-graph.graph' && webviewSection == 'commit'"
 			}
 		]
 	}

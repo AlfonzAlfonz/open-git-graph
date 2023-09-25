@@ -4,22 +4,14 @@ import { ShowFileTextDocumentContentProvider } from "../../ShowFileTextDocumentC
 import { Handler } from "../types.js";
 
 export const handleShowDiff: Handler<ShowDiffMessage> = async (
-	{ a, b },
+	{ path, a, b },
 	getState,
 ) => {
 	await getState(async (s) => {
 		await vscode.commands.executeCommand(
 			"vscode.diff",
-			ShowFileTextDocumentContentProvider.createUri(
-				a[0],
-				a[1],
-				s.panelRepository,
-			),
-			ShowFileTextDocumentContentProvider.createUri(
-				b[0],
-				b[1],
-				s.panelRepository,
-			),
+			ShowFileTextDocumentContentProvider.createUri(a, path, s.panelRepository),
+			ShowFileTextDocumentContentProvider.createUri(b, path, s.panelRepository),
 			"Swag",
 		);
 	});

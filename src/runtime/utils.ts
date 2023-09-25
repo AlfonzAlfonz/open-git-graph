@@ -1,3 +1,16 @@
+import * as vscode from "vscode";
+import { Lazy, RuntimeStore } from "./state/types";
+
+export type Command<TId extends string> = {
+	id: TId;
+	command: (
+		context: vscode.ExtensionContext,
+		store: Lazy<RuntimeStore>,
+	) => () => void;
+};
+
+export const command = <TId extends string>(command: Command<TId>) => command;
+
 export const buffer = async <T>(iterable: AsyncIterable<T>) => {
 	const result = [];
 	for await (const itm of iterable) {
