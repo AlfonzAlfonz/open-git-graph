@@ -15,7 +15,10 @@ declare const idBrand: unique symbol;
 export type RailId = number & { [idBrand]: typeof idBrand };
 
 export class Rails {
-	public constructor(public state: RailsState = { rails: [], nextId: 0 }) {}
+	public constructor(
+		public state: RailsState = { rails: [], nextId: 0 },
+		private hashes: Set<string>,
+	) {}
 
 	add(commit: GitCommit): GraphNode {
 		const children = [...this.getChildren(commit)];
@@ -42,8 +45,8 @@ export class Rails {
 			for (const r of this.state.rails) {
 				if (r.id === first) {
 					newRails.push({ next: commit.parents[0]!, id: first });
-				} else if (!forks.includes(r.id)) {
 					// Discard forked rails
+				} else if (!forks.includes(r.id)) {
 					newRails.push(r);
 				}
 			}
@@ -55,9 +58,11 @@ export class Rails {
 			// log(commit.subject, commit.parents);
 			const [, ...mergedParents] = [...commit.parents];
 			for (const parent of mergedParents) {
-				const rail = { next: parent, id: this.id() };
-				this.state.rails.push(rail);
-				merges.push(rail.id);
+				if (this.hashes.has(parent)) {
+					const rail = { next: parent, id: this.id() };
+					this.state.rails.push(rail);
+					merges.push(rail.id);
+				}
 			}
 		}
 

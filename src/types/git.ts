@@ -4,7 +4,8 @@ export type GitCommit = {
 	subject: string;
 	author: string;
 	authorEmail: string;
-	authorDate: string;
+	authorDate: number;
+	commitDate: number;
 	files: GitCommitFile[];
 };
 

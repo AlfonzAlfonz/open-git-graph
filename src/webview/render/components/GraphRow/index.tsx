@@ -48,7 +48,7 @@ export const GraphRow = ({ node, tags }: GraphRowProps) => {
 					{node.commit.author}
 				</td>
 				<td class="px-1 whitespace-nowrap text-ellipsis overflow-hidden">
-					{new Date(node.commit.authorDate).toString()}
+					{new Date(node.commit.authorDate * 1000).toLocaleString()}
 				</td>
 				<td class="px-1 whitespace-nowrap text-ellipsis overflow-hidden">
 					{node.commit.hash.slice(0, 10)}

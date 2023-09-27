@@ -2,12 +2,14 @@ import { spawn } from "node:child_process";
 import { handleError } from "../handleError.js";
 import { RuntimeState } from "../state/types.js";
 import { Repository } from "../vscode.git/types.js";
-import { getCommits } from "./GitCommands/getCommits.js";
-import { getRefs } from "./GitCommands/getRefs.js";
+import { logCommits } from "./GitCommands/logCommits.js";
+import { showRefs } from "./GitCommands/showRefs.js";
 import { GitCommand } from "./GitCommands/utils.js";
 import { resetHead } from "./GitCommands/resetHead.js";
 import { showRefFile } from "./GitCommands/showRefFile.js";
 import { checkout } from "./GitCommands/checkout.js";
+import { stashList } from "./GitCommands/stashList.js";
+import { buffer } from "../utils.js";
 
 export class GitRepository {
 	private repository: Repository;
@@ -27,12 +29,20 @@ export class GitRepository {
 		this.repository = repo;
 	}
 
-	public getCommits() {
-		return this.execGit(getCommits());
+	public async *getCommits() {
+		const stashes = await buffer(this.execGit(stashList()));
+		stashes.sort((a, b) => b.commitDate - a.commitDate);
+
+		for await (const c of this.execGit(logCommits())) {
+			while ((stashes[0]?.commitDate ?? 0) > c.commitDate) {
+				yield stashes.shift()!;
+			}
+			yield c;
+		}
 	}
 
 	public getRefs() {
-		return this.execGit(getRefs());
+		return this.execGit(showRefs());
 	}
 
 	public async reset(ref: string, mode: "soft" | "mixed" | "hard") {

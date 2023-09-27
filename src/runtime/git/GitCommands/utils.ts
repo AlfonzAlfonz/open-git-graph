@@ -9,4 +9,29 @@ export type GitCommand<T> = {
 };
 
 export const FORMAT_SEPARATOR = "XX7Nal-YARtTpjCikii9nJxER19D6diSyk-AWkPb";
-export const formatMsg = (...x: string[]) => x.join(FORMAT_SEPARATOR);
+export const commitFormat = ["%H", "%P", "%aN", "%aE", "%at", "%s", "%ct"].join(
+	FORMAT_SEPARATOR,
+);
+export const parseCommitFormat = (value: string) => {
+	type SplittedCommitHeader = [
+		string,
+		string,
+		string,
+		string,
+		string,
+		string,
+		string,
+	];
+	const [hash, parents, author, authorEmail, authorDate, subject, commitDate] =
+		value!.split(FORMAT_SEPARATOR) as SplittedCommitHeader;
+
+	return {
+		hash,
+		parents: parents.split(" ").filter(Boolean),
+		subject,
+		author,
+		authorDate: +authorDate,
+		authorEmail,
+		commitDate: +commitDate,
+	};
+};

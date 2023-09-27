@@ -1,8 +1,8 @@
 import { GitCommit, GitCommitFileMode } from "../../../types/git";
 import { toLineGenerator } from "../toLineGenerator";
-import { FORMAT_SEPARATOR, GitCommand, formatMsg } from "./utils";
+import { GitCommand, commitFormat, parseCommitFormat } from "./utils";
 
-export const getCommits = (): GitCommand<AsyncIterable<GitCommit>> => {
+export const logCommits = (): GitCommand<AsyncIterable<GitCommit>> => {
 	return {
 		args: [
 			"-c",
@@ -11,7 +11,7 @@ export const getCommits = (): GitCommand<AsyncIterable<GitCommit>> => {
 			"--branches=*",
 			"--remotes=*",
 			"--tags=*",
-			`--format=${formatMsg("%H", "%P", "%aN", "%aE", "%at", "%s")}`,
+			`--format=${commitFormat}`,
 			"-m",
 			"--raw",
 		],
@@ -20,7 +20,7 @@ export const getCommits = (): GitCommand<AsyncIterable<GitCommit>> => {
 
 			let { value: value, done } = await lines.next();
 			while (true) {
-				if (done) {
+				if (done || value === undefined) {
 					return;
 				}
 
@@ -30,16 +30,7 @@ export const getCommits = (): GitCommand<AsyncIterable<GitCommit>> => {
 					);
 				}
 
-				type SplittedCommitHeader = [
-					string,
-					string,
-					string,
-					string,
-					string,
-					string,
-				];
-				const [hash, parents, author, authorEmail, authorDate, subject] =
-					value!.split(FORMAT_SEPARATOR) as SplittedCommitHeader;
+				const base = parseCommitFormat(value);
 
 				({ value, done } = await lines.next());
 
@@ -64,15 +55,7 @@ export const getCommits = (): GitCommand<AsyncIterable<GitCommit>> => {
 					}
 				}
 
-				yield {
-					hash,
-					parents: parents.split(" ").filter(Boolean),
-					subject,
-					author,
-					authorDate,
-					authorEmail,
-					files,
-				};
+				yield { ...base, files };
 			}
 		},
 	};

@@ -26,7 +26,8 @@ export type GraphNode = {
 };
 
 export const createGraphNodes = (commits: GitCommit[], prev?: Graph): Graph => {
-	const rails = new Rails(prev?.rails);
+	const hashes = new Set(commitHashes(commits, prev?.nodes));
+	const rails = new Rails(prev?.rails, hashes);
 
 	const graph: Graph = {
 		nodes: prev?.nodes ?? [],
@@ -40,3 +41,13 @@ export const createGraphNodes = (commits: GitCommit[], prev?: Graph): Graph => {
 
 	return graph;
 };
+
+function* commitHashes(commits: GitCommit[], prev?: GraphNode[]) {
+	for (const c of commits) {
+		yield c.hash;
+	}
+	if (prev)
+		for (const n of prev) {
+			yield n.commit.hash;
+		}
+}

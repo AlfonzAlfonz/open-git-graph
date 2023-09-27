@@ -2,7 +2,7 @@ import { GitRef } from "../../../types/git";
 import { toLineGenerator } from "../toLineGenerator";
 import { GitCommand } from "./utils";
 
-export const getRefs = (): GitCommand<AsyncIterable<GitRef>> => {
+export const showRefs = (): GitCommand<AsyncIterable<GitRef>> => {
 	return {
 		args: ["show-ref", "--head", "--dereference"],
 		parse: async function* (stdout) {
