@@ -1,13 +1,15 @@
 import * as vscode from "vscode";
-import { command } from "../utils";
 import { GitRepository } from "../git/GitRepository";
+import { handleWebviewMessage } from "../panel/handleWebviewMessage";
+import { command } from "../utils";
 
 export const resetHeadCommand = command({
 	id: "open-git-graph.reset-head",
 	command:
-		(_, store) =>
+		(_, s) =>
 		async ({ repo, ref }: { repo?: string; ref?: string } = {}) => {
-			console.log(repo, ref);
+			const store = s.ensure();
+
 			if (!repo) {
 				throw new Error("Missing repository path");
 			}
@@ -15,7 +17,7 @@ export const resetHeadCommand = command({
 				throw new Error("Missing ref");
 			}
 
-			const git = new GitRepository(store.ensure().getState(), repo);
+			const git = new GitRepository(store.getState(), repo);
 			const o = [
 				{
 					value: "soft",
@@ -40,6 +42,11 @@ export const resetHeadCommand = command({
 
 			if (answer) {
 				await git.reset(ref, answer.value);
+			}
+
+			for (const [panel, { repoPath }] of store.getState().panels) {
+				if (repo !== repoPath) continue;
+				await handleWebviewMessage(store, panel, { type: "INIT" });
 			}
 		},
 });

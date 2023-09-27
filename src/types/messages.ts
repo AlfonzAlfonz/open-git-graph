@@ -1,10 +1,18 @@
 import { GitCommit, GitRef } from "./git.js";
 import { Req } from "./req.js";
 
-export type FromWebviewMessage = InitMessage | ShowDiffMessage;
+export type FromWebviewMessage =
+	| InitMessage
+	| RefreshMessage
+	| ShowDiffMessage
+	| CheckoutMessage;
 
 export type InitMessage = {
 	type: "INIT";
+};
+
+export type RefreshMessage = {
+	type: "REFRESH";
 };
 
 export type ShowDiffMessage = {
@@ -14,9 +22,22 @@ export type ShowDiffMessage = {
 	path: string;
 };
 
-export type FromRuntimeMessage = GetCommitsMessage | GetRefsMessage;
+export type CheckoutMessage = {
+	type: "CHECKOUT";
+	branch: string;
+};
 
-export type GetCommitsMessage = {
+export type FromRuntimeMessage =
+	| SetCommitsMessage
+	| AppendCommitsMessage
+	| GetRefsMessage;
+
+export type SetCommitsMessage = {
+	type: "SET_COMMITS";
+	commits: Req<GitCommit[]>;
+};
+
+export type AppendCommitsMessage = {
 	type: "APPEND_COMMITS";
 	commits: Req<GitCommit[]>;
 };

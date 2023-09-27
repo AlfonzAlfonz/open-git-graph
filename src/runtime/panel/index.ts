@@ -1,14 +1,15 @@
 import * as vscode from "vscode";
-import { errors } from "../handleError";
+import { catchErrors, errors } from "../handleError";
 import { RuntimeStore } from "../state/types";
 import { Repository } from "../vscode.git/types";
-import { createBridge } from "./createBridge";
+import { handleWebviewMessage } from "./handleWebviewMessage";
+import { FromWebviewMessage } from "../../types/messages";
 
 export const createGraphPanel = async (
 	context: vscode.ExtensionContext,
 	store: RuntimeStore,
 ) => {
-	const repo = await selectRepo(store.getState().repository);
+	const repoPath = await selectRepo(store.getState().repository);
 
 	const panel = vscode.window.createWebviewPanel(
 		"open-git-graph.graph",
@@ -31,14 +32,31 @@ export const createGraphPanel = async (
 	html = html.replace(
 		"${scripts}",
 		`
-        <script>window.__REPOSITORY = "${repo.rootUri.toString()}"</script>
+        <script>window.__REPOSITORY = "${repoPath}"</script>
         <script src="${scriptUri.toString()}"></script>
       `,
 	);
 
 	panel.webview.html = html;
 
-	createBridge(store, repo, panel.webview);
+	panel.webview.onDidReceiveMessage(
+		catchErrors(store, async (msg: FromWebviewMessage) => {
+			await handleWebviewMessage(store, panel, msg);
+		}),
+	);
+
+	store.dispatch({
+		type: "ADD_PANEL",
+		panel,
+		state: { repoPath },
+	});
+
+	panel.onDidDispose(() =>
+		store.dispatch({
+			type: "REMOVE_PANEL",
+			panel,
+		}),
+	);
 
 	return panel;
 };
@@ -53,10 +71,10 @@ export const selectRepo = async (repos: Record<string, Repository>) => {
 	}
 
 	if (keys.length === 1) {
-		return repos[keys[0]!]!;
+		return keys[0]!;
 	}
 
 	const selected = await vscode.window.showQuickPick(keys);
 
-	return repos[selected ?? keys[0]!]!;
+	return selected ?? keys[0]!;
 };

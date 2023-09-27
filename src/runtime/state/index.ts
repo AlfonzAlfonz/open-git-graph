@@ -17,6 +17,7 @@ export const runtimeStore = (
 			extension: git.exports,
 			repository: {},
 			logger,
+			panels: new Map(),
 		}));
 
 		return {
@@ -36,6 +37,20 @@ export const runtimeStore = (
 							const { [action.rootUri.toString()]: _, ...repository } =
 								s.repository;
 							return { repository };
+						});
+						break;
+					case "ADD_PANEL":
+						setState((s) => ({
+							panels: new Map(s.panels).set(action.panel, action.state),
+						}));
+						break;
+					case "REMOVE_PANEL":
+						setState((s) => {
+							const panels = new Map(s.panels);
+							panels.delete(action.panel);
+							return {
+								panels,
+							};
 						});
 						break;
 					default: {

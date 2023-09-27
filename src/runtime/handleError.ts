@@ -14,12 +14,23 @@ export const catchErrors =
 		cb: (...args: TArgs) => TReturn,
 	) =>
 	(...args: TArgs) => {
-		try {
-			return cb(...args);
-		} catch (e) {
+		const _catch = (e: unknown) => {
 			state = "ensure" in state ? state.ensure() : state;
 			state = "getState" in state ? state.getState() : state;
 			handleError(state)(e);
+		};
+
+		try {
+			const result = cb(...args);
+
+			if (isThenable(result)) {
+				// promises if not awaited won't be catched in the catch block
+				return result.then((x) => x, _catch);
+			} else {
+				return result;
+			}
+		} catch (e) {
+			_catch(e);
 		}
 	};
 
@@ -57,3 +68,6 @@ const tryStringify = (e: unknown) => {
 		return "{ not stringifiable ) }";
 	}
 };
+
+const isThenable = (x: unknown): x is Thenable<unknown> =>
+	!!x && typeof x === "object" && "then" in x && typeof x.then === "function";

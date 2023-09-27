@@ -1,11 +1,11 @@
-import { InitMessage } from "../../../types/messages";
+import { RefreshMessage } from "../../../types/messages";
 import { req } from "../../../types/req";
 import { GitRepository } from "../../git/GitRepository";
-import { batch, buffer } from "../../utils";
+import { buffer } from "../../utils";
 import { Handler } from "../types";
 import { msg } from "./utils";
 
-export const handleInit: Handler<InitMessage> = async ({
+export const handleRefresh: Handler<RefreshMessage> = async ({
 	panel,
 	state,
 	panelState,
@@ -13,24 +13,14 @@ export const handleInit: Handler<InitMessage> = async ({
 	const git = new GitRepository(state, panelState.repoPath);
 
 	const dispatchCommits = async () => {
-		let first = true;
+		const commits = await buffer(git.getCommits());
 
-		const batched = batch(git.getCommits());
-
-		while (true) {
-			const commits = await batched.next();
-
-			await panel.webview.postMessage(
-				msg({
-					type: first ? "SET_COMMITS" : "APPEND_COMMITS",
-					commits: commits.done
-						? req.done(commits.value)
-						: req.waiting(commits.value),
-				}),
-			);
-			first = false;
-			if (commits.done) break;
-		}
+		await panel.webview.postMessage(
+			msg({
+				type: "SET_COMMITS",
+				commits: req.done(commits),
+			}),
+		);
 	};
 
 	const dispatchRefs = async () => {

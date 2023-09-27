@@ -11,7 +11,7 @@ export const render = () => {
 };
 
 const App = () => {
-	const { graph, tags, dispatch } = useWebviewStore();
+	const { graph, dispatch } = useWebviewStore();
 
 	useEffect(() => {
 		dispatch({ type: "INIT" });

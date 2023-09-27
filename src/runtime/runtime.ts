@@ -6,6 +6,7 @@ import { rebaseHeadCommand } from "./commands/rebaseHead.js";
 import { resetHeadCommand } from "./commands/resetHead.js";
 import { catchErrors } from "./handleError.js";
 import { runtimeStore } from "./state/index.js";
+import { checkoutCommand } from "./commands/checkout.js";
 
 export function activate(context: vscode.ExtensionContext) {
 	const logger = vscode.window.createOutputChannel("Open git graph");
@@ -25,6 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
 		mergeHeadCommand,
 		rebaseHeadCommand,
 		resetHeadCommand,
+		checkoutCommand,
 	];
 
 	for (const c of commands) {

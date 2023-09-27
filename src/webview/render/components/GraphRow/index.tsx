@@ -1,12 +1,10 @@
-import { CSSProperties } from "preact/compat";
-import { useState } from "preact/hooks";
 import { getColor } from "../../../state/createGraphNodes/Rails.js";
 import { GraphNode } from "../../../state/createGraphNodes/index.js";
-import { GraphTag } from "../../../state/toGraphTags.js";
-import { renderRails } from "./renderRails.js";
-import { renderTags } from "./renderTags.js";
-import { CommitInspector } from "../CommitInspector/index.js";
 import { useWebviewStore } from "../../../state/index.js";
+import { GraphTag } from "../../../state/toGraphTags.js";
+import { CommitInspector } from "../CommitInspector/index.js";
+import { CommitTags } from "./CommitTags.js";
+import { renderRails } from "./renderRails.js";
 
 export interface GraphRowProps {
 	node: GraphNode;
@@ -21,9 +19,12 @@ export const GraphRow = ({ node, tags }: GraphRowProps) => {
 	return (
 		<>
 			<tr
-				onClick={() =>
-					dispatch({ type: "EXPAND_COMMMIT", commit: node.commit.hash })
-				}
+				onClick={(e) => {
+					if (e.detail > 1) {
+						return;
+					}
+					dispatch({ type: "EXPAND_COMMMIT", commit: node.commit.hash });
+				}}
 				class={`graph-row ${isHead ? "head" : ""} ${
 					node.commit.parents.length > 1 ? "merge" : ""
 				} ${getColor(node.position)}`}
@@ -37,7 +38,7 @@ export const GraphRow = ({ node, tags }: GraphRowProps) => {
 				<td>{renderRails(node)}</td>
 				<td>
 					<div class="flex gap-2 items-center">
-						{tags && renderTags(tags)}
+						{tags && <CommitTags tags={tags} />}
 						<p class="inline-block whitespace-nowrap text-ellipsis overflow-hidden leading-tight flex-grow-1">
 							{node.commit.subject}
 						</p>

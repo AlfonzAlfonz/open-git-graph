@@ -35,9 +35,12 @@ export const useWebviewStore = create<WebviewState>((set, get) => {
 		expandedCommit: state?.expandedCommit,
 
 		dispatch: (msg) => {
+			const state = get();
 			try {
 				switch (msg.type) {
 					case "INIT":
+					case "REFRESH":
+					case "CHECKOUT":
 						set({
 							graph: req.waiting(state?.graph.data),
 							tags: req.waiting(state?.tags.data),
@@ -69,9 +72,15 @@ export const useWebviewStore = create<WebviewState>((set, get) => {
 export const receive = (msg: FromRuntimeMessage) => {
 	try {
 		switch (msg.type) {
+			case "SET_COMMITS":
 			case "APPEND_COMMITS": {
 				useWebviewStore.setState((s) => ({
-					graph: req.map(msg.commits, (c) => createGraphNodes(c, s.graph.data)),
+					graph: req.map(msg.commits, (c) =>
+						createGraphNodes(
+							c,
+							msg.type === "APPEND_COMMITS" ? s.graph.data : undefined,
+						),
+					),
 				}));
 				break;
 			}

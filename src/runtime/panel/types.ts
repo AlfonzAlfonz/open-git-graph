@@ -1,6 +1,11 @@
-import { PanelState } from "../state/types";
+import { PanelState, RuntimeState } from "../state/types";
+import * as vscode from "vscode";
 
-export type Handler<T> = (
-	action: T,
-	getState: <T>(cb: (state: PanelState) => T) => T,
-) => Promise<void> | void;
+export type Handler<T> = (opts: HandlerOptions<T>) => Promise<void> | void;
+
+export type HandlerOptions<T> = {
+	msg: Omit<T, "type">;
+	panel: vscode.WebviewPanel;
+	state: RuntimeState;
+	panelState: PanelState;
+};

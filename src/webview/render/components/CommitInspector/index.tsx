@@ -46,9 +46,9 @@ export const CommitInspector = ({ node }: { node: GraphNode }) => {
 };
 
 const fileModeColors: Record<GitCommitFileMode, string> = {
-	A: "text-green-900",
-	D: "text-rose-950",
+	A: "text-green-800",
+	D: "text-rose-700",
 	M: "text-yellow-600",
-	R: "text-lime-900",
+	R: "text-lime-800",
 	U: "text-stone-500",
 };

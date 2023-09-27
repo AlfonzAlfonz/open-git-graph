@@ -7,6 +7,7 @@ import { getRefs } from "./GitCommands/getRefs.js";
 import { GitCommand } from "./GitCommands/utils.js";
 import { resetHead } from "./GitCommands/resetHead.js";
 import { showRefFile } from "./GitCommands/showRefFile.js";
+import { checkout } from "./GitCommands/checkout.js";
 
 export class GitRepository {
 	private repository: Repository;
@@ -34,8 +35,8 @@ export class GitRepository {
 		return this.execGit(getRefs());
 	}
 
-	public reset(ref: string, mode: "soft" | "mixed" | "hard") {
-		return this.execGit(resetHead(ref, mode));
+	public async reset(ref: string, mode: "soft" | "mixed" | "hard") {
+		return await this.execGit(resetHead(ref, mode));
 	}
 
 	public trueMerge() {}
@@ -43,7 +44,11 @@ export class GitRepository {
 	public ffMerge() {}
 
 	public async showFile(ref: string, path: string) {
-		return this.execGit(showRefFile(ref, path));
+		return await this.execGit(showRefFile(ref, path));
+	}
+
+	public async checkout(branch: string) {
+		return await this.execGit(checkout(branch));
 	}
 
 	private execGit = <T>(cmd: GitCommand<T>): T => {
