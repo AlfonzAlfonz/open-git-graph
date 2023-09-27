@@ -37,6 +37,8 @@
 
 			&:nth-child(2) {
 				width: 100%;
+				max-width: 0;
+				overflow: hidden;
 			}
 		}
 
@@ -47,7 +49,7 @@
 			fill: transparent;
 			position: relative;
 
-			circle {
+			& circle {
 				fill: var(--rail-color, white);
 			}
 
@@ -61,8 +63,7 @@
 	}
 
 	.graph-tag {
-		@apply rounded-md flex items-center;
-
+		@apply rounded-md flex items-center flex-shrink-0;
 		color: var(--text-primary);
 		background: rgba(255, 255, 255, 0.05);
 		border: 1px solid var(--rail-color, white);
@@ -74,6 +75,7 @@
 			width: 18px;
 			height: 18px;
 			background: var(--rail-color, white);
+			color: var(--vscode-editor-background);
 			line-height: 1.5;
 			font-weight: 700;
 			flex-shrink: 0;
@@ -92,11 +94,11 @@
 		}
 
 		& .content {
-			@apply px-1 h-full flex items-center;
+			@apply px-1 h-full flex items-center whitespace-nowrap;
 		}
 
 		& .end-decorator {
-			@apply px-1 h-full flex items-center;
+			@apply px-1 h-full flex items-center italic;
 			border-left: 1px solid var(--rail-color, white);
 		}
 	}
