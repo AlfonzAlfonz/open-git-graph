@@ -1,5 +1,5 @@
 @layer components {
-  #graph {
+	#graph {
 		border-collapse: collapse;
 		table-layout: fixed;
 
@@ -43,16 +43,17 @@
 			&.focused {
 				background-color: var(--vscode-quickInputList-focusBackground);
 			}
-			
+
 			&.merge {
 				color: var(--vscode-disabledForeground);
 			}
 
 			&.head {
 				font-weight: 700;
-	
+
 				& .graph-tag {
-					&, & .end-decorator {
+					&,
+					& .end-decorator {
 						border-color: var(--rail-color, white);
 						border-width: 1.5px;
 					}
@@ -60,20 +61,21 @@
 			}
 
 			& td {
+				&:nth-child(2) {
+					border-left: 1px solid var(--vscode-sideBarSectionHeader-border);
 
-			&:nth-child(2) {
-				border-left: 1px solid var(--vscode-sideBarSectionHeader-border);
+					max-width: 0;
+					overflow: hidden;
+				}
 
-				max-width: 0;
-				overflow: hidden;
-			}
-
-			&:last-child, &:nth-last-child(2) {
-				font-family: var(--vscode-editor-font-family);
-				font-size: var(--vscode-editor-font-size);
-			}
+				&:last-child,
+				&:nth-last-child(2) {
+					font-family: var(--vscode-editor-font-family);
+					font-size: var(--vscode-editor-font-size);
+				}
 			}
 		}
+
 		& td {
 			@apply pl-2 pr-1;
 
@@ -119,7 +121,7 @@
 		font-size: 0.9rem;
 
 		&::before {
-			@apply  flex items-center justify-center codicon;
+			@apply flex items-center justify-center codicon;
 			width: 18px;
 			height: 18px;
 			background: var(--rail-color, white);

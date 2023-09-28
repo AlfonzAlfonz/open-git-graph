@@ -9,7 +9,7 @@
 				border-right: 1px solid var(--vscode-input-border);
 				& * {
 					@apply overflow-hidden text-ellipsis;
-				}		
+				}
 			}
 		}
 
@@ -17,13 +17,15 @@
 			& .added {
 				color: var(--vscode-gitDecoration-addedResourceForeground);
 			}
-			& .modified, & .type-modified {
+			& .modified,
+			& .type-modified {
 				color: var(--vscode-gitDecoration-modifiedResourceForeground);
 			}
 			& .deleted {
 				color: var(--vscode-gitDecoration-deletedResourceForeground);
 			}
-			& .renamed, & .renamed {
+			& .renamed,
+			& .copied {
 				color: var(--vscode-gitDecoration-renamedResourceForeground);
 			}
 			& .updated {
