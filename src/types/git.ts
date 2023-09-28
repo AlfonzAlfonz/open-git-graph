@@ -17,7 +17,7 @@ export type GitRef =
 
 export type GitCommitFile = {
 	path: string;
-	mode: GitCommitFileMode;
+	mode: GitFileMode;
 };
 
-export type GitCommitFileMode = "M" | "A" | "D" | "R" | "U";
+export type GitFileMode = "M" | "T" | "A" | "D" | "R" | "C" | "U" | "?" | "!";

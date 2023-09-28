@@ -27,7 +27,9 @@ export const GraphRow = ({ node, tags }: GraphRowProps) => {
 				}}
 				class={`graph-row ${isHead ? "head" : ""} ${
 					node.commit.parents.length > 1 ? "merge" : ""
-				} ${getColor(node.position)}`}
+				} ${expandedCommit === node.commit.hash ? "focused" : ""} ${getColor(
+					node.position,
+				)}`}
 				data-vscode-context={JSON.stringify({
 					webviewSection: "commit",
 					preventDefaultContextMenuItems: true,

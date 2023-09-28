@@ -1,5 +1,5 @@
 @layer components {
-  #graph {
+	#graph {
 		border-collapse: collapse;
 		table-layout: fixed;
 
@@ -33,16 +33,47 @@
 			}
 		}
 
-		& .graph-row:hover {
-			background: rgba(255, 255, 255, 0.05);
-		}
+		& .graph-row {
+			cursor: pointer;
 
-		& .graph-row.merge {
-			color: var(--vscode-disabledForeground);
-		}
+			&:hover {
+				background-color: var(--vscode-list-hoverBackground);
+			}
 
-		& .graph-row.head {
-			font-weight: 700;
+			&.focused {
+				background-color: var(--vscode-quickInputList-focusBackground);
+			}
+
+			&.merge {
+				color: var(--vscode-disabledForeground);
+			}
+
+			&.head {
+				font-weight: 700;
+
+				& .graph-tag {
+					&,
+					& .end-decorator {
+						border-color: var(--rail-color, white);
+						border-width: 1.5px;
+					}
+				}
+			}
+
+			& td {
+				&:nth-child(2) {
+					border-left: 1px solid var(--vscode-sideBarSectionHeader-border);
+
+					max-width: 0;
+					overflow: hidden;
+				}
+
+				&:last-child,
+				&:nth-last-child(2) {
+					font-family: var(--vscode-editor-font-family);
+					font-size: var(--vscode-editor-font-size);
+				}
+			}
 		}
 
 		& td {
@@ -55,18 +86,6 @@
 				margin: 0;
 				padding: 0;
 				overflow: hidden;
-			}
-
-			&:nth-child(2) {
-				border-left: 1px solid var(--vscode-sideBarSectionHeader-border);
-
-				max-width: 0;
-				overflow: hidden;
-			}
-
-			&:last-child, &:nth-last-child(2) {
-				font-family: var(--vscode-editor-font-family);
-				font-size: var(--vscode-editor-font-size);
 			}
 		}
 
@@ -94,10 +113,10 @@
 	}
 
 	.graph-tag {
-		@apply rounded-sm flex items-center flex-shrink-0;
+		@apply rounded-sm flex items-center flex-shrink-0 overflow-hidden;
 		color: var(--text-primary);
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid var(--rail-color, white);
+		background: var(--vscode-input-background);
+		border: 1px solid var(--vscode-input-border);
 		height: 18px;
 		font-size: 0.9rem;
 
@@ -135,7 +154,7 @@
 
 		& .end-decorator {
 			@apply px-1 h-full flex items-center italic;
-			border-left: 1px solid var(--rail-color, white);
+			border-left: 1px solid var(--vscode-input-border);
 		}
 	}
 }

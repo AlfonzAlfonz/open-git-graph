@@ -1,0 +1,42 @@
+.commit-inspector {
+	background-color: var(--vscode-input-background);
+	border-bottom: 2px solid var(--vscode-input-border);
+
+	& td[colspan="4"] {
+		border-left: 1px solid var(--vscode-input-border) !important;
+		& > div {
+			& > div {
+				border-right: 1px solid var(--vscode-input-border);
+				& * {
+					@apply overflow-hidden text-ellipsis;
+				}
+			}
+		}
+
+		& .files {
+			& .added {
+				color: var(--vscode-gitDecoration-addedResourceForeground);
+			}
+			& .modified,
+			& .type-modified {
+				color: var(--vscode-gitDecoration-modifiedResourceForeground);
+			}
+			& .deleted {
+				color: var(--vscode-gitDecoration-deletedResourceForeground);
+			}
+			& .renamed,
+			& .copied {
+				color: var(--vscode-gitDecoration-renamedResourceForeground);
+			}
+			& .updated {
+				color: var(--vscode-gitDecoration-updatedResourceForeground);
+			}
+			& .ignored {
+				color: var(--vscode-gitDecoration-ignoredResourceForeground);
+			}
+			& .untracked {
+				color: var(--vscode-gitDecoration-untrackedResourceForeground);
+			}
+		}
+	}
+}
