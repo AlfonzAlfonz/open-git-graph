@@ -31,11 +31,12 @@ export class GitRepository {
 
 	public async *getCommits() {
 		const stashes = await buffer(this.execGit(stashList()));
-		stashes.sort((a, b) => b.commitDate - a.commitDate);
 
 		for await (const c of this.execGit(logCommits())) {
-			while ((stashes[0]?.commitDate ?? 0) > c.commitDate) {
-				yield stashes.shift()!;
+			for (const s of stashes) {
+				if (s.parents.includes(c.hash)) {
+					yield s;
+				}
 			}
 			yield c;
 		}

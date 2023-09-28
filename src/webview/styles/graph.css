@@ -1,6 +1,7 @@
 @layer components {
   #graph {
 		border-collapse: collapse;
+		table-layout: fixed;
 
 		& thead {
 			position: sticky;
@@ -10,6 +11,25 @@
 
 			& th {
 				@apply py-2;
+				width: 100px;
+			}
+
+			& th:first-child {
+				width: 200px;
+			}
+
+			& th:nth-child(2) {
+				width: 100%;
+			}
+
+			& .handle {
+				@apply flex cursor-col-resize -mr-1 relative;
+
+				&::after {
+					@apply mx-1;
+					content: "";
+					border-left: 1px solid var(--vscode-sideBarSectionHeader-border);
+				}
 			}
 		}
 
@@ -26,19 +46,27 @@
 		}
 
 		& td {
+			@apply pl-2 pr-1;
+
 			border: none;
 			line-height: 0;
 
 			&:first-child {
-				max-width: 200px;
 				margin: 0;
 				padding: 0;
+				overflow: hidden;
 			}
 
 			&:nth-child(2) {
-				width: 100%;
+				border-left: 1px solid var(--vscode-sideBarSectionHeader-border);
+
 				max-width: 0;
 				overflow: hidden;
+			}
+
+			&:last-child, &:nth-last-child(2) {
+				font-family: var(--vscode-editor-font-family);
+				font-size: var(--vscode-editor-font-size);
 			}
 		}
 
@@ -49,8 +77,11 @@
 			fill: transparent;
 			position: relative;
 
-			& circle {
+			& rect {
 				fill: var(--rail-color, white);
+				stroke: var(--rail-color, white);
+				stroke-width: 3.5;
+				stroke-linejoin: round;
 			}
 
 			& line,
@@ -63,7 +94,7 @@
 	}
 
 	.graph-tag {
-		@apply rounded-md flex items-center flex-shrink-0;
+		@apply rounded-sm flex items-center flex-shrink-0;
 		color: var(--text-primary);
 		background: rgba(255, 255, 255, 0.05);
 		border: 1px solid var(--rail-color, white);

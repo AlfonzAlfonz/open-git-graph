@@ -58,11 +58,12 @@ export const renderRails = (n: GraphNode) => {
 		rails.push(<path d={toBezier(x1, y1, x2, y2)} class={getColor(m)} />);
 	}
 
+	const s = 3.5;
 	return (
 		<svg width={(width + 1) * WIDTH} height={HEIGHT}>
 			{rails}
 			{/* Commit circle */}
-			<circle cx={cx} cy={cy} r={3.5} class={color} />
+			<rect x={cx - s / 2} y={cy - s / 2} width={s} height={s} class={color} />
 		</svg>
 	);
 };

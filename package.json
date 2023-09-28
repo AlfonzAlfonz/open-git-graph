@@ -59,19 +59,23 @@
 			"webview/context": [
 				{
 					"command": "open-git-graph.merge-head",
-					"when": "webviewId == 'open-git-graph.graph' && webviewSection == 'commit'"
+					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch')",
+					"group": "1_commit@1"
 				},
 				{
 					"command": "open-git-graph.rebase-head",
-					"when": "webviewId == 'open-git-graph.graph' && webviewSection == 'commit'"
+					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch')",
+					"group": "1_commit@2"
 				},
 				{
 					"command": "open-git-graph.reset-head",
-					"when": "webviewId == 'open-git-graph.graph' && webviewSection == 'commit'"
+					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch')",
+					"group": "1_commit@3"
 				},
 				{
 					"command": "open-git-graph.checkout",
-					"when": "webviewId == 'open-git-graph.graph' && webviewSection == 'branch'"
+					"when": "webviewId == 'open-git-graph.graph' && webviewSection == 'branch'",
+					"group": "2_branch@1"
 				}
 			]
 		},
