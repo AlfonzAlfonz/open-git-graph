@@ -14,6 +14,7 @@ const api = acquireVsCodeApi();
 interface WebviewState {
 	graph: Req<Graph>;
 	tags: Req<Record<string, GraphTag[]>>;
+	stashes: Req<Record<string, GraphTag[]>>;
 
 	commits: Record<string, Req<GitCommit>>;
 
@@ -31,6 +32,7 @@ export const useWebviewStore = create<WebviewState>((set, get) => {
 	return {
 		graph: state?.graph ?? req.empty(),
 		tags: state?.tags ?? req.empty(),
+		stashes: state?.stashes ?? req.empty(),
 		commits: state?.commits ?? {},
 		expandedCommit: state?.expandedCommit,
 
@@ -84,9 +86,17 @@ export const receive = (msg: FromRuntimeMessage) => {
 				}));
 				break;
 			}
-			case "GET_REFS": {
+			case "SET_REFS": {
 				useWebviewStore.setState({
 					tags: req.map(msg.refs, (refs) =>
+						Object.fromEntries(toGraphTags(groupBy(refs, (r) => r.hash))),
+					),
+				});
+				break;
+			}
+			case "SET_STASHES": {
+				useWebviewStore.setState({
+					stashes: req.map(msg.stashes, (refs) =>
 						Object.fromEntries(toGraphTags(groupBy(refs, (r) => r.hash))),
 					),
 				});

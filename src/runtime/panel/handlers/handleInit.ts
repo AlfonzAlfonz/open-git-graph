@@ -15,7 +15,13 @@ export const handleInit: Handler<InitMessage> = async ({
 	const dispatchCommits = async () => {
 		let first = true;
 
-		const batched = batch(git.getCommits());
+		const log = await git.getCommits();
+
+		panel.webview.postMessage(
+			msg({ type: "SET_STASHES", stashes: req.done(log.stashes) }),
+		);
+
+		const batched = batch(log.commits);
 
 		while (true) {
 			const commits = await batched.next();
@@ -37,7 +43,7 @@ export const handleInit: Handler<InitMessage> = async ({
 		const refs = await buffer(git.getRefs());
 		await panel.webview.postMessage(
 			msg({
-				type: "GET_REFS",
+				type: "SET_REFS",
 				refs: req.done(refs),
 			}),
 		);

@@ -7,6 +7,8 @@ export function* toGraphTags(refs: Iterable<[string, GitRef[]]>) {
 			v.reduce((acc, r) => {
 				if (r.type === "tag" || r.type === "head") {
 					acc.push({ label: "name" in r ? r.name : "HEAD", type: r.type });
+				} else if (r.type === "stash") {
+					acc.push({ type: "stash", label: "stash" });
 				} else {
 					const index = acc.findIndex(
 						(x) => x.type === "branch" && x.label === r.name,

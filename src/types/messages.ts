@@ -30,7 +30,8 @@ export type CheckoutMessage = {
 export type FromRuntimeMessage =
 	| SetCommitsMessage
 	| AppendCommitsMessage
-	| GetRefsMessage;
+	| SetRefsMessage
+	| SetStashesMessage;
 
 export type SetCommitsMessage = {
 	type: "SET_COMMITS";
@@ -42,7 +43,12 @@ export type AppendCommitsMessage = {
 	commits: Req<GitCommit[]>;
 };
 
-export type GetRefsMessage = {
-	type: "GET_REFS";
+export type SetRefsMessage = {
+	type: "SET_REFS";
 	refs: Req<GitRef[]>;
+};
+
+export type SetStashesMessage = {
+	type: "SET_STASHES";
+	stashes: Req<GitRef[]>;
 };

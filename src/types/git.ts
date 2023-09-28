@@ -12,7 +12,8 @@ export type GitCommit = {
 export type GitRef =
 	| { hash: string; type: "tag"; name: string }
 	| { hash: string; type: "branch"; name: string; remote?: string }
-	| { hash: string; type: "head" };
+	| { hash: string; type: "head" }
+	| { hash: string; type: "stash" };
 
 export type GitCommitFile = {
 	path: string;

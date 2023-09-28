@@ -124,6 +124,11 @@
 			content: "\ea68";
 		}
 
+		&.stash::before {
+			content: "\eb09";
+			line-height: 1.65;
+		}
+
 		& .content {
 			@apply px-1 h-full flex items-center whitespace-nowrap;
 		}

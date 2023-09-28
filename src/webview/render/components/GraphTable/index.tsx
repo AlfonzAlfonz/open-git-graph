@@ -6,7 +6,7 @@ import { useDragHandle } from "./useDragHandle";
 import { useVirtualTable } from "./useVirtualTable";
 
 export const GraphTable = () => {
-	const { graph, tags } = useWebviewStore();
+	const { graph, tags, stashes } = useWebviewStore();
 
 	const ref = useRef<HTMLTableSectionElement>(null);
 	const { topPadding, slice, bottomPadding } = useVirtualTable({
@@ -36,7 +36,10 @@ export const GraphTable = () => {
 					<GraphRow
 						key={node.commit.hash}
 						node={node}
-						tags={tags.data?.[node.commit.hash]}
+						tags={[
+							...(tags.data?.[node.commit.hash] ?? []),
+							...(stashes.data?.[node.commit.hash] ?? []),
+						]}
 					/>
 				))}
 				<tr style={{ height: `${bottomPadding}px` }}>

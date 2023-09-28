@@ -10,6 +10,7 @@ import { showRefFile } from "./GitCommands/showRefFile.js";
 import { checkout } from "./GitCommands/checkout.js";
 import { stashList } from "./GitCommands/stashList.js";
 import { buffer } from "../utils.js";
+import { GitCommit, GitRef } from "../../types/git.js";
 
 export class GitRepository {
 	private repository: Repository;
@@ -29,17 +30,17 @@ export class GitRepository {
 		this.repository = repo;
 	}
 
-	public async *getCommits() {
+	public async getCommits(): Promise<{
+		stashes: GitRef[];
+		commits: AsyncIterable<GitCommit>;
+	}> {
 		const stashes = await buffer(this.execGit(stashList()));
+		const commits = this.execGit(logCommits());
 
-		for await (const c of this.execGit(logCommits())) {
-			for (const s of stashes) {
-				if (s.parents.includes(c.hash)) {
-					yield s;
-				}
-			}
-			yield c;
-		}
+		return {
+			stashes: stashes.map((s) => ({ type: "stash", hash: s.hash })),
+			commits: this.addStashes(commits, stashes),
+		};
 	}
 
 	public getRefs() {
@@ -81,4 +82,18 @@ export class GitRepository {
 			}),
 		);
 	};
+
+	private async *addStashes(
+		commits: AsyncIterable<GitCommit>,
+		stashes: GitCommit[],
+	) {
+		for await (const c of commits) {
+			for (const s of stashes) {
+				if (s.parents.includes(c.hash)) {
+					yield s;
+				}
+			}
+			yield c;
+		}
+	}
 }
