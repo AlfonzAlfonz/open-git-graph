@@ -9,7 +9,7 @@ export const CommitInspector = ({ node }: { node: GraphNode }) => {
 	const { commit } = node;
 
 	return (
-		<tr class={"commit-inspector"}>
+		<tr class="commit-inspector">
 			<td>{renderEmptyRails(node, 200)}</td>
 			<td colSpan={4}>
 				<div class="flex leading-normal h-[200px] overflow-scroll">

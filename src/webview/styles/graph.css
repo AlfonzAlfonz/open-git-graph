@@ -33,18 +33,32 @@
 			}
 		}
 
-		& .graph-row:hover {
-			background: rgba(255, 255, 255, 0.05);
-		}
+		& .graph-row {
+			cursor: pointer;
 
-		& .graph-row.merge {
-			color: var(--vscode-disabledForeground);
-		}
+			&:hover {
+				background-color: var(--vscode-list-hoverBackground);
+			}
 
-		& .graph-row.head {
-			font-weight: 700;
-		}
+			&.focused {
+				background-color: var(--vscode-quickInputList-focusBackground);
+			}
+			
+			&.merge {
+				color: var(--vscode-disabledForeground);
+			}
 
+			&.head {
+				font-weight: 700;
+	
+				& .graph-tag {
+					&, & .end-decorator {
+						border-color: var(--rail-color, white);
+						border-width: 1.5px;
+					}
+				}
+			}
+		}
 		& td {
 			@apply pl-2 pr-1;
 
@@ -94,15 +108,15 @@
 	}
 
 	.graph-tag {
-		@apply rounded-sm flex items-center flex-shrink-0;
+		@apply rounded-sm flex items-center flex-shrink-0 overflow-hidden;
 		color: var(--text-primary);
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid var(--rail-color, white);
+		background: var(--vscode-input-background);
+		border: 1px solid var(--vscode-input-border);
 		height: 18px;
 		font-size: 0.9rem;
 
 		&::before {
-			@apply flex items-center justify-center codicon;
+			@apply  flex items-center justify-center codicon;
 			width: 18px;
 			height: 18px;
 			background: var(--rail-color, white);
@@ -135,7 +149,7 @@
 
 		& .end-decorator {
 			@apply px-1 h-full flex items-center italic;
-			border-left: 1px solid var(--rail-color, white);
+			border-left: 1px solid var(--vscode-input-border);
 		}
 	}
 }
