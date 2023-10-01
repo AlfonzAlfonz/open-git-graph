@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { ShowDiffMessage } from "../../../types/messages.js";
+import { ShowDiffMessage } from "../../../universal/messages.js";
 import { ShowFileTextDocumentContentProvider } from "../../ShowFileTextDocumentContentProvider.js";
 import { Handler } from "../types.js";
 

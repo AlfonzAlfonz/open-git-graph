@@ -26,13 +26,21 @@ export const req = {
 		error,
 	}),
 
-	map: <T, U>(req: Req<T>, selector: (x: T) => U): Req<U> =>
-		req.state === "done"
-			? {
-					...req,
-					data: selector(req.data),
-			  }
-			: req.state === "waiting" && req.data
-			? { ...req, data: selector(req.data) }
-			: (req as Req<U>),
+	map: <T, U>(
+		req: Req<T>,
+		selector: (x: T) => U,
+		onRejected: (e: unknown) => unknown,
+	): Req<U> => {
+		if (req.data) {
+			try {
+				const data = selector(req.data);
+				return { state: req.state, data } as Req<U>;
+			} catch (e) {
+				onRejected(e);
+				return { state: "error", data: undefined, error: e };
+			}
+		} else {
+			return req as Req<U>;
+		}
+	},
 };

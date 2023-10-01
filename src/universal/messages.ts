@@ -1,11 +1,12 @@
-import { GitCommit, GitRef } from "./git.js";
+import { GitCommit, GitIndex, GitRef } from "./git.js";
 import { Req } from "./req.js";
 
 export type FromWebviewMessage =
 	| InitMessage
 	| RefreshMessage
 	| ShowDiffMessage
-	| CheckoutMessage;
+	| CheckoutMessage
+	| LogErrorMessage;
 
 export type InitMessage = {
 	type: "INIT";
@@ -27,6 +28,11 @@ export type CheckoutMessage = {
 	branch: string;
 };
 
+export type LogErrorMessage = {
+	type: "LOG_ERROR";
+	content: string;
+};
+
 export type FromRuntimeMessage =
 	| SetCommitsMessage
 	| AppendCommitsMessage
@@ -35,7 +41,10 @@ export type FromRuntimeMessage =
 
 export type SetCommitsMessage = {
 	type: "SET_COMMITS";
-	commits: Req<GitCommit[]>;
+	commits: Req<{
+		index: GitIndex;
+		commits: GitCommit[];
+	}>;
 };
 
 export type AppendCommitsMessage = {

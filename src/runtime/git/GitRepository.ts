@@ -1,16 +1,18 @@
 import { spawn } from "node:child_process";
+import { GitCommit, GitIndex, GitRef } from "../../universal/git.js";
 import { handleError } from "../handleError.js";
 import { RuntimeState } from "../state/types.js";
-import { Repository } from "../vscode.git/types.js";
-import { logCommits } from "./GitCommands/logCommits.js";
-import { showRefs } from "./GitCommands/showRefs.js";
-import { GitCommand } from "./GitCommands/utils.js";
-import { resetHead } from "./GitCommands/resetHead.js";
-import { showRefFile } from "./GitCommands/showRefFile.js";
-import { checkout } from "./GitCommands/checkout.js";
-import { stashList } from "./GitCommands/stashList.js";
 import { buffer } from "../utils.js";
-import { GitCommit, GitRef } from "../../types/git.js";
+import { Repository } from "../vscode.git/types.js";
+import { gitCheckout } from "./commands/gitCheckout.js";
+import { gitLogCommits } from "./commands/gitLogCommits.js";
+import { gitResetHead } from "./commands/gitResetHead.js";
+import { gitShowRefFile } from "./commands/gitShowRefFile.js";
+import { gitShowRefs } from "./commands/gitShowRefs.js";
+import { gitStashList } from "./commands/gitStashList.js";
+import { gitStatus } from "./commands/gitStatus.js";
+import { gitLogHeadHash } from "./commands/gitLogHeadHash.js";
+import { GitCommand } from "./commands/utils.js";
 
 export class GitRepository {
 	private repository: Repository;
@@ -34,8 +36,8 @@ export class GitRepository {
 		stashes: GitRef[];
 		commits: AsyncIterable<GitCommit>;
 	}> {
-		const stashes = await buffer(this.execGit(stashList()));
-		const commits = this.execGit(logCommits());
+		const stashes = await buffer(this.execGit(gitStashList()));
+		const commits = this.execGit(gitLogCommits());
 
 		return {
 			stashes: stashes.map((s) => ({ type: "stash", hash: s.hash })),
@@ -44,11 +46,32 @@ export class GitRepository {
 	}
 
 	public getRefs() {
-		return this.execGit(showRefs());
+		return this.execGit(gitShowRefs());
+	}
+
+	public async getIndex() {
+		const status = this.execGit(gitStatus());
+
+		const index: GitIndex = {
+			parents: [await this.getLastCommitHash()],
+			tracked: [],
+			untracked: [],
+		};
+
+		for await (const [tracked, untracked] of status) {
+			tracked && index.tracked.push(tracked);
+			untracked && index.untracked.push(untracked);
+		}
+
+		return index;
+	}
+
+	public async getLastCommitHash() {
+		return await this.execGit(gitLogHeadHash());
 	}
 
 	public async reset(ref: string, mode: "soft" | "mixed" | "hard") {
-		return await this.execGit(resetHead(ref, mode));
+		return await this.execGit(gitResetHead(ref, mode));
 	}
 
 	public trueMerge() {}
@@ -56,11 +79,11 @@ export class GitRepository {
 	public ffMerge() {}
 
 	public async showFile(ref: string, path: string) {
-		return await this.execGit(showRefFile(ref, path));
+		return await this.execGit(gitShowRefFile(ref, path));
 	}
 
 	public async checkout(branch: string) {
-		return await this.execGit(checkout(branch));
+		return await this.execGit(gitCheckout(branch));
 	}
 
 	private execGit = <T>(cmd: GitCommand<T>): T => {

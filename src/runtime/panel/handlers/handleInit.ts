@@ -1,9 +1,9 @@
-import { InitMessage } from "../../../types/messages";
-import { req } from "../../../types/req";
-import { GitRepository } from "../../git/GitRepository";
-import { batch, buffer } from "../../utils";
-import { Handler } from "../types";
-import { msg } from "./utils";
+import { InitMessage } from "../../../universal/messages.js";
+import { req } from "../../../universal/req.js";
+import { GitRepository } from "../../git/GitRepository.js";
+import { batch, buffer } from "../../utils.js";
+import { Handler } from "../types.js";
+import { msg } from "./utils.js";
 
 export const handleInit: Handler<InitMessage> = async ({
 	panel,
@@ -16,7 +16,6 @@ export const handleInit: Handler<InitMessage> = async ({
 		let first = true;
 
 		const log = await git.getCommits();
-
 		panel.webview.postMessage(
 			msg({ type: "SET_STASHES", stashes: req.done(log.stashes) }),
 		);
@@ -26,15 +25,29 @@ export const handleInit: Handler<InitMessage> = async ({
 		while (true) {
 			const commits = await batched.next();
 
-			await panel.webview.postMessage(
-				msg({
-					type: first ? "SET_COMMITS" : "APPEND_COMMITS",
-					commits: commits.done
-						? req.done(commits.value)
-						: req.waiting(commits.value),
-				}),
-			);
-			first = false;
+			if (first) {
+				const payload = {
+					index: await git.getIndex(),
+					commits: commits.value,
+				};
+				await panel.webview.postMessage(
+					msg({
+						type: "SET_COMMITS",
+						commits: commits.done ? req.done(payload) : req.waiting(payload),
+					}),
+				);
+				first = false;
+			} else {
+				await panel.webview.postMessage(
+					msg({
+						type: "APPEND_COMMITS",
+						commits: commits.done
+							? req.done(commits.value)
+							: req.waiting(commits.value),
+					}),
+				);
+			}
+
 			if (commits.done) break;
 		}
 	};

@@ -1,7 +1,10 @@
 import { ComponentChild } from "preact";
 import { useRef } from "preact/hooks";
+import { GitCommit, GitIndex } from "../../../../universal/git";
 import { useWebviewStore } from "../../../state";
-import { GraphRow } from "../GraphRow";
+import { GraphNode } from "../../../state/createGraphNodes";
+import { CommitGraphRow } from "../GraphRow/CommitGraphRow";
+import { IndexGraphRow } from "../GraphRow/IndexGraphRow";
 import { useDragHandle } from "./useDragHandle";
 import { useVirtualTable } from "./useVirtualTable";
 
@@ -32,16 +35,16 @@ export const GraphTable = () => {
 				<tr style={{ height: `${topPadding}px` }}>
 					<td colSpan={9} />
 				</tr>
-				{slice.map((node) => (
-					<GraphRow
-						key={node.commit.hash}
-						node={node}
-						tags={[
-							...(tags.data?.[node.commit.hash] ?? []),
-							...(stashes.data?.[node.commit.hash] ?? []),
-						]}
-					/>
-				))}
+				{slice.map((node) =>
+					"hash" in node.commit ? (
+						<CommitGraphRow
+							node={node as GraphNode<GitCommit>}
+							tags={tags.data?.[node.commit.hash]}
+						/>
+					) : (
+						<IndexGraphRow node={node as GraphNode<GitIndex>} />
+					),
+				)}
 				<tr style={{ height: `${bottomPadding}px` }}>
 					<td colSpan={9} />
 				</tr>

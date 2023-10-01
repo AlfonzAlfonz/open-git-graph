@@ -1,4 +1,4 @@
-import { GitRef } from "../../types/git";
+import { GitRef } from "../../universal/git";
 
 export function* toGraphTags(refs: Iterable<[string, GitRef[]]>) {
 	for (const [k, v] of refs) {

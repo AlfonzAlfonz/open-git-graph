@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { StoreApi } from "zustand/vanilla";
-import { FromRuntimeMessage } from "../../types/messages.js";
 import { GitExtension, Repository } from "../vscode.git/types.js";
 
 export type Lazy<T> = { ensure: () => T };

@@ -1,8 +1,8 @@
-import { GitRef } from "../../../types/git";
-import { toLineGenerator } from "../toLineGenerator";
-import { GitCommand } from "./utils";
+import { GitRef } from "../../../universal/git.js";
+import { toLineGenerator } from "../toLineGenerator.js";
+import { GitCommand } from "./utils.js";
 
-export const showRefs = (): GitCommand<AsyncIterable<GitRef>> => {
+export const gitShowRefs = (): GitCommand<AsyncIterable<GitRef>> => {
 	return {
 		args: ["show-ref", "--head", "--dereference"],
 		parse: async function* (stdout) {

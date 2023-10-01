@@ -1,4 +1,4 @@
-import { GitCommit } from "../../../types/git.js";
+import { GitCommit, GitIndex } from "../../../universal/git.js";
 import { GraphNode } from "./index.js";
 
 export type RailsState = {
@@ -20,7 +20,7 @@ export class Rails {
 		private hashes: Set<string>,
 	) {}
 
-	add(commit: GitCommit): GraphNode {
+	add(commit: GitCommit | GitIndex): GraphNode {
 		const children = [...this.getChildren(commit)];
 		const rails = this.state.rails.map((r) => r.id);
 		let position: RailId;
@@ -79,7 +79,9 @@ export class Rails {
 		return this.state.nextId++ as RailId;
 	}
 
-	*getChildren(commit: GitCommit) {
+	*getChildren(commit: GitCommit | GitIndex) {
+		if (!("hash" in commit)) return;
+
 		for (const r of this.state.rails) {
 			if (r.next === commit.hash) {
 				yield r.id;

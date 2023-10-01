@@ -1,4 +1,4 @@
-import { GitCommit } from "../../../types/git.js";
+import { GitCommit, GitIndex } from "../../../universal/git.js";
 import { RailId, Rails, RailsState } from "./Rails.js";
 
 /**
@@ -7,12 +7,12 @@ import { RailId, Rails, RailsState } from "./Rails.js";
  * another is first in the structure but refered to as after.
  */
 export type Graph = {
-	nodes: GraphNode[];
+	nodes: GraphNode<GitCommit | GitIndex>[];
 	rails: RailsState;
 };
 
-export type GraphNode = {
-	commit: GitCommit;
+export type GraphNode<T extends GitCommit | GitIndex = GitCommit | GitIndex> = {
+	commit: T;
 	position: RailId;
 
 	/** State of rails after this commit */
@@ -25,18 +25,27 @@ export type GraphNode = {
 	merges: RailId[];
 };
 
-export const createGraphNodes = (commits: GitCommit[], prev?: Graph): Graph => {
+export const createGraphNodes = (
+	commits: GitCommit[],
+	index?: GitIndex,
+	prev?: Graph,
+): Graph => {
 	const hashes = new Set(commitHashes(commits, prev?.nodes));
-	const rails = new Rails(prev?.rails, hashes);
+
+	const nodes = prev?.nodes ?? [];
+
+	let rails: Rails = new Rails(prev?.rails, hashes);
+	if (index) {
+		nodes.push(rails.add(index));
+	}
 
 	const graph: Graph = {
-		nodes: prev?.nodes ?? [],
+		nodes,
 		rails: rails.state,
 	};
 
 	for (const c of commits) {
-		const r = rails.add(c);
-		graph.nodes.push(r);
+		graph.nodes.push(rails.add(c));
 	}
 
 	return graph;
@@ -48,6 +57,8 @@ function* commitHashes(commits: GitCommit[], prev?: GraphNode[]) {
 	}
 	if (prev)
 		for (const n of prev) {
-			yield n.commit.hash;
+			if ("hash" in n.commit) {
+				yield n.commit.hash;
+			}
 		}
 }

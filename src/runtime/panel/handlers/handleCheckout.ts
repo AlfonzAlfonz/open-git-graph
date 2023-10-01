@@ -1,4 +1,4 @@
-import { CheckoutMessage } from "../../../types/messages";
+import { CheckoutMessage } from "../../../universal/messages";
 import { GitRepository } from "../../git/GitRepository";
 import { Handler } from "../types";
 import { handleRefresh } from "./handleRefresh";

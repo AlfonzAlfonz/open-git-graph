@@ -1,10 +1,11 @@
 import * as vscode from "vscode";
-import { FromWebviewMessage } from "../../types/messages";
+import { FromWebviewMessage } from "../../universal/messages";
 import { RuntimeStore } from "../state/types";
 import { handleInit } from "./handlers/handleInit";
 import { handleShowDiff } from "./handlers/handleShowDiff";
 import { handleRefresh } from "./handlers/handleRefresh";
 import { handleCheckout } from "./handlers/handleCheckout";
+import { handleLogError } from "./handlers/handleLogError";
 
 export const handleWebviewMessage = async (
 	store: RuntimeStore,
@@ -27,6 +28,9 @@ export const handleWebviewMessage = async (
 			break;
 		case "CHECKOUT":
 			await handleCheckout({ msg, state, panelState, panel });
+			break;
+		case "LOG_ERROR":
+			await handleLogError({ msg, state, panelState, panel });
 			break;
 		default: {
 			msg satisfies never;

@@ -1,5 +1,5 @@
-import { RefreshMessage } from "../../../types/messages";
-import { req } from "../../../types/req";
+import { RefreshMessage } from "../../../universal/messages";
+import { req } from "../../../universal/req";
 import { GitRepository } from "../../git/GitRepository";
 import { buffer } from "../../utils";
 import { Handler } from "../types";
@@ -13,12 +13,20 @@ export const handleRefresh: Handler<RefreshMessage> = async ({
 	const git = new GitRepository(state, panelState.repoPath);
 
 	const dispatchCommits = async () => {
-		const commits = await buffer(git.getCommits());
+		const log = await git.getCommits();
+		const commits = await buffer(log.commits);
+
+		await panel.webview.postMessage(
+			msg({ type: "SET_STASHES", stashes: req.done(log.stashes) }),
+		);
 
 		await panel.webview.postMessage(
 			msg({
 				type: "SET_COMMITS",
-				commits: req.done(commits),
+				commits: req.done({
+					index: await git.getIndex(),
+					commits,
+				}),
 			}),
 		);
 	};
@@ -27,7 +35,7 @@ export const handleRefresh: Handler<RefreshMessage> = async ({
 		const refs = await buffer(git.getRefs());
 		await panel.webview.postMessage(
 			msg({
-				type: "GET_REFS",
+				type: "SET_REFS",
 				refs: req.done(refs),
 			}),
 		);

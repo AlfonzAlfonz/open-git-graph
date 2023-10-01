@@ -1,9 +1,9 @@
-import { errors } from "../../handleError";
-import { GitCommand } from "./utils";
+import { errors } from "../../handleError.js";
+import { GitCommand } from "./utils.js";
 
 export type GitResetMode = "soft" | "mixed" | "hard";
 
-export const resetHead = (
+export const gitResetHead = (
 	ref: string,
 	mode: GitResetMode,
 ): GitCommand<Promise<void>> => ({

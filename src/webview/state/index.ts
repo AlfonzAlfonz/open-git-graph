@@ -1,9 +1,10 @@
-import { GitCommit } from "../../types/git.js";
+import { errorToString } from "../../universal/errorToString.js";
+import { GitCommit, GitIndex } from "../../universal/git.js";
 import {
 	FromRuntimeMessage,
 	FromWebviewMessage,
-} from "../../types/messages.js";
-import { Req, req } from "../../types/req.js";
+} from "../../universal/messages.js";
+import { Req, req } from "../../universal/req.js";
 import { Graph, createGraphNodes } from "./createGraphNodes/index.js";
 import { groupBy } from "./groupBy.js";
 import { GraphTag, toGraphTags } from "./toGraphTags.js";
@@ -15,6 +16,7 @@ interface WebviewState {
 	graph: Req<Graph>;
 	tags: Req<Record<string, GraphTag[]>>;
 	stashes: Req<Record<string, GraphTag[]>>;
+	index: Req<GitIndex>;
 
 	commits: Record<string, Req<GitCommit>>;
 
@@ -35,6 +37,7 @@ export const useWebviewStore = create<WebviewState>((set, get) => {
 		stashes: state?.stashes ?? req.empty(),
 		commits: state?.commits ?? {},
 		expandedCommit: state?.expandedCommit,
+		index: state?.index ?? req.empty(),
 
 		dispatch: (msg) => {
 			const state = get();
@@ -55,6 +58,7 @@ export const useWebviewStore = create<WebviewState>((set, get) => {
 								s.expandedCommit === msg.commit ? undefined : msg.commit,
 						}));
 						break;
+					case "LOG_ERROR":
 					case "SHOW_DIFF":
 						api.postMessage(msg);
 						break;
@@ -72,32 +76,48 @@ export const useWebviewStore = create<WebviewState>((set, get) => {
 });
 
 export const receive = (msg: FromRuntimeMessage) => {
+	const onRejected = (e: unknown) =>
+		api.postMessage({ type: "LOG_ERROR", content: errorToString(e) });
 	try {
 		switch (msg.type) {
-			case "SET_COMMITS":
+			case "SET_COMMITS": {
+				useWebviewStore.setState({
+					graph: req.map(
+						msg.commits,
+						({ index, commits }) => createGraphNodes(commits, index),
+						onRejected,
+					),
+				});
+				break;
+			}
 			case "APPEND_COMMITS": {
 				useWebviewStore.setState((s) => ({
-					graph: req.map(msg.commits, (c) =>
-						createGraphNodes(
-							c,
-							msg.type === "APPEND_COMMITS" ? s.graph.data : undefined,
-						),
+					graph: req.map(
+						msg.commits,
+						(c) => createGraphNodes(c, undefined, s.graph.data),
+						onRejected,
 					),
 				}));
 				break;
 			}
 			case "SET_REFS": {
 				useWebviewStore.setState({
-					tags: req.map(msg.refs, (refs) =>
-						Object.fromEntries(toGraphTags(groupBy(refs, (r) => r.hash))),
+					tags: req.map(
+						msg.refs,
+						(refs) =>
+							Object.fromEntries(toGraphTags(groupBy(refs, (r) => r.hash))),
+						onRejected,
 					),
 				});
 				break;
 			}
 			case "SET_STASHES": {
 				useWebviewStore.setState({
-					stashes: req.map(msg.stashes, (refs) =>
-						Object.fromEntries(toGraphTags(groupBy(refs, (r) => r.hash))),
+					stashes: req.map(
+						msg.stashes,
+						(refs) =>
+							Object.fromEntries(toGraphTags(groupBy(refs, (r) => r.hash))),
+						onRejected,
 					),
 				});
 				break;
@@ -107,7 +127,7 @@ export const receive = (msg: FromRuntimeMessage) => {
 			}
 		}
 	} catch (e) {
-		throw e;
+		onRejected(e);
 	} finally {
 		api.setState(useWebviewStore.getState());
 	}

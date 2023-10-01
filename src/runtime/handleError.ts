@@ -1,3 +1,4 @@
+import { errorToString } from "../universal/errorToString.js";
 import { Lazy, RuntimeState, RuntimeStore } from "./state/types.js";
 import * as vscode from "vscode";
 
@@ -34,39 +35,10 @@ export const catchErrors =
 		}
 	};
 
-const errorToString = (e: unknown) => {
-	if (typeof e === "object" && e instanceof Error) {
-		return `
-Error occured
-  ${e.message}
-  ${e.stack}
-  ${tryStringify(e)}
-    `;
-	}
-
-	return `
-Error occured
-  ${
-		typeof e === "object" && e && ("toString" in e || Symbol.toStringTag in e)
-			? String(e)
-			: ""
-	}
-  ${tryStringify(e)}
-`;
-};
-
 export const errors = {
 	noRepo: () => new Error("Cannot execute git outside of a repository"),
 	gitFailed: (exitCode: number) =>
 		new Error(`Git failed (exit code ${exitCode}) to execute a command.`),
-};
-
-const tryStringify = (e: unknown) => {
-	try {
-		return JSON.stringify(e);
-	} catch {
-		return "{ not stringifiable ) }";
-	}
 };
 
 const isThenable = (x: unknown): x is Thenable<unknown> =>

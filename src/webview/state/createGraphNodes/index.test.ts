@@ -1,4 +1,4 @@
-import { GitCommit } from "../../../types/git.js";
+import { GitCommit } from "../../../universal/git.js";
 import { GraphNode, createGraphNodes } from "./index.js";
 
 const commit = (
@@ -10,7 +10,8 @@ const commit = (
 	parents,
 	subject,
 	author: "",
-	authorDate: "",
+	authorDate: 0,
+	commitDate: 0,
 	authorEmail: "",
 	files: [],
 });

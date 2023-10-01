@@ -3,7 +3,7 @@ import { catchErrors, errors } from "../handleError";
 import { RuntimeStore } from "../state/types";
 import { Repository } from "../vscode.git/types";
 import { handleWebviewMessage } from "./handleWebviewMessage";
-import { FromWebviewMessage } from "../../types/messages";
+import { FromWebviewMessage } from "../../universal/messages";
 
 export const createGraphPanel = async (
 	context: vscode.ExtensionContext,

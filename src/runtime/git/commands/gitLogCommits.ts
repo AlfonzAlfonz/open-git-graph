@@ -1,8 +1,8 @@
-import { GitCommit, GitCommitFileMode } from "../../../types/git";
-import { toLineGenerator } from "../toLineGenerator";
-import { GitCommand, commitFormat, parseCommitFormat } from "./utils";
+import { GitCommit, GitFileMode } from "../../../universal/git.js";
+import { toLineGenerator } from "../toLineGenerator.js";
+import { GitCommand, commitFormat, parseCommitFormat } from "./utils.js";
 
-export const logCommits = (): GitCommand<AsyncIterable<GitCommit>> => {
+export const gitLogCommits = (): GitCommand<AsyncIterable<GitCommit>> => {
 	return {
 		args: [
 			"-c",
@@ -45,7 +45,7 @@ export const logCommits = (): GitCommand<AsyncIterable<GitCommit>> => {
 							string,
 							string,
 							string,
-							GitCommitFileMode,
+							GitFileMode,
 							string,
 						];
 						const [, , , , mode, path] = value!.split(

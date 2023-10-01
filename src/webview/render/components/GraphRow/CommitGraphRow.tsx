@@ -1,35 +1,22 @@
-import { getColor } from "../../../state/createGraphNodes/Rails.js";
-import { GraphNode } from "../../../state/createGraphNodes/index.js";
+import { GitCommit } from "../../../../universal/git.js";
 import { useWebviewStore } from "../../../state/index.js";
-import { GraphTag } from "../../../state/toGraphTags.js";
-import { CommitInspector } from "../CommitInspector/index.js";
+import { CommitInspector } from "../inspectors/CommitInspector.js";
 import { CommitTags } from "./CommitTags.js";
 import { renderRails } from "./renderRails.js";
+import { UseGraphRowOptions, useGraphRow } from "./useGraphRow.js";
 
-export interface GraphRowProps {
-	node: GraphNode;
-	tags?: GraphTag[];
-}
-
-export const GraphRow = ({ node, tags }: GraphRowProps) => {
-	const { expandedCommit, dispatch } = useWebviewStore();
-
-	const isHead = tags?.some((r) => r.type === "head");
+export const CommitGraphRow = ({
+	node,
+	tags,
+}: UseGraphRowOptions<GitCommit>) => {
+	const { expandedCommit } = useWebviewStore();
+	const { onClick, className } = useGraphRow({ node, tags });
 
 	return (
 		<>
 			<tr
-				onClick={(e) => {
-					if (e.detail > 1) {
-						return;
-					}
-					dispatch({ type: "EXPAND_COMMMIT", commit: node.commit.hash });
-				}}
-				class={`graph-row ${isHead ? "head" : ""} ${
-					node.commit.parents.length > 1 ? "merge" : ""
-				} ${expandedCommit === node.commit.hash ? "focused" : ""} ${getColor(
-					node.position,
-				)}`}
+				onClick={onClick}
+				class={className}
 				data-vscode-context={JSON.stringify({
 					webviewSection: "commit",
 					preventDefaultContextMenuItems: true,
