@@ -35,7 +35,7 @@ export const createGraphNodes = (
 	const nodes = prev?.nodes ?? [];
 
 	let rails: Rails = new Rails(prev?.rails, hashes);
-	if (index) {
+	if (index && (index.tracked.length || index.untracked.length)) {
 		nodes.push(rails.add(index));
 	}
 

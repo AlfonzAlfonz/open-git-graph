@@ -11,6 +11,7 @@ export const gitLogCommits = (): GitCommand<AsyncIterable<GitCommit>> => {
 			"--branches=*",
 			"--remotes=*",
 			"--tags=*",
+			"--date-order",
 			`--format=${commitFormat}`,
 			"-m",
 			"--raw",

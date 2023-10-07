@@ -1,4 +1,4 @@
-import { GitCommit } from "../../../universal/git.js";
+import { GitCommit, GitIndex } from "../../../universal/git.js";
 import { GraphNode, createGraphNodes } from "./index.js";
 
 const commit = (
@@ -146,4 +146,43 @@ test("merge2", () => {
 	expect(n2b.merges).toMatchObject([]);
 	expect(n3.merges).toMatchObject([]);
 	expect(n4.merges).toMatchObject([]);
+});
+
+test("index", () => {
+	const commits: GitCommit[] = [
+		commit("1", ["2"], "1"),
+		commit("2", ["3"], "2a"),
+		commit("3", ["4"], "3"),
+		commit("4", [], "4"),
+	];
+
+	const index: GitIndex = { parents: ["2"], tracked: [], untracked: [] };
+
+	const { nodes } = createGraphNodes(commits, index);
+
+	const [i, n1, n2, n3, n4] = nodes as [
+		GraphNode,
+		GraphNode,
+		GraphNode,
+		GraphNode,
+		GraphNode,
+	];
+
+	expect(i.position).toBe(0);
+	expect(n1.position).toBe(1);
+	expect(n2.position).toBe(0);
+	expect(n3.position).toBe(0);
+	expect(n4.position).toBe(0);
+
+	expect(i.rails).toMatchObject([]);
+	expect(n1.rails).toMatchObject([0]);
+	expect(n2.rails).toMatchObject([0, 1]);
+	expect(n3.rails).toMatchObject([0]);
+	expect(n4.rails).toMatchObject([0]);
+
+	expect(i.forks).toMatchObject([0]);
+	expect(n1.forks).toMatchObject([1]);
+	expect(n2.forks).toMatchObject([1]);
+	expect(n3.forks).toMatchObject([]);
+	expect(n4.forks).toMatchObject([]);
 });
