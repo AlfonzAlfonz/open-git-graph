@@ -1,9 +1,9 @@
 import { render as renderPreact } from "preact";
 import { useEffect, useErrorBoundary } from "preact/hooks";
-import { useWebviewStore } from "../state/index.js";
-import { Loading } from "./components/Loading.js";
-import { GraphTable } from "./components/GraphTable/index.js";
 import { errorToString } from "../../universal/errorToString.js";
+import { useWebviewStore } from "../state/index.js";
+import { GraphTable } from "./components/GraphTable/index.js";
+import { Loading } from "./components/Loading.js";
 
 const graphDiv = document.querySelector("#root")!;
 
@@ -13,9 +13,10 @@ export const render = () => {
 
 const App = () => {
 	const { graph, dispatch } = useWebviewStore();
-	const [error, resetError] = useErrorBoundary(
-		(e) => void dispatch({ type: "LOG_ERROR", content: errorToString(e) }),
-	);
+	const [error, resetError] = useErrorBoundary((e) => {
+		console.error(e);
+		dispatch({ type: "LOG_ERROR", content: errorToString(e) });
+	});
 
 	useEffect(() => {
 		dispatch({ type: "INIT" });

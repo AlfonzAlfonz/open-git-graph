@@ -3,7 +3,7 @@ import { GraphNode } from "../../../state/createGraphNodes/index.js";
 import { getColor } from "../../../state/createGraphNodes/Rails.js";
 
 const WIDTH = 16;
-const HEIGHT = 26;
+export const HEIGHT = 26;
 const CENTER = 0.5;
 
 export const renderRails = (n: GraphNode) => {

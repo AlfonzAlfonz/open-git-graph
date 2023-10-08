@@ -77,4 +77,12 @@
 		-webkit-user-select: none;
 		-ms-user-select: none;
 	}
+
+	.graph-grid {
+		display: grid;
+		grid-template-columns:
+			var(--graph-rails-width, 150px) auto var(--graph-author-width, 120px)
+			var(--graph-date-width, 100px) var(--graph-hash-width, 100px);
+		gap: 16px;
+	}
 }

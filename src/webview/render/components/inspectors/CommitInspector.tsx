@@ -7,9 +7,9 @@ export const CommitInspector = ({ node }: { node: GraphNode<GitCommit> }) => {
 	const { commit } = node;
 
 	return (
-		<tr class="commit-inspector">
-			<td>{renderEmptyRails(node, 200)}</td>
-			<td colSpan={4}>
+		<div class="commit-inspector">
+			<div>{renderEmptyRails(node, 200)}</div>
+			<div>
 				<div class="flex leading-normal h-[200px] overflow-auto w-full">
 					<div class="w-1/2 p-1 overflow-hidden text-ellipsis">
 						<div>
@@ -24,15 +24,13 @@ export const CommitInspector = ({ node }: { node: GraphNode<GitCommit> }) => {
 						<div>{commit.subject}</div>
 					</div>
 					<div class="w-1/2 p-1 overflow-y-auto overflow-x-hidden text-ellipsis">
-						<ul class="files list-none">
-							<CommitFileList
-								files={commit.files}
-								diff={{ a: commit.parents[0], b: commit.hash }}
-							/>
-						</ul>
+						<CommitFileList
+							files={commit.files}
+							diff={{ a: commit.parents[0], b: commit.hash }}
+						/>
 					</div>
 				</div>
-			</td>
-		</tr>
+			</div>
+		</div>
 	);
 };

@@ -5,9 +5,9 @@ import { CommitFileList } from "./CommitFileList.js";
 
 export const IndexInspector = ({ node }: { node: GraphNode<GitIndex> }) => {
 	return (
-		<tr class={"commit-inspector"}>
-			<td>{renderEmptyRails(node, 200)}</td>
-			<td colSpan={4}>
+		<div class={"commit-inspector"}>
+			<div>{renderEmptyRails(node, 200)}</div>
+			<div colSpan={4}>
 				<div class="flex leading-normal h-[200px] overflow-scroll">
 					<div></div>
 					<div class="w-full p-1 overflow-y-auto overflow-x-hidden text-ellipsis">
@@ -24,7 +24,7 @@ export const IndexInspector = ({ node }: { node: GraphNode<GitIndex> }) => {
 						/>
 					</div>
 				</div>
-			</td>
-		</tr>
+			</div>
+		</div>
 	);
 };

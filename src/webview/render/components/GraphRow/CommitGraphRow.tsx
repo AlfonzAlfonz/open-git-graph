@@ -8,15 +8,15 @@ import { UseGraphRowOptions, useGraphRow } from "./useGraphRow.js";
 export const CommitGraphRow = ({
 	node,
 	tags,
-}: UseGraphRowOptions<GitCommit>) => {
+	style,
+}: UseGraphRowOptions<GitCommit> & { style: any }) => {
 	const { expandedCommit } = useWebviewStore();
-	const { onClick, className } = useGraphRow({ node, tags });
+	const props = useGraphRow({ node, tags });
 
 	return (
-		<>
-			<tr
-				onClick={onClick}
-				class={className}
+		<div style={style}>
+			<div
+				{...props}
 				data-vscode-context={JSON.stringify({
 					webviewSection: "commit",
 					preventDefaultContextMenuItems: true,
@@ -24,26 +24,26 @@ export const CommitGraphRow = ({
 					ref: node.commit.hash,
 				})}
 			>
-				<td>{renderRails(node)}</td>
-				<td>
+				<div>{renderRails(node)}</div>
+				<div>
 					<div class="flex gap-2 items-center">
 						{tags && <CommitTags tags={tags} />}
 						<p class="inline-block whitespace-nowrap text-ellipsis overflow-hidden leading-tight flex-grow-1">
 							{node.commit.subject}
 						</p>
 					</div>
-				</td>
-				<td class="px-1 whitespace-nowrap text-ellipsis overflow-hidden">
+				</div>
+				<div class="px-1 whitespace-nowrap text-ellipsis overflow-hidden">
 					{node.commit.author}
-				</td>
-				<td class="px-1 whitespace-nowrap text-ellipsis overflow-hidden">
+				</div>
+				<div class="px-1 whitespace-nowrap text-ellipsis overflow-hidden">
 					{new Date(node.commit.authorDate * 1000).toLocaleString()}
-				</td>
-				<td class="px-1 whitespace-nowrap text-ellipsis overflow-hidden">
+				</div>
+				<div class="px-1 whitespace-nowrap text-ellipsis overflow-hidden">
 					{node.commit.hash.slice(0, 10)}
-				</td>
-			</tr>
+				</div>
+			</div>
 			{expandedCommit === node.commit.hash && <CommitInspector node={node} />}
-		</>
+		</div>
 	);
 };
