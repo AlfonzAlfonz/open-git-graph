@@ -1,3 +1,4 @@
+import { MouseEvent } from "react";
 import { GitCommit, GitIndex } from "../../../../universal/git.js";
 import { getColor } from "../../../state/createGraphNodes/Rails.js";
 import { GraphNode } from "../../../state/createGraphNodes/index.js";

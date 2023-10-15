@@ -26,20 +26,20 @@ export const CommitGraphRow = ({
 			>
 				<div>{renderRails(node)}</div>
 				<div>
-					<div class="flex gap-2 items-center">
+					<div className="flex gap-2 items-center">
 						{tags && <CommitTags tags={tags} />}
-						<p class="inline-block whitespace-nowrap text-ellipsis overflow-hidden leading-tight flex-grow-1">
+						<p className="inline-block whitespace-nowrap text-ellipsis overflow-hidden leading-tight flex-grow-1">
 							{node.commit.subject}
 						</p>
 					</div>
 				</div>
-				<div class="px-1 whitespace-nowrap text-ellipsis overflow-hidden">
+				<div className="px-1 whitespace-nowrap text-ellipsis overflow-hidden">
 					{node.commit.author}
 				</div>
-				<div class="px-1 whitespace-nowrap text-ellipsis overflow-hidden">
+				<div className="px-1 whitespace-nowrap text-ellipsis overflow-hidden">
 					{new Date(node.commit.authorDate * 1000).toLocaleString()}
 				</div>
-				<div class="px-1 whitespace-nowrap text-ellipsis overflow-hidden">
+				<div className="px-1 whitespace-nowrap text-ellipsis overflow-hidden">
 					{node.commit.hash.slice(0, 10)}
 				</div>
 			</div>

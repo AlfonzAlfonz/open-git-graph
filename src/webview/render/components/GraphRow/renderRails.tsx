@@ -1,6 +1,6 @@
-import { ComponentChild } from "preact";
-import { GraphNode } from "../../../state/createGraphNodes/index.js";
+import { ReactNode } from "react";
 import { getColor } from "../../../state/createGraphNodes/Rails.js";
+import { GraphNode } from "../../../state/createGraphNodes/index.js";
 
 const WIDTH = 16;
 export const HEIGHT = 26;
@@ -14,7 +14,7 @@ export const renderRails = (n: GraphNode) => {
 		y * HEIGHT,
 	];
 
-	const rails: ComponentChild[] = [];
+	const rails: ReactNode[] = [];
 
 	let shift = 0;
 	let activeIndex = n.rails.findIndex((r) => n.position === r);
@@ -33,7 +33,7 @@ export const renderRails = (n: GraphNode) => {
 			shift++;
 		}
 
-		rails.push(<path d={toBezier(x1, y1, x2, y2)} class={color} />);
+		rails.push(<path d={toBezier(x1, y1, x2, y2)} className={color} />);
 	}
 
 	// Render new rail
@@ -43,7 +43,7 @@ export const renderRails = (n: GraphNode) => {
 		const [x1, y1] = absoluteCoords(n.rails.length, CENTER);
 		const [x2, y2] = absoluteCoords(n.rails.length, 1);
 
-		rails.push(<path d={toBezier(x1, y1, x2, y2)} class={color} />);
+		rails.push(<path d={toBezier(x1, y1, x2, y2)} className={color} />);
 	}
 
 	const color = getColor(n.position);
@@ -55,7 +55,7 @@ export const renderRails = (n: GraphNode) => {
 		const [x1, y1] = absoluteCoords(activeIndex, CENTER);
 		const [x2, y2] = absoluteCoords(x, 1);
 
-		rails.push(<path d={toBezier(x1, y1, x2, y2)} class={getColor(m)} />);
+		rails.push(<path d={toBezier(x1, y1, x2, y2)} className={getColor(m)} />);
 	}
 
 	const s = 3.5;
@@ -63,7 +63,13 @@ export const renderRails = (n: GraphNode) => {
 		<svg width={(width + 1) * WIDTH} height={HEIGHT}>
 			{rails}
 			{/* Commit circle */}
-			<rect x={cx - s / 2} y={cy - s / 2} width={s} height={s} class={color} />
+			<rect
+				x={cx - s / 2}
+				y={cy - s / 2}
+				width={s}
+				height={s}
+				className={color}
+			/>
 		</svg>
 	);
 };
@@ -79,7 +85,7 @@ export const renderEmptyRails = (node: GraphNode, height: number) => {
 	const newRail = node.forks.find((f) => !node.rails.includes(f));
 	const width = node.rails.length + +!!newRail;
 
-	const rails: ComponentChild[] = [];
+	const rails: ReactNode[] = [];
 
 	for (const [x, r] of node.rails.entries()) {
 		const color = getColor(r);
@@ -87,12 +93,14 @@ export const renderEmptyRails = (node: GraphNode, height: number) => {
 		const [x1, y1] = absoluteCoords(x, 0);
 		const [x2, y2] = absoluteCoords(x, 1);
 
-		rails.push(<path d={toBezier(x1, y1, x2, y2)} class={color} />);
+		rails.push(<path d={toBezier(x1, y1, x2, y2)} className={color} />);
 	}
 	if (!!newRail) {
 		const [x1, y1] = absoluteCoords(node.rails.length, 0);
 		const [x2, y2] = absoluteCoords(node.rails.length, 1);
-		rails.push(<path d={toBezier(x1, y1, x2, y2)} class={getColor(newRail)} />);
+		rails.push(
+			<path d={toBezier(x1, y1, x2, y2)} className={getColor(newRail)} />,
+		);
 	}
 
 	return (

@@ -1,19 +1,17 @@
-import { ComponentChild } from "preact";
-import { useEffect, useRef } from "preact/hooks";
-import * as ResizablePanels from "react-resizable-panels";
-import ReactAutoSizer from "react-virtualized-auto-sizer";
-import * as ReactWindow from "react-window";
+import { useEffect, useRef } from "react";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import AutoSizer from "react-virtualized-auto-sizer";
+import { ListChildComponentProps, VariableSizeList } from "react-window";
 import { GitCommit, GitIndex } from "../../../../universal/git";
 import { useWebviewStore } from "../../../state";
 import { GraphNode } from "../../../state/createGraphNodes";
 import { GraphTag } from "../../../state/toGraphTags";
-import { PreactComponent } from "../../utils";
 import { CommitGraphRow } from "../GraphRow/CommitGraphRow";
 import { IndexGraphRow } from "../GraphRow/IndexGraphRow";
 import { HEIGHT } from "../GraphRow/renderRails";
 
 export const GraphTable = () => {
-	const listRef = useRef<ReactWindow.VariableSizeList>();
+	const listRef = useRef<VariableSizeList>(null!);
 	const { graph, tags, expandedCommit } = useWebviewStore();
 	const ref = useRef<HTMLDivElement>(null);
 
@@ -22,8 +20,8 @@ export const GraphTable = () => {
 	}, [expandedCommit]);
 
 	return (
-		<div id="graph" class={"h-[100vh]"} ref={ref}>
-			<div class={"graph-header"}>
+		<div id="graph" className={"h-[100vh]"} ref={ref}>
+			<div className={"graph-header"}>
 				<PanelGroup className="flex" direction="horizontal" units="pixels">
 					<Panel minSize={150} maxSize={150}>
 						Graph
@@ -47,7 +45,7 @@ export const GraphTable = () => {
 			{graph.data && (
 				<AutoSizer>
 					{({ height, width }) => (
-						<List
+						<VariableSizeList
 							ref={listRef}
 							itemSize={(i) => {
 								const node = graph.data!.nodes[i]!;
@@ -75,16 +73,13 @@ export const GraphTable = () => {
 
 interface RowData {
 	nodes: GraphNode[];
-	tags: Record<string, GraphTag[]>;
+	tags?: Record<string, GraphTag[]>;
 }
 
-const Row = ({
-	data,
-	index,
-	style,
-}: ReactWindow.ListChildComponentProps<RowData>) => {
+const Row = ({ data, index, style }: ListChildComponentProps<RowData>) => {
 	const node = data.nodes[index]!;
-	const tags = "hash" in node.commit ? data.tags[node.commit.hash] : undefined;
+	const tags =
+		"hash" in node.commit ? data.tags?.[node.commit.hash] : undefined;
 
 	return "hash" in node.commit ? (
 		<CommitGraphRow
@@ -96,22 +91,3 @@ const Row = ({
 		<IndexGraphRow node={node as GraphNode<GitIndex>} style={style} />
 	);
 };
-
-const List =
-	ReactWindow.VariableSizeList as any as PreactComponent<ReactWindow.VariableSizeListProps>;
-
-const AutoSizer = ReactAutoSizer as any as PreactComponent<
-	{},
-	(size: { height: number; width: number }) => ComponentChild
->;
-
-const PanelGroup =
-	ResizablePanels.PanelGroup as PreactComponent<ResizablePanels.PanelGroupProps>;
-
-const Panel =
-	ResizablePanels.Panel as PreactComponent<ResizablePanels.PanelProps>;
-
-const PanelResizeHandle = ResizablePanels.PanelResizeHandle as PreactComponent<
-	ResizablePanels.PanelResizeHandleProps,
-	undefined
->;

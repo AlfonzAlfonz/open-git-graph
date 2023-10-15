@@ -14,11 +14,11 @@ export const IndexGraphRow = ({
 
 	return (
 		<div style={style}>
-			<div onClick={onClick} class={className}>
+			<div onClick={onClick} className={className}>
 				<div>{renderRails(node)}</div>
-				<div colSpan={4}>
-					<div class="flex gap-2 items-center">
-						<p class="inline-block whitespace-nowrap text-ellipsis overflow-hidden leading-tight flex-grow-1">
+				<div>
+					<div className="flex gap-2 items-center">
+						<p className="inline-block whitespace-nowrap text-ellipsis overflow-hidden leading-tight flex-grow-1">
 							Uncommited changes
 						</p>
 					</div>

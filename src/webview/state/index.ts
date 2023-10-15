@@ -8,7 +8,7 @@ import { Req, req } from "../../universal/req.js";
 import { Graph, createGraphNodes } from "./createGraphNodes/index.js";
 import { groupBy } from "./groupBy.js";
 import { GraphTag, toGraphTags } from "./toGraphTags.js";
-import { create } from "./zustand.js";
+import { create } from "zustand";
 
 const api = acquireVsCodeApi();
 

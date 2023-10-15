@@ -24,7 +24,7 @@ const swcOptions = {
 			transform: {
 				react: {
 					runtime: "automatic",
-					importSource: "preact",
+					importSource: "react",
 				},
 			},
 			minify: {
@@ -51,9 +51,6 @@ const webview = {
 					prod ? "production" : "development",
 				),
 			},
-		}),
-		alias({
-			entries: [{ find: "react", replacement: "preact/compat" }],
 		}),
 		commonjs({}),
 		nodeResolve({ extensions: [".js", ".jsx", ".ts", ".tsx"] }),

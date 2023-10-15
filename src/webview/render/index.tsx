@@ -1,45 +1,41 @@
-import { render as renderPreact } from "preact";
-import { useEffect, useErrorBoundary } from "preact/hooks";
-import { errorToString } from "../../universal/errorToString.js";
+import { useEffect } from "react";
+import { createRoot } from "react-dom/client";
 import { useWebviewStore } from "../state/index.js";
 import { GraphTable } from "./components/GraphTable/index.js";
 import { Loading } from "./components/Loading.js";
-
-const graphDiv = document.querySelector("#root")!;
+import { ErrorBoundary } from "./ErrorBoundary.js";
+import { errorToString } from "../../universal/errorToString.js";
 
 export const render = () => {
-	renderPreact(<App />, graphDiv);
+	createRoot(document.querySelector("#root")!).render(<App />);
 };
 
 const App = () => {
 	const { graph, dispatch } = useWebviewStore();
-	const [error, resetError] = useErrorBoundary((e) => {
-		console.error(e);
-		dispatch({ type: "LOG_ERROR", content: errorToString(e) });
-	});
 
 	useEffect(() => {
 		dispatch({ type: "INIT" });
 	}, []);
 
-	if (error) {
-		return (
-			<div class="w-[100vw] h-[100vh] flex items-center justify-center">
-				<h1>Error happened :(</h1>
-				<button onClick={resetError}>Retry?</button>
-			</div>
-		);
-	}
-
 	return (
-		<>
+		<ErrorBoundary
+			handle={(e) => {
+				console.error(e);
+				dispatch({ type: "LOG_ERROR", content: errorToString(e) });
+			}}
+			fallback={
+				<div className="w-[100vw] h-[100vh] flex items-center justify-center">
+					<h1>Error happened :(</h1>
+				</div>
+			}
+		>
 			{graph?.data && <GraphTable />}
 
 			{!graph?.data && (
-				<div class="w-[100vw] h-[100vh] flex items-center justify-center">
+				<div className="w-[100vw] h-[100vh] flex items-center justify-center">
 					<Loading />
 				</div>
 			)}
-		</>
+		</ErrorBoundary>
 	);
 };

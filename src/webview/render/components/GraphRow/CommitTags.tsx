@@ -10,14 +10,14 @@ export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 				(r) =>
 					r.type !== "head" && (
 						<div
-							onDblClick={
+							onDoubleClick={
 								r.type === "branch"
 									? () => {
 											dispatch({ type: "CHECKOUT", branch: r.label });
 									  }
 									: undefined
 							}
-							class={`graph-tag ${r.type}`}
+							className={`graph-tag ${r.type}`}
 							data-vscode-context={
 								r.type === "branch"
 									? JSON.stringify({
@@ -29,9 +29,9 @@ export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 									: undefined
 							}
 						>
-							<div class="content">{r.label}</div>
+							<div className="content">{r.label}</div>
 							{r.endDecorators?.map((d) => (
-								<div class={"end-decorator"}>{d}</div>
+								<div className={"end-decorator"}>{d}</div>
 							))}
 						</div>
 					),
