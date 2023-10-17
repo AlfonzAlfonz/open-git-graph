@@ -14,6 +14,10 @@ export class ErrorBoundary extends Component<
 	}
 
 	render() {
-		return <>{!this.state.threw ? this.props.fallback : this.props.children}</>;
+		return (
+			<>
+				{this.state?.threw === true ? this.props.fallback : this.props.children}
+			</>
+		);
 	}
 }

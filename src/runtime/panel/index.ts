@@ -1,9 +1,18 @@
 import * as vscode from "vscode";
-import { catchErrors, errors } from "../handleError";
-import { RuntimeStore } from "../state/types";
-import { Repository } from "../vscode.git/types";
-import { handleWebviewMessage } from "./handleWebviewMessage";
-import { FromWebviewMessage } from "../../universal/messages";
+import {
+	RuntimeToWebBridge,
+	WebToRuntimeBridge,
+} from "../../universal/protocol/index.js";
+import {
+	createClientProxy,
+	handleRequest,
+	isBridgeRequest,
+	isBridgeResponse,
+} from "../../universal/protocol/utils.js";
+import { errors } from "../handleError.js";
+import { RuntimeStore } from "../state/types.js";
+import { Repository } from "../vscode.git/types.js";
+import { WebviewRequestHandler } from "./requestHandler.js";
 
 export const createGraphPanel = async (
 	context: vscode.ExtensionContext,
@@ -15,9 +24,7 @@ export const createGraphPanel = async (
 		"open-git-graph.graph",
 		"Open Git Graph",
 		vscode.ViewColumn.One,
-		{
-			enableScripts: true,
-		},
+		{ enableScripts: true },
 	);
 	const styleUri = panel.webview.asWebviewUri(
 		vscode.Uri.joinPath(context.extensionUri, "dist", "output.css"),
@@ -31,24 +38,38 @@ export const createGraphPanel = async (
 	html = html.replace("${styleUri}", styleUri.toString());
 	html = html.replace(
 		"${scripts}",
-		`
-        <script>window.__REPOSITORY = "${repoPath}"</script>
-        <script src="${scriptUri.toString()}"></script>
-      `,
+		`<script src="${scriptUri.toString()}"></script>`,
 	);
 
 	panel.webview.html = html;
 
-	panel.webview.onDidReceiveMessage(
-		catchErrors(store, async (msg: FromWebviewMessage) => {
-			await handleWebviewMessage(store, panel, msg);
-		}),
+	const [bridge, handleResponse] = createClientProxy<RuntimeToWebBridge>(
+		panel.webview.postMessage,
 	);
+
+	panel.webview.onDidReceiveMessage(async (data) => {
+		// handle responses from previous runtimeToWeb requests
+		if (isBridgeResponse<RuntimeToWebBridge>(data)) {
+			handleResponse(data);
+		}
+
+		// handle webToRuntime requests
+		if (isBridgeRequest<WebToRuntimeBridge>(data)) {
+			panel.webview.postMessage(
+				await handleRequest(new WebviewRequestHandler(store, panel), data),
+			);
+		}
+	});
 
 	store.dispatch({
 		type: "ADD_PANEL",
 		panel,
-		state: { repoPath },
+		state: {
+			repoPath,
+			expandedCommit: undefined,
+			scroll: 0,
+			bridge,
+		},
 	});
 
 	panel.onDidDispose(() =>

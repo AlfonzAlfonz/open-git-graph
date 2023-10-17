@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { StoreApi } from "zustand/vanilla";
 import { GitExtension, Repository } from "../vscode.git/types.js";
+import { RuntimeToWebBridge } from "../../universal/protocol/index.js";
 
 export type Lazy<T> = { ensure: () => T };
 
@@ -14,6 +15,11 @@ export interface RuntimeState {
 
 export interface PanelState {
 	repoPath: string;
+
+	expandedCommit: string | undefined;
+	scroll: number;
+
+	bridge: RuntimeToWebBridge;
 }
 
 export interface RuntimeStore extends Omit<StoreApi<RuntimeState>, "setState"> {

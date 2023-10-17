@@ -1,5 +1,4 @@
 import { GitRepository } from "../git/GitRepository";
-import { handleWebviewMessage } from "../panel/handleWebviewMessage";
 import { command } from "../utils";
 
 export const checkoutCommand = command({
@@ -15,9 +14,9 @@ export const checkoutCommand = command({
 			const git = new GitRepository(store.getState(), repo);
 			await git.checkout(branch);
 
-			for (const [panel, { repoPath }] of store.getState().panels) {
+			for (const [_, { repoPath, bridge }] of store.getState().panels) {
 				if (repo !== repoPath) continue;
-				await handleWebviewMessage(store, panel, { type: "REFRESH" });
+				await bridge.refresh();
 			}
 		},
 });

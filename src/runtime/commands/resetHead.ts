@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { GitRepository } from "../git/GitRepository";
-import { handleWebviewMessage } from "../panel/handleWebviewMessage";
 import { command } from "../utils";
 
 export const resetHeadCommand = command({
@@ -44,9 +43,9 @@ export const resetHeadCommand = command({
 				await git.reset(ref, answer.value);
 			}
 
-			for (const [panel, { repoPath }] of store.getState().panels) {
+			for (const [_, { repoPath, bridge }] of store.getState().panels) {
 				if (repo !== repoPath) continue;
-				await handleWebviewMessage(store, panel, { type: "INIT" });
+				bridge.refresh();
 			}
 		},
 });

@@ -1,6 +1,6 @@
 import { GitCommit } from "../../../../universal/git.js";
-import { useWebviewStore } from "../../../state/index.js";
-import { CommitInspector } from "../inspectors/CommitInspector.js";
+import { bridge } from "../../../bridge.js";
+import { useBridge } from "../../useBridge/useBridge.js";
 import { CommitTags } from "./CommitTags.js";
 import { renderRails } from "./renderRails.js";
 import { UseGraphRowOptions, useGraphRow } from "./useGraphRow.js";
@@ -10,7 +10,7 @@ export const CommitGraphRow = ({
 	tags,
 	style,
 }: UseGraphRowOptions<GitCommit> & { style: any }) => {
-	const { expandedCommit } = useWebviewStore();
+	const { data } = useBridge(bridge.getGraphData, []);
 	const props = useGraphRow({ node, tags });
 
 	return (
@@ -20,7 +20,7 @@ export const CommitGraphRow = ({
 				data-vscode-context={JSON.stringify({
 					webviewSection: "commit",
 					preventDefaultContextMenuItems: true,
-					repo: window.__REPOSITORY,
+					repo: data?.repoPath,
 					ref: node.commit.hash,
 				})}
 			>
@@ -43,7 +43,7 @@ export const CommitGraphRow = ({
 					{node.commit.hash.slice(0, 10)}
 				</div>
 			</div>
-			{expandedCommit === node.commit.hash && <CommitInspector node={node} />}
+			{/* {expandedCommit === node.commit.hash && <CommitInspector node={node} />} */}
 		</div>
 	);
 };

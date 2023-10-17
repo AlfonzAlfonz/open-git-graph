@@ -1,18 +1,36 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { ListChildComponentProps, VariableSizeList } from "react-window";
 import { GitCommit, GitIndex } from "../../../../universal/git";
-import { useWebviewStore } from "../../../state";
-import { GraphNode } from "../../../state/createGraphNodes";
-import { GraphTag } from "../../../state/toGraphTags";
+import { bridge } from "../../../bridge";
+import { GraphNode, createGraphNodes } from "../../../state/createGraphNodes";
+import { groupBy } from "../../../state/groupBy";
+import { GraphTag, toGraphTags } from "../../../state/toGraphTags";
+import { useBridge } from "../../useBridge/useBridge";
 import { CommitGraphRow } from "../GraphRow/CommitGraphRow";
 import { IndexGraphRow } from "../GraphRow/IndexGraphRow";
 import { HEIGHT } from "../GraphRow/renderRails";
 
 export const GraphTable = () => {
 	const listRef = useRef<VariableSizeList>(null!);
-	const { graph, tags, expandedCommit } = useWebviewStore();
+
+	const { data } = useBridge(bridge.getGraphData, []);
+
+	const expandedCommit: string = "";
+
+	const graph = useMemo(
+		() => data && createGraphNodes(data.commits, data.index),
+		[data],
+	);
+
+	const tags = useMemo(
+		() =>
+			data &&
+			Object.fromEntries(toGraphTags(groupBy(data.refs, (r) => r.hash))),
+		[data],
+	);
+
 	const ref = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -42,15 +60,14 @@ export const GraphTable = () => {
 					</Panel>
 				</PanelGroup>
 			</div>
-			{graph.data && (
+			{graph && (
 				<AutoSizer>
 					{({ height, width }) => (
 						<VariableSizeList
 							ref={listRef}
 							itemSize={(i) => {
-								const node = graph.data!.nodes[i]!;
+								const node = graph!.nodes[i]!;
 								if ("hash" in node.commit) {
-									console.log(expandedCommit, node.commit.hash);
 									return expandedCommit === node.commit.hash
 										? HEIGHT + 200
 										: HEIGHT;
@@ -58,10 +75,10 @@ export const GraphTable = () => {
 									return expandedCommit === "index" ? HEIGHT + 200 : HEIGHT;
 								}
 							}}
-							width={(console.log({ height, width }), width)}
+							width={width}
 							height={height}
-							itemData={{ nodes: graph.data!.nodes, tags: tags.data }}
-							itemCount={graph.data!.nodes.length}
+							itemData={{ nodes: graph!.nodes, tags: tags.data }}
+							itemCount={graph!.nodes.length}
 							children={Row}
 						/>
 					)}

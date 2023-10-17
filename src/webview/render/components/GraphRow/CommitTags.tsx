@@ -1,8 +1,9 @@
-import { useWebviewStore } from "../../../state/index.js";
+import { bridge } from "../../../bridge.js";
 import { GraphTag } from "../../../state/toGraphTags.js";
+import { useBridge } from "../../useBridge/useBridge.js";
 
 export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
-	const { dispatch } = useWebviewStore();
+	const { data } = useBridge(bridge.getGraphData, []);
 
 	return (
 		<>
@@ -13,7 +14,7 @@ export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 							onDoubleClick={
 								r.type === "branch"
 									? () => {
-											dispatch({ type: "CHECKOUT", branch: r.label });
+											bridge.checkout(r.label);
 									  }
 									: undefined
 							}
@@ -23,7 +24,7 @@ export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 									? JSON.stringify({
 											webviewSection: "branch",
 											preventDefaultContextMenuItems: true,
-											repo: window.__REPOSITORY,
+											repo: data?.repoPath,
 											branch: r.label,
 									  })
 									: undefined

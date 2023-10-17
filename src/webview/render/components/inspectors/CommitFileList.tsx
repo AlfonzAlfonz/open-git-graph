@@ -1,5 +1,5 @@
 import { GitCommitFile, GitFileMode } from "../../../../universal/git";
-import { useWebviewStore } from "../../../state";
+import { bridge } from "../../../bridge";
 
 export const CommitFileList = ({
 	diff,
@@ -8,20 +8,12 @@ export const CommitFileList = ({
 	diff: { a?: string; b?: string };
 	files: GitCommitFile[];
 }) => {
-	const { dispatch } = useWebviewStore();
-
 	return (
 		<ul className="files list-none">
 			{files.map((f, i) => (
 				<li
 					key={f.path}
-					onClick={() =>
-						dispatch({
-							type: "SHOW_DIFF",
-							path: f.path,
-							...diff,
-						})
-					}
+					onClick={() => bridge.showDiff(f.path, diff.a, diff.b)}
 					className={`flex gap-2 py-1 ${
 						fileModeColors[f.mode] ?? "white"
 					} cursor-pointer`}

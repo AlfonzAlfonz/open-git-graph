@@ -1,5 +1,4 @@
 import { GitIndex } from "../../../../universal/git.js";
-import { useWebviewStore } from "../../../state/index.js";
 import { IndexInspector } from "../inspectors/IndexInspector.js";
 import { renderRails } from "./renderRails.js";
 import { UseGraphRowOptions, useGraphRow } from "./useGraphRow.js";
@@ -9,7 +8,6 @@ export const IndexGraphRow = ({
 	tags,
 	style,
 }: UseGraphRowOptions<GitIndex> & { style: any }) => {
-	const { expandedCommit } = useWebviewStore();
 	const { onClick, className } = useGraphRow({ node, tags });
 
 	return (
@@ -24,7 +22,7 @@ export const IndexGraphRow = ({
 					</div>
 				</div>
 			</div>
-			{expandedCommit === "index" && <IndexInspector node={node} />}
+			{/* {expandedCommit === "index" && <IndexInspector node={node} />} */}
 		</div>
 	);
 };

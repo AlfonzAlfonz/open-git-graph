@@ -1,27 +1,29 @@
-import { useEffect } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
-import { useWebviewStore } from "../state/index.js";
-import { GraphTable } from "./components/GraphTable/index.js";
-import { Loading } from "./components/Loading.js";
-import { ErrorBoundary } from "./ErrorBoundary.js";
 import { errorToString } from "../../universal/errorToString.js";
+import { bridge } from "../bridge.js";
+import { ErrorBoundary } from "./ErrorBoundary.js";
+import { GraphTable } from "./components/GraphTable/index.js";
+import { useBridge } from "./useBridge/useBridge.js";
 
+const queryClient = new QueryClient();
 export const render = () => {
-	createRoot(document.querySelector("#root")!).render(<App />);
+	createRoot(document.querySelector("#root")!).render(
+		<QueryClientProvider client={queryClient}>
+			<App />
+		</QueryClientProvider>,
+	);
 };
 
 const App = () => {
-	const { graph, dispatch } = useWebviewStore();
-
-	useEffect(() => {
-		dispatch({ type: "INIT" });
-	}, []);
+	const { data } = useBridge(bridge.getState, []);
 
 	return (
 		<ErrorBoundary
-			handle={(e) => {
-				console.error(e);
-				dispatch({ type: "LOG_ERROR", content: errorToString(e) });
+			handle={async (e, errorInfo) => {
+				console.error(e, errorInfo);
+				await bridge.logError(errorToString(e));
+				await bridge.logError(errorToString(errorInfo));
 			}}
 			fallback={
 				<div className="w-[100vw] h-[100vh] flex items-center justify-center">
@@ -29,13 +31,7 @@ const App = () => {
 				</div>
 			}
 		>
-			{graph?.data && <GraphTable />}
-
-			{!graph?.data && (
-				<div className="w-[100vw] h-[100vh] flex items-center justify-center">
-					<Loading />
-				</div>
-			)}
+			<GraphTable />
 		</ErrorBoundary>
 	);
 };

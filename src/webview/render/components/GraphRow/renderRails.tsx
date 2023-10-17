@@ -33,7 +33,13 @@ export const renderRails = (n: GraphNode) => {
 			shift++;
 		}
 
-		rails.push(<path d={toBezier(x1, y1, x2, y2)} className={color} />);
+		rails.push(
+			<path
+				key={rails.length}
+				d={toBezier(x1, y1, x2, y2)}
+				className={color}
+			/>,
+		);
 	}
 
 	// Render new rail
@@ -43,7 +49,13 @@ export const renderRails = (n: GraphNode) => {
 		const [x1, y1] = absoluteCoords(n.rails.length, CENTER);
 		const [x2, y2] = absoluteCoords(n.rails.length, 1);
 
-		rails.push(<path d={toBezier(x1, y1, x2, y2)} className={color} />);
+		rails.push(
+			<path
+				key={rails.length}
+				d={toBezier(x1, y1, x2, y2)}
+				className={color}
+			/>,
+		);
 	}
 
 	const color = getColor(n.position);
@@ -55,7 +67,13 @@ export const renderRails = (n: GraphNode) => {
 		const [x1, y1] = absoluteCoords(activeIndex, CENTER);
 		const [x2, y2] = absoluteCoords(x, 1);
 
-		rails.push(<path d={toBezier(x1, y1, x2, y2)} className={getColor(m)} />);
+		rails.push(
+			<path
+				key={rails.length}
+				d={toBezier(x1, y1, x2, y2)}
+				className={getColor(m)}
+			/>,
+		);
 	}
 
 	const s = 3.5;
