@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
-import { Lazy, RuntimeStore } from "./state/types";
+import { Lazy } from "./store/types";
+import { RuntimeStore } from "./store";
 
 export type Command<TId extends string> = {
 	id: TId;

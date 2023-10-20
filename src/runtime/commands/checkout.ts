@@ -1,4 +1,3 @@
-import { GitRepository } from "../git/GitRepository";
 import { command } from "../utils";
 
 export const checkoutCommand = command({
@@ -6,12 +5,11 @@ export const checkoutCommand = command({
 	command:
 		(_, s) =>
 		async ({ repo, branch }: { repo?: string; branch?: string } = {}) => {
-			const store = s.ensure();
-
 			if (!repo) throw new Error("Missing repository path");
 			if (!branch) throw new Error("Missing branch");
+			const store = s.ensure();
 
-			const git = new GitRepository(store.getState(), repo);
+			const git = store.getGitRepository(repo);
 			await git.checkout(branch);
 
 			for (const [_, { repoPath, bridge }] of store.getState().panels) {

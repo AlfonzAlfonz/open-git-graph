@@ -1,18 +1,18 @@
 import * as vscode from "vscode";
 import { ShowFileTextDocumentContentProvider } from "./ShowFileTextDocumentContentProvider.js";
-import { graphCommand } from "./commands/graph.js";
+import { checkoutCommand } from "./commands/checkout.js";
+import { graphCommand } from "./commands/graph/graph.js";
 import { mergeHeadCommand } from "./commands/mergeMead.js";
 import { rebaseHeadCommand } from "./commands/rebaseHead.js";
 import { resetHeadCommand } from "./commands/resetHead.js";
 import { catchErrors } from "./handleError.js";
-import { runtimeStore } from "./state/index.js";
-import { checkoutCommand } from "./commands/checkout.js";
+import { lazyRuntimeStore } from "./store/index.js";
+import { ensureLogger } from "./logger.js";
 
 export function activate(context: vscode.ExtensionContext) {
-	const logger = vscode.window.createOutputChannel("Open git graph");
-	logger.appendLine("Activating extension");
+	ensureLogger().appendLine("Activating extension");
 
-	const store = runtimeStore(logger);
+	const store = lazyRuntimeStore();
 
 	context.subscriptions.push(
 		vscode.workspace.registerTextDocumentContentProvider(
@@ -33,10 +33,12 @@ export function activate(context: vscode.ExtensionContext) {
 		context.subscriptions.push(
 			vscode.commands.registerCommand(
 				c.id,
-				catchErrors(store, c.command(context, store)),
+				catchErrors(c.command(context, store)),
 			),
 		);
 	}
 }
 
-export function deactivate() {}
+export function deactivate() {
+	ensureLogger().dispose();
+}

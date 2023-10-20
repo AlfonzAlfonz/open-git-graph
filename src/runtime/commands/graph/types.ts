@@ -1,4 +1,4 @@
-import { PanelState, RuntimeState } from "../state/types";
+import { PanelState, RuntimeState } from "../../store/types";
 import * as vscode from "vscode";
 
 export type Handler<T> = (opts: HandlerOptions<T>) => Promise<void> | void;

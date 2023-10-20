@@ -1,10 +1,9 @@
 import * as vscode from "vscode";
-import { WebToRuntimeBridge } from "../../universal/protocol";
-import { RuntimeStore } from "../state/types";
-import { GitRepository } from "../git/GitRepository";
-import { buffer } from "../utils";
-import { ShowFileTextDocumentContentProvider } from "../ShowFileTextDocumentContentProvider";
-import { handleError } from "../handleError";
+import { WebToRuntimeBridge } from "../../../universal/protocol";
+import { ShowFileTextDocumentContentProvider } from "../../ShowFileTextDocumentContentProvider";
+import { RuntimeStore } from "../../store";
+import { buffer } from "../../utils";
+import { handleError } from "../../handleError";
 
 export class WebviewRequestHandler implements WebToRuntimeBridge {
 	constructor(
@@ -13,10 +12,8 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 	) {}
 
 	async getGraphData() {
-		const state = this.store.getState();
-		const panelState = state.panels.get(this.panel)!;
-
-		const git = new GitRepository(state, panelState.repoPath);
+		const { repoPath } = this.getOwnState();
+		const git = this.store.getGitRepository(repoPath);
 
 		const dispatchCommits = async () => {
 			const log = await git.getCommits();
@@ -36,7 +33,7 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 		]);
 
 		return {
-			repoPath: panelState.repoPath,
+			repoPath,
 			index,
 			commits,
 			refs,
@@ -44,9 +41,7 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 	}
 
 	async showDiff(path: string, a?: string, b?: string) {
-		const state = this.store.getState();
-		const panelState = state.panels.get(this.panel)!;
-		const repoPath = panelState.repoPath;
+		const repoPath = this.getOwnState().repoPath;
 
 		await vscode.commands.executeCommand(
 			"vscode.diff",
@@ -57,27 +52,30 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 	}
 
 	async checkout(branch: string) {
-		const state = this.store.getState();
-		const panelState = state.panels.get(this.panel)!;
-
-		const git = new GitRepository(state, panelState.repoPath);
-
+		const git = this.store.getGitRepository(this.panel);
 		await git.checkout(branch);
 	}
 
 	async logError(content: string) {
-		const state = this.store.getState();
-
-		handleError(state)(content);
+		handleError(content);
 	}
 
 	async getState() {
-		return {
-			scroll: 0,
-		};
+		const { expandedCommit, scroll } = this.getOwnState();
+		return { expandedCommit, scroll };
 	}
 
-	async expandCommit(value?: string | undefined) {}
+	async expandCommit(value?: string | undefined) {
+		const state = this.getOwnState();
+		state.expandedCommit = value;
+	}
 
-	async scroll(value: number) {}
+	async scroll(value: number) {
+		const state = this.getOwnState();
+		state.scroll = value;
+	}
+
+	private getOwnState() {
+		return this.store.getPanelState(this.panel)!;
+	}
 }

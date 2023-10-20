@@ -15,9 +15,9 @@ import { HEIGHT } from "../GraphRow/renderRails";
 export const GraphTable = () => {
 	const listRef = useRef<VariableSizeList>(null!);
 
+	const state = useBridge(bridge.getState, []);
+	const expandedCommit = state.data?.expandedCommit;
 	const { data } = useBridge(bridge.getGraphData, []);
-
-	const expandedCommit: string = "";
 
 	const graph = useMemo(
 		() => data && createGraphNodes(data.commits, data.index),
@@ -33,9 +33,7 @@ export const GraphTable = () => {
 
 	const ref = useRef<HTMLDivElement>(null);
 
-	useEffect(() => {
-		listRef.current?.resetAfterIndex(0);
-	}, [expandedCommit]);
+	useEffect(() => listRef.current?.resetAfterIndex(0), [expandedCommit]);
 
 	return (
 		<div id="graph" className={"h-[100vh]"} ref={ref}>

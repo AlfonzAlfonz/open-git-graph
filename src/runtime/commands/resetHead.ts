@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { GitRepository } from "../git/GitRepository";
 import { command } from "../utils";
 
 export const resetHeadCommand = command({
@@ -16,7 +15,7 @@ export const resetHeadCommand = command({
 				throw new Error("Missing ref");
 			}
 
-			const git = new GitRepository(store.getState(), repo);
+			const git = store.getGitRepository(repo);
 			const o = [
 				{
 					value: "soft",

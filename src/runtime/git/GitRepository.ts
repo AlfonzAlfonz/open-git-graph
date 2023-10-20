@@ -1,36 +1,24 @@
 import { spawn } from "node:child_process";
 import { GitCommit, GitIndex, GitRef } from "../../universal/git.js";
 import { handleError } from "../handleError.js";
-import { RuntimeState } from "../state/types.js";
 import { buffer } from "../utils.js";
-import { Repository } from "../vscode.git/types.js";
+import { GitExtension, Repository } from "../store/vscode.git/types.js";
 import { gitCheckout } from "./commands/gitCheckout.js";
 import { gitLogCommits } from "./commands/gitLogCommits.js";
+import { gitLogHeadHash } from "./commands/gitLogHeadHash.js";
 import { gitResetHead } from "./commands/gitResetHead.js";
 import { gitShowRefFile } from "./commands/gitShowRefFile.js";
 import { gitShowRefs } from "./commands/gitShowRefs.js";
 import { gitStashList } from "./commands/gitStashList.js";
 import { gitStatus } from "./commands/gitStatus.js";
-import { gitLogHeadHash } from "./commands/gitLogHeadHash.js";
 import { GitCommand } from "./commands/utils.js";
+import { ensureLogger } from "../logger.js";
 
 export class GitRepository {
-	private repository: Repository;
-
 	constructor(
-		private state: RuntimeState,
-		repository: Repository | string,
-	) {
-		const repo =
-			typeof repository !== "string"
-				? repository
-				: state.repository[repository];
-
-		if (!repo) {
-			throw new Error("Invalid repository path");
-		}
-		this.repository = repo;
-	}
+		private repository: Repository,
+		private extension: GitExtension,
+	) {}
 
 	public async getCommits(): Promise<{
 		stashes: GitRef[];
@@ -87,16 +75,16 @@ export class GitRepository {
 	}
 
 	private execGit = <T>(cmd: GitCommand<T>): T => {
-		const api = this.state.extension.getAPI(1);
+		const api = this.extension.getAPI(1);
 		const repository = this.repository;
 
-		this.state.logger.appendLine(`[git] ${api.git.path} ${cmd.args.join(" ")}`);
+		ensureLogger().appendLine(`[git] ${api.git.path} ${cmd.args.join(" ")}`);
 
 		const child = spawn(api.git.path, cmd.args, {
 			cwd: repository.rootUri.fsPath,
 		});
 
-		child.on("error", (e) => handleError(this.state)(e));
+		child.on("error", (e) => handleError(e));
 
 		return cmd.parse(
 			child.stdout,

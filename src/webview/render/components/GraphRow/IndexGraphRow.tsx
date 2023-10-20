@@ -8,12 +8,12 @@ export const IndexGraphRow = ({
 	tags,
 	style,
 }: UseGraphRowOptions<GitIndex> & { style: any }) => {
-	const { onClick, className } = useGraphRow({ node, tags });
+	const { open, ...props } = useGraphRow({ node, tags });
 
 	return (
 		<div style={style}>
-			<div onClick={onClick} className={className}>
-				<div>{renderRails(node)}</div>
+			<div {...props}>
+				<div className="h-[26px]">{renderRails(node)}</div>
 				<div>
 					<div className="flex gap-2 items-center">
 						<p className="inline-block whitespace-nowrap text-ellipsis overflow-hidden leading-tight flex-grow-1">
@@ -22,7 +22,7 @@ export const IndexGraphRow = ({
 					</div>
 				</div>
 			</div>
-			{/* {expandedCommit === "index" && <IndexInspector node={node} />} */}
+			{open && <IndexInspector node={node} />}
 		</div>
 	);
 };

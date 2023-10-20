@@ -8,8 +8,8 @@ export interface WebToRuntimeBridge {
 	logError(content: string): Promise<void>;
 
 	getState(): Promise<GraphState>;
-	expandCommit: (value?: string) => Promise<void>;
-	scroll: (value: number) => Promise<void>;
+	expandCommit(value?: string): Promise<void>;
+	scroll(value: number): Promise<void>;
 }
 
 export type GraphData = {

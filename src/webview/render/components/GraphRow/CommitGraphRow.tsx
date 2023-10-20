@@ -1,6 +1,7 @@
 import { GitCommit } from "../../../../universal/git.js";
 import { bridge } from "../../../bridge.js";
 import { useBridge } from "../../useBridge/useBridge.js";
+import { CommitInspector } from "../inspectors/CommitInspector.js";
 import { CommitTags } from "./CommitTags.js";
 import { renderRails } from "./renderRails.js";
 import { UseGraphRowOptions, useGraphRow } from "./useGraphRow.js";
@@ -11,7 +12,7 @@ export const CommitGraphRow = ({
 	style,
 }: UseGraphRowOptions<GitCommit> & { style: any }) => {
 	const { data } = useBridge(bridge.getGraphData, []);
-	const props = useGraphRow({ node, tags });
+	const { open, ...props } = useGraphRow({ node, tags });
 
 	return (
 		<div style={style}>
@@ -24,7 +25,7 @@ export const CommitGraphRow = ({
 					ref: node.commit.hash,
 				})}
 			>
-				<div>{renderRails(node)}</div>
+				<div className="h-[26px]">{renderRails(node)}</div>
 				<div>
 					<div className="flex gap-2 items-center">
 						{tags && <CommitTags tags={tags} />}
@@ -43,7 +44,7 @@ export const CommitGraphRow = ({
 					{node.commit.hash.slice(0, 10)}
 				</div>
 			</div>
-			{/* {expandedCommit === node.commit.hash && <CommitInspector node={node} />} */}
+			{open && <CommitInspector node={node} />}
 		</div>
 	);
 };

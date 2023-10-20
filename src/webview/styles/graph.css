@@ -18,6 +18,8 @@
 		& .graph-row {
 			@apply graph-grid;
 			cursor: pointer;
+			height: 26px;
+			align-items: center;
 
 			&:hover {
 				background-color: var(--vscode-list-hoverBackground);

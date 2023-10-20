@@ -1,19 +1,21 @@
-import { RuntimeStore } from "./types";
+import { RuntimeStore } from ".";
+import { ensureLogger } from "../logger";
 
 export const watchGit = (store: RuntimeStore) => {
 	const api = store.getState().extension.getAPI(1);
 
 	for (const r of api.repositories) {
-		store.dispatch({ type: "SET_REPOSITORY", repository: r });
+		store.setRepository(r);
 	}
 
-	api.onDidChangeState((e) => {
+	api.onDidChangeState((a) => {
+		ensureLogger().appendLine("[vscode.git] State changed");
 		// TODO: handle git state changes
 	});
 	api.onDidOpenRepository((r) => {
-		store.dispatch({ type: "SET_REPOSITORY", repository: r });
+		store.setRepository(r);
 	});
 	api.onDidCloseRepository((e) => {
-		store.dispatch({ type: "REMOVE_REPOSITORY", rootUri: e.rootUri });
+		store.removeRepository(e.rootUri);
 	});
 };

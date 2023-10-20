@@ -8,13 +8,23 @@ export const handleRequest = async <TBridge>(
 	requestHandler: TBridge,
 	request: BridgeRequest<keyof TBridge, BridgeParameters<TBridge>>,
 ): Promise<BridgeResponse<BridgeReturnType<TBridge>>> => {
-	const result = await (requestHandler[request.method] as any)(...request.args);
+	try {
+		const result = await (requestHandler[request.method] as any)(
+			...request.args,
+		);
 
-	return {
-		type: "response",
-		id: request.id,
-		result,
-	};
+		return {
+			type: "response",
+			id: request.id,
+			result,
+		};
+	} catch (error) {
+		return {
+			type: "error",
+			id: request.id,
+			error,
+		};
+	}
 };
 
 /**
@@ -63,11 +73,8 @@ export const createClientProxy = <TBridge extends object>(
 			if (listeners.has(response.id)) {
 				const [resolve, reject] = listeners.get(response.id)!;
 
-				if ("result" in response) {
-					resolve(response.result as never);
-				} else {
-					reject(response.error);
-				}
+				if (response.type === "response") resolve(response.result as never);
+				if (response.type === "error") reject(response.error);
 			} else {
 				throw new Error(`Missing listener for id: ${response.id}`);
 			}
@@ -83,7 +90,10 @@ export const isBridgeRequest = <TBridge>(
 export const isBridgeResponse = <TBridge>(
 	x: unknown,
 ): x is BridgeResponse<BridgeReturnType<TBridge>> =>
-	!!x && typeof x === "object" && "type" in x && x.type === "response";
+	!!x &&
+	typeof x === "object" &&
+	"type" in x &&
+	(x.type === "response" || x.type === "error");
 
 export type BridgeRequest<Tkey, T extends any[]> = {
 	type: "request";
@@ -92,10 +102,13 @@ export type BridgeRequest<Tkey, T extends any[]> = {
 	args: T;
 };
 
-export type BridgeResponse<T> = {
-	type: "response";
-	id: string;
-} & ({ result: T } | { error: unknown });
+export type BridgeResponse<T> =
+	| { type: "response"; id: string; result: T }
+	| {
+			type: "error";
+			id: string;
+			error: unknown;
+	  };
 
 type Listener = [resolve: (x: never) => void, reject: (e: unknown) => void];
 

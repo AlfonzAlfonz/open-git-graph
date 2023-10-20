@@ -1,24 +1,19 @@
-import { errorToString } from "../universal/errorToString.js";
-import { Lazy, RuntimeState, RuntimeStore } from "./state/types.js";
 import * as vscode from "vscode";
+import { errorToString } from "../universal/errorToString.js";
+import { ensureLogger } from "./logger.js";
 
-export const handleError = (state: RuntimeState) => (e: unknown) => {
+export const handleError = (e: unknown) => {
 	if (e instanceof Error) {
 		vscode.window.showErrorMessage(e.message);
 	}
-	state.logger.append(errorToString(e));
+	ensureLogger().append(errorToString(e));
 };
 
 export const catchErrors =
-	<TArgs extends any[], TReturn>(
-		state: RuntimeState | RuntimeStore | Lazy<RuntimeStore>,
-		cb: (...args: TArgs) => TReturn,
-	) =>
+	<TArgs extends any[], TReturn>(cb: (...args: TArgs) => TReturn) =>
 	(...args: TArgs) => {
 		const _catch = (e: unknown) => {
-			state = "ensure" in state ? state.ensure() : state;
-			state = "getState" in state ? state.getState() : state;
-			handleError(state)(e);
+			handleError(e);
 		};
 
 		try {
