@@ -11,8 +11,10 @@ import { useBridge } from "../../useBridge/useBridge";
 import { CommitGraphRow } from "../GraphRow/CommitGraphRow";
 import { IndexGraphRow } from "../GraphRow/IndexGraphRow";
 import { HEIGHT } from "../GraphRow/renderRails";
+import debounce from "lodash-es/debounce";
 
 export const GraphTable = () => {
+	const initScrollRef = useRef(false);
 	const listRef = useRef<VariableSizeList>(null!);
 
 	const state = useBridge(bridge.getState, []);
@@ -25,15 +27,24 @@ export const GraphTable = () => {
 	);
 
 	const tags = useMemo(
-		() =>
-			data &&
-			Object.fromEntries(toGraphTags(groupBy(data.refs, (r) => r.hash))),
+		() => data && new Map(toGraphTags(groupBy(data.refs, (r) => r.hash))),
 		[data],
 	);
 
 	const ref = useRef<HTMLDivElement>(null);
 
 	useEffect(() => listRef.current?.resetAfterIndex(0), [expandedCommit]);
+
+	useEffect(() => {
+		if (
+			listRef.current &&
+			!initScrollRef.current &&
+			state.data?.scroll !== undefined
+		) {
+			listRef.current.scrollTo(state.data.scroll);
+			initScrollRef.current = true;
+		}
+	});
 
 	return (
 		<div id="graph" className={"h-[100vh]"} ref={ref}>
@@ -58,51 +69,58 @@ export const GraphTable = () => {
 					</Panel>
 				</PanelGroup>
 			</div>
-			{graph && (
-				<AutoSizer>
-					{({ height, width }) => (
-						<VariableSizeList
-							ref={listRef}
-							itemSize={(i) => {
-								const node = graph!.nodes[i]!;
-								if ("hash" in node.commit) {
-									return expandedCommit === node.commit.hash
-										? HEIGHT + 200
-										: HEIGHT;
-								} else {
-									return expandedCommit === "index" ? HEIGHT + 200 : HEIGHT;
-								}
-							}}
-							width={width}
-							height={height}
-							itemData={{ nodes: graph!.nodes, tags: tags.data }}
-							itemCount={graph!.nodes.length}
-							children={Row}
-						/>
-					)}
-				</AutoSizer>
-			)}
+			<AutoSizer>
+				{({ height, width }) => (
+					<VariableSizeList
+						ref={listRef}
+						itemSize={(i) => {
+							const node = graph?.nodes[i]!;
+							if ("hash" in node.commit) {
+								return expandedCommit === node.commit.hash
+									? HEIGHT + 200
+									: HEIGHT;
+							} else {
+								return expandedCommit === "index" ? HEIGHT + 200 : HEIGHT;
+							}
+						}}
+						width={width}
+						height={height}
+						itemData={{ nodes: graph?.nodes ?? [], tags }}
+						itemCount={graph?.nodes.length ?? 0}
+						children={Row}
+						onScroll={({ scrollOffset }) => {
+							if (initScrollRef.current) {
+								sendDebouncedScroll(scrollOffset);
+								console.log("actual", scrollOffset);
+							}
+						}}
+					/>
+				)}
+			</AutoSizer>
 		</div>
 	);
 };
 
 interface RowData {
 	nodes: GraphNode[];
-	tags?: Record<string, GraphTag[]>;
+	tags?: Map<string, GraphTag[]>;
 }
 
 const Row = ({ data, index, style }: ListChildComponentProps<RowData>) => {
 	const node = data.nodes[index]!;
-	const tags =
-		"hash" in node.commit ? data.tags?.[node.commit.hash] : undefined;
 
 	return "hash" in node.commit ? (
 		<CommitGraphRow
 			node={node as GraphNode<GitCommit>}
-			tags={tags}
+			tags={data.tags?.get(node.commit.hash)}
 			style={style}
 		/>
 	) : (
 		<IndexGraphRow node={node as GraphNode<GitIndex>} style={style} />
 	);
 };
+
+const sendDebouncedScroll = debounce((scroll: number) => {
+	bridge.scroll(scroll);
+	console.log("debounced", scroll);
+}, 100);

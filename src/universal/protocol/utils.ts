@@ -7,6 +7,7 @@
 export const handleRequest = async <TBridge>(
 	requestHandler: TBridge,
 	request: BridgeRequest<keyof TBridge, BridgeParameters<TBridge>>,
+	onReject: (e: unknown) => unknown,
 ): Promise<BridgeResponse<BridgeReturnType<TBridge>>> => {
 	try {
 		const result = await (requestHandler[request.method] as any)(
@@ -19,6 +20,7 @@ export const handleRequest = async <TBridge>(
 			result,
 		};
 	} catch (error) {
+		onReject(error);
 		return {
 			type: "error",
 			id: request.id,

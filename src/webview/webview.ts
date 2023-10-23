@@ -20,7 +20,9 @@ window.addEventListener("message", (e) => {
 
 	// handle runtimeToWeb requests
 	if (isBridgeRequest<RuntimeToWebBridge>(e.data)) {
-		vscodeApi.postMessage(handleRequest(requestHandler, e.data));
+		vscodeApi.postMessage(
+			handleRequest(requestHandler, e.data, (e) => console.error(e)),
+		);
 	}
 });
 

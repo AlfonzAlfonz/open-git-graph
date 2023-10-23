@@ -9,7 +9,7 @@ import {
 	isBridgeRequest,
 	isBridgeResponse,
 } from "../../../universal/protocol/utils";
-import { errors } from "../../handleError";
+import { errors, handleError } from "../../handleError";
 import { Repository } from "../../store/vscode.git/types";
 import { command } from "../../utils";
 import { WebviewRequestHandler } from "./requestHandler";
@@ -60,7 +60,11 @@ export const graphCommand = command({
 					`[run] Received request ${data.method} id: ${data.id}`,
 				);
 				panel.webview.postMessage(
-					await handleRequest(new WebviewRequestHandler(store, panel), data),
+					await handleRequest(
+						new WebviewRequestHandler(store, panel),
+						data,
+						handleError,
+					),
 				);
 			}
 		});

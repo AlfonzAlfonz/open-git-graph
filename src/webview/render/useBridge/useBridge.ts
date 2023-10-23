@@ -1,7 +1,26 @@
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import { useLayoutEffect, useRef } from "react";
+import { persistQueryClient } from "@tanstack/react-query-persist-client";
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
+import { vscodeStorage } from "../../vscodeApi";
 
-export const queryClient = new QueryClient();
+export const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			staleTime: 10000,
+			gcTime: 10000,
+		},
+	},
+});
+
+const localStoragePersister = createSyncStoragePersister({
+	storage: vscodeStorage,
+});
+
+persistQueryClient({
+	queryClient,
+	persister: localStoragePersister,
+});
 
 export const useBridge = <TArgs extends unknown[], TResult>(
 	fetch: (...args: TArgs) => Promise<TResult>,

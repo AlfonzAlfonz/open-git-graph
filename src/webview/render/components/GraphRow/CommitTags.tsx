@@ -1,6 +1,6 @@
 import { bridge } from "../../../bridge.js";
 import { GraphTag } from "../../../state/toGraphTags.js";
-import { useBridge } from "../../useBridge/useBridge.js";
+import { invalidate, useBridge } from "../../useBridge/useBridge.js";
 
 export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 	const { data } = useBridge(bridge.getGraphData, []);
@@ -13,8 +13,9 @@ export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 						<div
 							onDoubleClick={
 								r.type === "branch"
-									? () => {
-											bridge.checkout(r.label);
+									? async () => {
+											await bridge.checkout(r.label);
+											await invalidate(bridge.getGraphData, []);
 									  }
 									: undefined
 							}

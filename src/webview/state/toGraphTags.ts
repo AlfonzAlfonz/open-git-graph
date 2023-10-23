@@ -37,6 +37,6 @@ export function* toGraphTags(refs: Iterable<[string, GitRef[]]>) {
 			}
 		}
 
-		yield [k, tags];
+		yield [k, tags] as [string, GraphTag[]];
 	}
 }

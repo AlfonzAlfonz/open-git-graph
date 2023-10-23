@@ -2,7 +2,9 @@ import { GitCommit, GitFileMode } from "../../../universal/git.js";
 import { toLineGenerator } from "../toLineGenerator.js";
 import { GitCommand, commitFormat, parseCommitFormat } from "./utils.js";
 
-export const gitLogCommits = (): GitCommand<AsyncIterable<GitCommit>> => {
+export const gitLogCommits = (
+	logFiles: boolean = true,
+): GitCommand<AsyncIterable<GitCommit>> => {
 	return {
 		args: [
 			"-c",
@@ -14,7 +16,7 @@ export const gitLogCommits = (): GitCommand<AsyncIterable<GitCommit>> => {
 			"--date-order",
 			`--format=${commitFormat}`,
 			"-m",
-			"--raw",
+			...(logFiles ? ["--raw"] : []),
 		],
 		parse: async function* (stdout) {
 			const lines = toLineGenerator(stdout);
@@ -25,7 +27,7 @@ export const gitLogCommits = (): GitCommand<AsyncIterable<GitCommit>> => {
 					return;
 				}
 
-				if (value === "") {
+				if (logFiles && value === "") {
 					throw new Error(
 						"invalid format, commit line expected, empty line instead",
 					);
@@ -36,23 +38,25 @@ export const gitLogCommits = (): GitCommand<AsyncIterable<GitCommit>> => {
 				({ value, done } = await lines.next());
 
 				const files = [];
-				if (value === "" && !done) {
-					while (true) {
-						({ value, done } = await lines.next());
-						if (done || !value!.startsWith(":")) break;
+				if (logFiles) {
+					if (value === "" && !done) {
+						while (true) {
+							({ value, done } = await lines.next());
+							if (done || !value!.startsWith(":")) break;
 
-						type SplittedCommitFile = [
-							string,
-							string,
-							string,
-							string,
-							GitFileMode,
-							string,
-						];
-						const [, , , , mode, path] = value!.split(
-							/\s+/,
-						) as SplittedCommitFile;
-						files.push({ mode, path });
+							type SplittedCommitFile = [
+								string,
+								string,
+								string,
+								string,
+								GitFileMode,
+								string,
+							];
+							const [, , , , mode, path] = value!.split(
+								/\s+/,
+							) as SplittedCommitFile;
+							files.push({ mode, path });
+						}
 					}
 				}
 

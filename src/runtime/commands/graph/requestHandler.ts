@@ -18,7 +18,6 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 		const dispatchCommits = async () => {
 			const log = await git.getCommits();
 			const commits = await buffer(log.commits);
-
 			return { commits };
 		};
 
