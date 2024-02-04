@@ -1,19 +1,19 @@
 import * as vscode from "vscode";
 import {
-	RuntimeToWebBridge,
-	WebToRuntimeBridge,
-} from "../../../universal/protocol";
-import {
 	createClientProxy,
 	handleRequest,
 	isBridgeRequest,
 	isBridgeResponse,
-} from "../../../universal/protocol/utils";
+} from "../../../universal/bridge";
+import {
+	RuntimeToWebBridge,
+	WebToRuntimeBridge,
+} from "../../../universal/protocol";
 import { errors, handleError } from "../../handleError";
+import { ensureLogger } from "../../logger";
 import { Repository } from "../../store/vscode.git/types";
 import { command } from "../../utils";
 import { WebviewRequestHandler } from "./requestHandler";
-import { ensureLogger } from "../../logger";
 
 export const graphCommand = command({
 	id: "open-git-graph.graph",

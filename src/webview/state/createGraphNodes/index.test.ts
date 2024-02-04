@@ -1,5 +1,5 @@
-import { GitCommit, GitIndex } from "../../../universal/git.js";
-import { GraphNode, createGraphNodes } from "./index.js";
+import { GitCommit, GitIndex } from "../../../universal/git";
+import { GraphNode, createGraphNodes } from "./index";
 
 const commit = (
 	hash: string,

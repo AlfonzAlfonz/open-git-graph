@@ -1,7 +1,7 @@
-import { GitIndex } from "../../../../universal/git.js";
-import { IndexInspector } from "../inspectors/IndexInspector.js";
-import { renderRails } from "./renderRails.js";
-import { UseGraphRowOptions, useGraphRow } from "./useGraphRow.js";
+import { GitIndex } from "../../../../universal/git";
+import { IndexInspector } from "../inspectors/IndexInspector";
+import { renderRails } from "./renderRails";
+import { UseGraphRowOptions, useGraphRow } from "./useGraphRow";
 
 export const IndexGraphRow = ({
 	node,

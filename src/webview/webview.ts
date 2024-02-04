@@ -1,16 +1,16 @@
 import {
-	RuntimeToWebBridge,
-	WebToRuntimeBridge,
-} from "../universal/protocol/index.js";
-import {
 	handleRequest,
 	isBridgeRequest,
 	isBridgeResponse,
-} from "../universal/protocol/utils.js";
-import { handleResponse } from "./bridge.js";
-import { render } from "./render/index.js";
-import { requestHandler } from "./requestHandler.js";
-import { vscodeApi } from "./vscodeApi.js";
+} from "../universal/bridge";
+import {
+	RuntimeToWebBridge,
+	WebToRuntimeBridge,
+} from "../universal/protocol/index";
+import { handleResponse } from "./bridge";
+import { render } from "./render/index";
+import { requestHandler } from "./requestHandler";
+import { vscodeApi } from "./vscodeApi";
 
 window.addEventListener("message", (e) => {
 	// handle responses from previous webToRuntime requests

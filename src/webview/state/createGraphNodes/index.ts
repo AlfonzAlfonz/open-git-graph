@@ -1,5 +1,5 @@
-import { GitCommit, GitIndex } from "../../../universal/git.js";
-import { RailId, Rails, RailsState } from "./Rails.js";
+import { GitCommit, GitIndex } from "../../../universal/git";
+import { RailId, Rails, RailsState } from "./Rails";
 
 /**
  * Structure representing node ordered by date descending.

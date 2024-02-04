@@ -1,5 +1,5 @@
-import { GitCommit, GitIndex } from "../../../universal/git.js";
-import { GraphNode } from "./index.js";
+import { GitCommit, GitIndex } from "../../../universal/git";
+import { GraphNode } from "./index";
 
 export type RailsState = {
 	rails: Rail[];

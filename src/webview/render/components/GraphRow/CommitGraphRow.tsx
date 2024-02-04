@@ -1,10 +1,10 @@
-import { GitCommit } from "../../../../universal/git.js";
-import { bridge } from "../../../bridge.js";
-import { useBridge } from "../../useBridge/useBridge.js";
-import { CommitInspector } from "../inspectors/CommitInspector.js";
-import { CommitTags } from "./CommitTags.js";
-import { renderRails } from "./renderRails.js";
-import { UseGraphRowOptions, useGraphRow } from "./useGraphRow.js";
+import { GitCommit } from "../../../../universal/git";
+import { bridge } from "../../../bridge";
+import { useBridge } from "../../useBridge/useBridge";
+import { CommitInspector } from "../inspectors/CommitInspector";
+import { CommitTags } from "./CommitTags";
+import { renderRails } from "./renderRails";
+import { UseGraphRowOptions, useGraphRow } from "./useGraphRow";
 
 export const CommitGraphRow = ({
 	node,

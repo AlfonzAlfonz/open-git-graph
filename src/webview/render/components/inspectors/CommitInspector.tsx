@@ -1,7 +1,7 @@
-import { GitCommit } from "../../../../universal/git.js";
-import { GraphNode } from "../../../state/createGraphNodes/index.js";
-import { renderEmptyRails } from "../GraphRow/renderRails.js";
-import { CommitFileList } from "./CommitFileList.js";
+import { GitCommit } from "../../../../universal/git";
+import { GraphNode } from "../../../state/createGraphNodes/index";
+import { renderEmptyRails } from "../GraphRow/renderRails";
+import { CommitFileList } from "./CommitFileList";
 
 export const CommitInspector = ({ node }: { node: GraphNode<GitCommit> }) => {
 	const { commit } = node;

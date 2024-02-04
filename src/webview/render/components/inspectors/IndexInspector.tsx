@@ -1,7 +1,7 @@
-import { GitIndex } from "../../../../universal/git.js";
-import { GraphNode } from "../../../state/createGraphNodes/index.js";
-import { renderEmptyRails } from "../GraphRow/renderRails.js";
-import { CommitFileList } from "./CommitFileList.js";
+import { GitIndex } from "../../../../universal/git";
+import { GraphNode } from "../../../state/createGraphNodes/index";
+import { renderEmptyRails } from "../GraphRow/renderRails";
+import { CommitFileList } from "./CommitFileList";
 
 export const IndexInspector = ({ node }: { node: GraphNode<GitIndex> }) => {
 	return (

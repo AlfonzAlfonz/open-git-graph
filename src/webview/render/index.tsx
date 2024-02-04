@@ -1,11 +1,11 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
-import { errorToString } from "../../universal/errorToString.js";
-import { bridge } from "../bridge.js";
-import { ErrorBoundary } from "./ErrorBoundary.js";
-import { GraphTable } from "./components/GraphTable/index.js";
-import { LoadingModal } from "./components/LoadingModal.js";
-import { queryClient, useBridge } from "./useBridge/useBridge.js";
+import { errorToString } from "../../universal/errorToString";
+import { bridge } from "../bridge";
+import { ErrorBoundary } from "./ErrorBoundary";
+import { GraphTable } from "./components/GraphTable/index";
+import { LoadingModal } from "./components/LoadingModal";
+import { queryClient } from "./useBridge/useBridge";
 
 export const render = () => {
 	createRoot(document.querySelector("#root")!).render(
