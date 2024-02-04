@@ -91,7 +91,6 @@ export const GraphTable = () => {
 						onScroll={({ scrollOffset }) => {
 							if (initScrollRef.current) {
 								sendDebouncedScroll(scrollOffset);
-								console.log("actual", scrollOffset);
 							}
 						}}
 					/>
@@ -122,5 +121,4 @@ const Row = ({ data, index, style }: ListChildComponentProps<RowData>) => {
 
 const sendDebouncedScroll = debounce((scroll: number) => {
 	bridge.scroll(scroll);
-	console.log("debounced", scroll);
 }, 100);

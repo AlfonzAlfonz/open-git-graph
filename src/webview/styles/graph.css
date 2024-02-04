@@ -59,19 +59,6 @@
 			}
 		}
 
-		& td {
-			@apply pl-2 pr-1;
-
-			border: none;
-			line-height: 0;
-
-			&:first-child {
-				margin: 0;
-				padding: 0;
-				overflow: hidden;
-			}
-		}
-
 		& svg {
 			overflow: hidden;
 			margin: 0;

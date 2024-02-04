@@ -4,6 +4,7 @@ import { errorToString } from "../../universal/errorToString.js";
 import { bridge } from "../bridge.js";
 import { ErrorBoundary } from "./ErrorBoundary.js";
 import { GraphTable } from "./components/GraphTable/index.js";
+import { LoadingModal } from "./components/LoadingModal.js";
 import { queryClient, useBridge } from "./useBridge/useBridge.js";
 
 export const render = () => {
@@ -15,8 +16,6 @@ export const render = () => {
 };
 
 const App = () => {
-	const { data } = useBridge(bridge.getState, []);
-
 	return (
 		<ErrorBoundary
 			handle={async (e, errorInfo) => {
@@ -30,7 +29,9 @@ const App = () => {
 				</div>
 			}
 		>
-			<GraphTable />
+			<LoadingModal>
+				<GraphTable />
+			</LoadingModal>
 		</ErrorBoundary>
 	);
 };

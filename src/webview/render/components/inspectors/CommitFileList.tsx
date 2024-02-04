@@ -1,5 +1,6 @@
 import { GitCommitFile, GitFileMode } from "../../../../universal/git";
 import { bridge } from "../../../bridge";
+import { useBridgeMutation } from "../../useBridge/useBridgeMutation";
 
 export const CommitFileList = ({
 	diff,
@@ -8,12 +9,14 @@ export const CommitFileList = ({
 	diff: { a?: string; b?: string };
 	files: GitCommitFile[];
 }) => {
+	const showDiff = useBridgeMutation(bridge.showDiff);
+
 	return (
 		<ul className="files list-none">
 			{files.map((f, i) => (
 				<li
 					key={f.path}
-					onClick={() => bridge.showDiff(f.path, diff.a, diff.b)}
+					onClick={() => showDiff.mutateAsync([f.path, diff.a, diff.b])}
 					className={`flex gap-2 py-1 ${
 						fileModeColors[f.mode] ?? "white"
 					} cursor-pointer`}

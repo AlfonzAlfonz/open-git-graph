@@ -1,9 +1,11 @@
 import { bridge } from "../../../bridge.js";
 import { GraphTag } from "../../../state/toGraphTags.js";
 import { invalidate, useBridge } from "../../useBridge/useBridge.js";
+import { useBridgeMutation } from "../../useBridge/useBridgeMutation.js";
 
 export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 	const { data } = useBridge(bridge.getGraphData, []);
+	const checkout = useBridgeMutation(bridge.checkout);
 
 	return (
 		<>
@@ -14,7 +16,7 @@ export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 							onDoubleClick={
 								r.type === "branch"
 									? async () => {
-											await bridge.checkout(r.label);
+											await checkout.mutateAsync([r.label]);
 											await invalidate(bridge.getGraphData, []);
 									  }
 									: undefined
