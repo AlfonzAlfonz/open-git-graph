@@ -1,23 +1,24 @@
-import { spawn } from "node:child_process";
-import { GitCommit, GitIndex, GitRef } from "../../universal/git.js";
-import { handleError } from "../handleError.js";
-import { buffer } from "../utils.js";
-import { GitExtension, Repository } from "../store/vscode.git/types.js";
-import { gitCheckout } from "./commands/gitCheckout.js";
-import { gitLogCommits } from "./commands/gitLogCommits.js";
-import { gitLogHeadHash } from "./commands/gitLogHeadHash.js";
-import { gitResetHead } from "./commands/gitResetHead.js";
-import { gitShowRefFile } from "./commands/gitShowRefFile.js";
-import { gitShowRefs } from "./commands/gitShowRefs.js";
-import { gitStashList } from "./commands/gitStashList.js";
-import { gitStatus } from "./commands/gitStatus.js";
-import { GitCommand } from "./commands/utils.js";
-import { ensureLogger } from "../logger.js";
+import { OutputChannel } from "vscode";
+import { GitCommit, GitIndex, GitRef } from "../../universal/git";
+import { handleError } from "../handleError";
+import { GitExtension, Repository } from "../store/vscode.git/types";
+import { buffer } from "../utils";
+import { gitCheckout } from "./commands/gitCheckout";
+import { gitLogCommits } from "./commands/gitLogCommits";
+import { gitLogHeadHash } from "./commands/gitLogHeadHash";
+import { gitResetHead } from "./commands/gitResetHead";
+import { gitShowRefFile } from "./commands/gitShowRefFile";
+import { gitShowRefs } from "./commands/gitShowRefs";
+import { gitStashList } from "./commands/gitStashList";
+import { gitStatus } from "./commands/gitStatus";
+import { GitCommand } from "./commands/utils";
+import { execGit } from "./execGit";
 
 export class GitRepository {
 	constructor(
 		private repository: Repository,
 		private extension: GitExtension,
+		private logger: OutputChannel,
 	) {}
 
 	public async getCommits(): Promise<{
@@ -78,20 +79,9 @@ export class GitRepository {
 		const api = this.extension.getAPI(1);
 		const repository = this.repository;
 
-		ensureLogger().appendLine(`[git] ${api.git.path} ${cmd.args.join(" ")}`);
+		this.logger.appendLine(`[git] ${api.git.path} ${cmd.args.join(" ")}`);
 
-		const child = spawn(api.git.path, cmd.args, {
-			cwd: repository.rootUri.fsPath,
-		});
-
-		child.on("error", (e) => handleError(e));
-
-		return cmd.parse(
-			child.stdout,
-			new Promise((resolve) => {
-				child.on("exit", (...args) => resolve(args));
-			}),
-		);
+		return execGit(cmd, api.git.path, repository.rootUri.fsPath, handleError);
 	};
 
 	private async *addStashes(

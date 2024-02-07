@@ -1,6 +1,6 @@
-import { GitRef } from "../../../universal/git.js";
-import { toLineGenerator } from "../toLineGenerator.js";
-import { GitCommand } from "./utils.js";
+import { GitRef } from "../../../universal/git";
+import { toLineGenerator } from "../toLineGenerator";
+import { GitCommand } from "./utils";
 
 export const gitShowRefs = (): GitCommand<AsyncIterable<GitRef>> => {
 	return {

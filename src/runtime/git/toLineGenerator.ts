@@ -5,9 +5,7 @@ export async function* toLineGenerator(
 	stream: Readable,
 ): AsyncGenerator<string, undefined, unknown> {
 	let queue: string[] = [];
-	let resolve = () => {
-		console.error("empty resolve");
-	};
+	let resolve: () => void;
 	let promise = new Promise<void>((r) => (resolve = r));
 	let done = false;
 

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { GitExtension, Repository } from "./vscode.git/types.js";
-import { RuntimeToWebBridge } from "../../universal/protocol/index.js";
+import { GitExtension, Repository } from "./vscode.git/types";
+import { RuntimeToWebBridge } from "../../universal/protocol/index";
 
 export type Lazy<T> = { ensure: () => T };
 

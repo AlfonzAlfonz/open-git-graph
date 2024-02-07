@@ -1,13 +1,13 @@
 import * as vscode from "vscode";
-import { ShowFileTextDocumentContentProvider } from "./ShowFileTextDocumentContentProvider.js";
-import { checkoutCommand } from "./commands/checkout.js";
-import { graphCommand } from "./commands/graph/graph.js";
-import { mergeHeadCommand } from "./commands/mergeMead.js";
-import { rebaseHeadCommand } from "./commands/rebaseHead.js";
-import { resetHeadCommand } from "./commands/resetHead.js";
-import { catchErrors } from "./handleError.js";
-import { lazyRuntimeStore } from "./store/index.js";
-import { ensureLogger } from "./logger.js";
+import { ShowFileTextDocumentContentProvider } from "./ShowFileTextDocumentContentProvider";
+import { checkoutCommand } from "./commands/checkout";
+import { graphCommand } from "./commands/graph/graph";
+import { mergeHeadCommand } from "./commands/mergeMead";
+import { rebaseHeadCommand } from "./commands/rebaseHead";
+import { resetHeadCommand } from "./commands/resetHead";
+import { catchErrors } from "./handleError";
+import { lazyRuntimeStore } from "./store/index";
+import { ensureLogger } from "./logger";
 
 export function activate(context: vscode.ExtensionContext) {
 	ensureLogger().appendLine("Activating extension");

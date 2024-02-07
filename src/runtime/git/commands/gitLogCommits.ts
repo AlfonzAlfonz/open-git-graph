@@ -1,6 +1,6 @@
-import { GitCommit, GitFileMode } from "../../../universal/git.js";
-import { toLineGenerator } from "../toLineGenerator.js";
-import { GitCommand, commitFormat, parseCommitFormat } from "./utils.js";
+import { GitCommit, GitFileMode } from "../../../universal/git";
+import { toLineGenerator } from "../toLineGenerator";
+import { GitCommand, commitFormat, parseCommitFormat } from "./utils";
 
 export const gitLogCommits = (
 	logFiles: boolean = true,

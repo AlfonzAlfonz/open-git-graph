@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid";
 import {
 	BridgeParameters,
 	BridgeRequest,
@@ -62,5 +63,4 @@ export const createClientProxy = <TBridge extends object>(
 
 type Listener = [resolve: (x: never) => void, reject: (e: unknown) => void];
 
-// TODO: use better alg to create an id
-const createGuid = () => (Math.random() * 100_000).toFixed(0);
+const createGuid = () => nanoid();

@@ -1,5 +1,5 @@
-import { errors } from "../../handleError.js";
-import { GitCommand } from "./utils.js";
+import { errors } from "../../handleError";
+import { GitCommand } from "./utils";
 
 export type GitResetMode = "soft" | "mixed" | "hard";
 

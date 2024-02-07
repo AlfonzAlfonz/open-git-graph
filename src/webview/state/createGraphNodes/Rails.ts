@@ -55,7 +55,6 @@ export class Rails {
 		}
 
 		if (commit.parents.length > 1) {
-			// log(commit.subject, commit.parents);
 			const [, ...mergedParents] = [...commit.parents];
 			for (const parent of mergedParents) {
 				if (this.hashes.has(parent)) {

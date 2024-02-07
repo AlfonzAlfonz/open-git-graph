@@ -63,7 +63,7 @@ const runtime = () => ({
 	input: "src/runtime/runtime.ts",
 	external: ["vscode"],
 	output: {
-		file: "dist/runtime.js",
+		file: "dist/runtime.cjs",
 		compact: prod,
 		format: /** @type {"cjs"} */ ("cjs"),
 	},
@@ -97,7 +97,7 @@ fs.cpSync(
 		{
 			"--input": "./src/webview/styles/index.css",
 			"--output": "./dist/output.css",
-			"--postcss": "./postcss.config.js",
+			"--postcss": "./postcss.config.cjs",
 			...(prod ? { "--minify": true } : {}),
 		},
 		path.resolve("./tailwind.config.js"),

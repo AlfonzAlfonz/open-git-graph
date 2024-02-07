@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import {
 	createClientProxy,
-	handleRequest,
+	createResponse,
 	isBridgeRequest,
 	isBridgeResponse,
 } from "../../../universal/bridge";
@@ -60,7 +60,7 @@ export const graphCommand = command({
 					`[run] Received request ${data.method} id: ${data.id}`,
 				);
 				panel.webview.postMessage(
-					await handleRequest(
+					await createResponse(
 						new WebviewRequestHandler(store, panel),
 						data,
 						handleError,

@@ -2,14 +2,18 @@
 	"name": "open-git-graph",
 	"description": "swag",
 	"version": "0.0.1",
+	"type": "module",
 	"scripts": {
 		"vscode:prepublish": "pnpm run build",
 		"build": "node build.mjs",
 		"build:prod": "node build.mjs -p",
 		"watch": "pnpm build --watch",
-		"lint": "eslint src --ext ts && prettier . -c && tsc --noEmit"
+		"lint": "eslint src --ext ts && prettier . -c && tsc --noEmit",
+		"test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+		"test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch --collectCoverage=false"
 	},
 	"devDependencies": {
+		"@jest/globals": "^29.7.0",
 		"@rollup/plugin-alias": "^5.0.0",
 		"@rollup/plugin-commonjs": "^25.0.4",
 		"@rollup/plugin-node-resolve": "^15.2.1",
@@ -22,7 +26,7 @@
 		"@types/jest": "^29.5.4",
 		"@types/lodash-es": "^4.17.10",
 		"@types/mocha": "^10.0.1",
-		"@types/node": "~20.11.16",
+		"@types/node": "^20.11.16",
 		"@types/react": "^18.2.28",
 		"@types/react-dom": "^18.2.13",
 		"@types/react-window": "^1.8.6",
@@ -39,6 +43,7 @@
 		"jest": "^29.6.4",
 		"lodash-es": "^4.17.21",
 		"mocha": "^10.2.0",
+		"nanoid": "^5.0.5",
 		"nodemon": "^3.0.1",
 		"postcss": "^8.4.29",
 		"postcss-import": "^15.1.0",
@@ -53,7 +58,9 @@
 		"ts-jest": "^29.1.1",
 		"ts-node": "^10.9.1",
 		"typescript": "^5.3.3",
-		"uuid": "^9.0.1"
+		"uuid": "^9.0.1",
+		"vscode": "npm:nop@1.0.0",
+		"zx": "^7.2.3"
 	},
 	"displayName": "Open Git Graph",
 	"engines": {
@@ -63,7 +70,7 @@
 		"Other"
 	],
 	"activationEvents": [],
-	"main": "./dist/runtime.js",
+	"main": "./dist/runtime.cjs",
 	"extensionDependencies": [
 		"vscode.git"
 	],
@@ -114,5 +121,10 @@
 				"title": "Checkout branch"
 			}
 		]
+	},
+	"pnpm": {
+		"overrides": {
+			"vscode": "npm:nop@1.0.0"
+		}
 	}
 }

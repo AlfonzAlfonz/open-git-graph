@@ -1,5 +1,5 @@
 import { buffer } from "node:stream/consumers";
-import { GitCommand } from "./utils.js";
+import { GitCommand } from "./utils";
 
 export const gitShowRefFile = (
 	ref: string,

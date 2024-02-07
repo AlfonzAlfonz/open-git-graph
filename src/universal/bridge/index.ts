@@ -1,4 +1,4 @@
 export * from "./createClientProxy";
-export * from "./handleRequest";
+export * from "./createResponse";
 export * from "./types";
 export * from "./utils";

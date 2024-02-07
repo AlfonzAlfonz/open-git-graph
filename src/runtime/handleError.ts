@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { errorToString } from "../universal/errorToString.js";
-import { ensureLogger } from "./logger.js";
+import { errorToString } from "../universal/errorToString";
+import { ensureLogger } from "./logger";
 
 export const handleError = (e: unknown) => {
 	if (e instanceof Error) {
@@ -10,10 +10,13 @@ export const handleError = (e: unknown) => {
 };
 
 export const catchErrors =
-	<TArgs extends any[], TReturn>(cb: (...args: TArgs) => TReturn) =>
+	<TArgs extends any[], TReturn>(
+		cb: (...args: TArgs) => TReturn,
+		onError: typeof handleError = handleError,
+	) =>
 	(...args: TArgs) => {
 		const _catch = (e: unknown) => {
-			handleError(e);
+			onError(e);
 		};
 
 		try {

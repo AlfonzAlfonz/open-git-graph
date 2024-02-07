@@ -1,6 +1,6 @@
-import { GitCommitFile, GitFileMode } from "../../../universal/git.js";
-import { toLineGenerator } from "../toLineGenerator.js";
-import { GitCommand } from "./utils.js";
+import { GitCommitFile, GitFileMode } from "../../../universal/git";
+import { toLineGenerator } from "../toLineGenerator";
+import { GitCommand } from "./utils";
 
 export const gitStatus = (): GitCommand<
 	AsyncIterable<[GitCommitFile | undefined, GitCommitFile | undefined]>

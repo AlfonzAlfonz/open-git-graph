@@ -1,6 +1,6 @@
-import { GitCommit } from "../../../universal/git.js";
-import { gitLogCommits } from "./gitLogCommits.js";
-import { GitCommand, commitFormat } from "./utils.js";
+import { GitCommit } from "../../../universal/git";
+import { gitLogCommits } from "./gitLogCommits";
+import { GitCommand, commitFormat } from "./utils";
 
 export const gitStashList = (): GitCommand<AsyncIterable<GitCommit>> => {
 	return {

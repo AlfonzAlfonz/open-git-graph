@@ -1,5 +1,5 @@
 import {
-	handleRequest,
+	createResponse,
 	isBridgeRequest,
 	isBridgeResponse,
 } from "../universal/bridge";
@@ -21,7 +21,7 @@ window.addEventListener("message", (e) => {
 	// handle runtimeToWeb requests
 	if (isBridgeRequest<RuntimeToWebBridge>(e.data)) {
 		vscodeApi.postMessage(
-			handleRequest(requestHandler, e.data, (e) => console.error(e)),
+			createResponse(requestHandler, e.data, (e) => console.error(e)),
 		);
 	}
 });
