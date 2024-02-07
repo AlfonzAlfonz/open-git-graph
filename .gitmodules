@@ -1,9 +1,9 @@
 [submodule "test/fixtures/simple-history"]
 	path = test/fixtures/simple-history
-	url = git@github.com:AlfonzAlfonz/ogg-simple-history.git
+	url = https://github.com/AlfonzAlfonz/ogg-simple-history.git
 [submodule "test/fixtures/linear-history"]
 	path = test/fixtures/linear-history
-	url = git@github.com:AlfonzAlfonz/ogg-linear-history.git
+	url = https://github.com/AlfonzAlfonz/ogg-linear-history.git
 [submodule "test/fixtures/merge-history"]
 	path = test/fixtures/merge-history
-	url = git@github.com:AlfonzAlfonz/ogg-merge-history.git
+	url = https://github.com/AlfonzAlfonz/ogg-merge-history.git
