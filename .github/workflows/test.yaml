@@ -1,0 +1,53 @@
+name: Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: pnpm/action-setup@0609f0983b7a228f052f81ef4c3d6510cae254ad
+      with:
+        version: 8.14.1
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+        cache: 'pnpm'
+    - run: pnpm install
+    - run: pnpm build
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        submodules: true
+    - uses: pnpm/action-setup@0609f0983b7a228f052f81ef4c3d6510cae254ad
+      with:
+        version: 8.14.1
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+        cache: 'pnpm'
+    - run: git submodule update --init --recursive
+    - run: pnpm install
+    - run: pnpm test
+  check-types:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: pnpm/action-setup@0609f0983b7a228f052f81ef4c3d6510cae254ad
+      with:
+        version: 8.14.1
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+        cache: 'pnpm'
+    - run: pnpm install
+    - run: pnpm tsc --noEmit

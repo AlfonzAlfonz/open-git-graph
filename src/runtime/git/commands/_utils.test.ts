@@ -1,12 +1,13 @@
 import { $ } from "zx";
 import { getFixtureRepoPath } from "../../../../test/_utils.test";
+import { fs } from "zx";
 
 export const setupRepoFixture = async (
 	repo: string,
 	branch: string = "main",
 ) => {
 	$.cwd = getFixtureRepoPath(repo);
-	const gitPath = (await $`which git`).stdout.trim();
+	const gitPath = "git";
 
 	await $`git switch --force-create ${branch} ${"origin/" + branch}`;
 
