@@ -1,6 +1,6 @@
-import { GitCommitFile, GitFileMode } from "../../../../universal/git";
+import { GitCommitFile, GitFileMode } from "../../../universal/git";
 import { bridge } from "../../../bridge";
-import { useBridgeMutation } from "../../useBridge/useBridgeMutation";
+import { useBridgeMutation } from "../useBridge/useBridgeMutation";
 
 export const CommitFileList = ({
 	diff,

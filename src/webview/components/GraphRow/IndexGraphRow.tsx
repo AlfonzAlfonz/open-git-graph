@@ -1,4 +1,4 @@
-import { GitIndex } from "../../../../universal/git";
+import { GitIndex } from "../../../universal/git";
 import { IndexInspector } from "../inspectors/IndexInspector";
 import { renderRails } from "./renderRails";
 import { UseGraphRowOptions, useGraphRow } from "./useGraphRow";

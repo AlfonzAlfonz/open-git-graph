@@ -1,5 +1,5 @@
-import { GitIndex } from "../../../../universal/git";
-import { GraphNode } from "../../../state/createGraphNodes/index";
+import { GitIndex } from "../../../universal/git";
+import { GraphNode } from "../../state/createGraphNodes/index";
 import { renderEmptyRails } from "../GraphRow/renderRails";
 import { CommitFileList } from "./CommitFileList";
 

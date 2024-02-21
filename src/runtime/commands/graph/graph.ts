@@ -1,16 +1,15 @@
 import * as vscode from "vscode";
 import {
-	createClientProxy,
-	createResponse,
-	isBridgeRequest,
-	isBridgeResponse,
+  createClientProxy,
+  createResponse,
+  isBridgeRequest,
+  isBridgeResponse,
 } from "../../../universal/bridge";
 import {
-	RuntimeToWebBridge,
-	WebToRuntimeBridge,
+  RuntimeToWebBridge,
+  WebToRuntimeBridge,
 } from "../../../universal/protocol";
 import { errors, handleError } from "../../handleError";
-import { ensureLogger } from "../../logger";
 import { Repository } from "../../store/vscode.git/types";
 import { command } from "../../utils";
 import { WebviewRequestHandler } from "./requestHandler";
@@ -56,9 +55,9 @@ export const graphCommand = command({
 
 			// handle webToRuntime requests
 			if (isBridgeRequest<WebToRuntimeBridge>(data)) {
-				ensureLogger().appendLine(
-					`[run] Received request ${data.method} id: ${data.id}`,
-				);
+				// ensureLogger().appendLine(
+				// 	`[run] Received request ${data.method} id: ${data.id}`,
+				// );
 				panel.webview.postMessage(
 					await createResponse(
 						new WebviewRequestHandler(store, panel),
@@ -77,7 +76,8 @@ export const graphCommand = command({
 	},
 });
 
-const webview = `WEBVIEW_HTML`; // Value is replaced at build time
+declare const WEBVIEW_HTML: string;
+const webview = WEBVIEW_HTML; // Value is replaced at build time
 
 export const selectRepo = async (repos: Record<string, Repository>) => {
 	const keys = Object.keys(repos);

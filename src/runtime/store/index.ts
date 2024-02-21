@@ -1,11 +1,10 @@
 import * as vscode from "vscode";
 import { RuntimeToWebBridge } from "../../universal/protocol/index";
 import { GitRepository } from "../git/GitRepository";
+import { Lazy, RuntimeState } from "./types";
 import { ensureGitExtension } from "./vscode.git/index";
 import { GitExtension, Repository } from "./vscode.git/types";
-import { Lazy, RuntimeState } from "./types";
 import { watchGit } from "./watchGit";
-import { ensureLogger } from "../logger";
 
 export class RuntimeStore {
 	private state: RuntimeState;
@@ -63,7 +62,12 @@ export class RuntimeStore {
 			throw new Error("Invalid repo path");
 		}
 
-		return new GitRepository(repo, this.state.extension, ensureLogger());
+		return new GitRepository(
+			repo,
+			this.state.extension,
+      null!
+			// ensureLogger()
+		);
 	}
 }
 

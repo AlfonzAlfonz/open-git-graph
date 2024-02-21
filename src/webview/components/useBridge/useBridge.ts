@@ -2,7 +2,7 @@ import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persist
 import { QueryCache, QueryClient, useQuery } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { vscodeStorage } from "../../vscodeApi";
-import { useLoading } from "../components/LoadingModal";
+import { useLoading } from "../LoadingModal";
 import { bridge } from "../../bridge";
 import { errorToString } from "../../../universal/errorToString";
 

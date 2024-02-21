@@ -1,11 +1,11 @@
 import { MouseEvent } from "react";
-import { GitCommit, GitIndex } from "../../../../universal/git";
+import { GitCommit, GitIndex } from "../../../universal/git";
 import { bridge } from "../../../bridge";
-import { getColor } from "../../../state/createGraphNodes/Rails";
-import { GraphNode } from "../../../state/createGraphNodes/index";
-import { GraphTag } from "../../../state/toGraphTags";
-import { invalidate, useBridge } from "../../useBridge/useBridge";
-import { useBridgeMutation } from "../../useBridge/useBridgeMutation";
+import { getColor } from "../../state/createGraphNodes/Rails";
+import { GraphNode } from "../../state/createGraphNodes/index";
+import { GraphTag } from "../../state/toGraphTags";
+import { invalidate, useBridge } from "../useBridge/useBridge";
+import { useBridgeMutation } from "../useBridge/useBridgeMutation";
 
 export type UseGraphRowOptions<T extends GitCommit | GitIndex> = {
 	node: GraphNode<T>;

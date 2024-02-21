@@ -1,21 +1,10 @@
-import { QueryClientProvider } from "@tanstack/react-query";
-import { createRoot } from "react-dom/client";
 import { errorToString } from "../../universal/errorToString";
-import { bridge } from "../bridge";
+import { WebToRuntimeBridge } from "../../universal/protocol";
 import { ErrorBoundary } from "./ErrorBoundary";
-import { GraphTable } from "./components/GraphTable/index";
-import { LoadingModal } from "./components/LoadingModal";
-import { queryClient } from "./useBridge/useBridge";
+import { GraphTable } from "./GraphTable";
+import { LoadingModal } from "./LoadingModal";
 
-export const render = () => {
-	createRoot(document.querySelector("#root")!).render(
-		<QueryClientProvider client={queryClient}>
-			<App />
-		</QueryClientProvider>,
-	);
-};
-
-const App = () => {
+export const App = ({ bridge }: { bridge: WebToRuntimeBridge }) => {
 	return (
 		<ErrorBoundary
 			handle={async (e, errorInfo) => {

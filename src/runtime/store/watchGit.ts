@@ -1,5 +1,4 @@
 import { RuntimeStore } from ".";
-import { ensureLogger } from "../logger";
 
 export const watchGit = (store: RuntimeStore) => {
 	const api = store.getState().extension.getAPI(1);
@@ -9,7 +8,7 @@ export const watchGit = (store: RuntimeStore) => {
 	}
 
 	api.onDidChangeState((a) => {
-		ensureLogger().appendLine("[vscode.git] State changed");
+		// ensureLogger().appendLine("[vscode.git] State changed");
 		// TODO: handle git state changes
 	});
 	api.onDidOpenRepository((r) => {

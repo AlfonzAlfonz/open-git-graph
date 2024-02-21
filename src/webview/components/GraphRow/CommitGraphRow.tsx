@@ -1,6 +1,6 @@
-import { GitCommit } from "../../../../universal/git";
+import { GitCommit } from "../../../universal/git";
 import { bridge } from "../../../bridge";
-import { useBridge } from "../../useBridge/useBridge";
+import { useBridge } from "../useBridge/useBridge";
 import { CommitInspector } from "../inspectors/CommitInspector";
 import { CommitTags } from "./CommitTags";
 import { renderRails } from "./renderRails";

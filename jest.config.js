@@ -2,7 +2,6 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 export default {
 	testEnvironment: "node",
-	transform: {},
 	extensionsToTreatAsEsm: [".ts", ".tsx"],
 	testPathIgnorePatterns: ["/node_modules/", "_utils.test.ts"],
 	collectCoverage: true,

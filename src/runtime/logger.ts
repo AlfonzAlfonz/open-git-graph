@@ -1,8 +1,8 @@
-import * as vscode from "vscode";
+// import * as vscode from "vscode";
 
-let logger: vscode.OutputChannel;
+// let logger: vscode.OutputChannel;
 
-export const ensureLogger = () => {
-	if (!logger) logger = vscode.window.createOutputChannel("Open git graph");
-	return logger;
-};
+// export const ensureLogger = () => {
+// 	if (!logger) logger = vscode.window.createOutputChannel("Open git graph");
+// 	return logger;
+// };

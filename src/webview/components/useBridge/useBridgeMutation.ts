@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { useLoading } from "../components/LoadingModal";
+import { useLoading } from "../LoadingModal";
 
 export const useBridgeMutation = <TArgs extends unknown[], TResult>(
 	fetch: (...args: TArgs) => Promise<TResult>,

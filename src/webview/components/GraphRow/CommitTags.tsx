@@ -1,7 +1,7 @@
 import { bridge } from "../../../bridge";
-import { GraphTag } from "../../../state/toGraphTags";
-import { invalidate, useBridge } from "../../useBridge/useBridge";
-import { useBridgeMutation } from "../../useBridge/useBridgeMutation";
+import { GraphTag } from "../../state/toGraphTags";
+import { invalidate, useBridge } from "../useBridge/useBridge";
+import { useBridgeMutation } from "../useBridge/useBridgeMutation";
 
 export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 	const { data } = useBridge(bridge.getGraphData, []);
