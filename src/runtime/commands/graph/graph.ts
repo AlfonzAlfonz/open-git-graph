@@ -34,7 +34,7 @@ export const graphCommand = command({
 			vscode.Uri.joinPath(context.extensionUri, "dist", "webview.js"),
 		);
 
-		let html = Buffer.from(webview, "base64").toString("utf-8");
+		let html = Buffer.from(WEBVIEW_HTML, "base64").toString("utf-8");
 
 		html = html.replace("${styleUri}", styleUri.toString());
 		html = html.replace(
@@ -77,7 +77,7 @@ export const graphCommand = command({
 	},
 });
 
-const webview = `WEBVIEW_HTML`; // Value is replaced at build time
+declare const WEBVIEW_HTML: string; // Value is supplied at build time
 
 export const selectRepo = async (repos: Record<string, Repository>) => {
 	const keys = Object.keys(repos);

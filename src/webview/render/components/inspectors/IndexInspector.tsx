@@ -6,7 +6,7 @@ import { CommitFileList } from "./CommitFileList";
 export const IndexInspector = ({ node }: { node: GraphNode<GitIndex> }) => {
 	return (
 		<div className={"commit-inspector"}>
-			<div>{renderEmptyRails(node, 200)}</div>
+			<div className="pl-3">{renderEmptyRails(node, 200)}</div>
 			<div>
 				<div className="flex leading-normal h-[200px] overflow-scroll">
 					<div></div>

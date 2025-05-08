@@ -13,7 +13,7 @@ export const IndexGraphRow = ({
 	return (
 		<div style={style}>
 			<div {...props}>
-				<div className="h-[26px]">{renderRails(node)}</div>
+				<div className="h-[26px] pl-3">{renderRails(node)}</div>
 				<div>
 					<div className="flex gap-2 items-center">
 						<p className="inline-block whitespace-nowrap text-ellipsis overflow-hidden leading-tight flex-grow-1">

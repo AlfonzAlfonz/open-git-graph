@@ -8,7 +8,7 @@ export const CommitInspector = ({ node }: { node: GraphNode<GitCommit> }) => {
 
 	return (
 		<div className="commit-inspector">
-			<div>{renderEmptyRails(node, 200)}</div>
+			<div className="pl-3">{renderEmptyRails(node, 200)}</div>
 			<div>
 				<div className="flex leading-normal h-[200px] overflow-auto w-full">
 					<div className="w-1/2 p-1 overflow-hidden text-ellipsis">
