@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { ListChildComponentProps, VariableSizeList } from "react-window";
+import { GraphNode } from "../../../../runtime/GraphTabManager/createGraphNodes";
 import { GitCommit, GitIndex } from "../../../../universal/git";
 import { bridge } from "../../../bridge";
 import { groupBy } from "../../../state/groupBy";
@@ -12,7 +13,7 @@ import { useAppContext } from "../AppContext";
 import { CommitGraphRow } from "../GraphRow/CommitGraphRow";
 import { IndexGraphRow } from "../GraphRow/IndexGraphRow";
 import { HEIGHT } from "../GraphRow/renderRails";
-import { GraphNode } from "../../../../runtime/GraphTabManager/createGraphNodes";
+import { GraphTableLayout } from "./GraphTableLayout";
 
 export const GraphTable = () => {
 	const initScrollRef = useRef(false);
@@ -26,8 +27,6 @@ export const GraphTable = () => {
 		() => refs && new Map(toGraphTags(groupBy(refs, (r) => r.hash))),
 		[refs],
 	);
-
-	const ref = useRef<HTMLDivElement>(null);
 
 	useEffect(() => listRef.current?.resetAfterIndex(0), [expandedCommit]);
 
@@ -43,28 +42,7 @@ export const GraphTable = () => {
 	});
 
 	return (
-		<div id="graph" className={"h-[100vh]"} ref={ref}>
-			<div className={"graph-header"}>
-				<PanelGroup className="flex" direction="horizontal" units="pixels">
-					<Panel minSize={150} maxSize={150}>
-						Graph
-					</Panel>
-					<PanelResizeHandle className="resize-handle" />
-					<Panel>Info</Panel>
-					<PanelResizeHandle className="resize-handle" />
-					<Panel minSize={120} maxSize={120}>
-						Author
-					</Panel>
-					<PanelResizeHandle className="resize-handle" />
-					<Panel minSize={100} maxSize={100}>
-						Date
-					</Panel>
-					<PanelResizeHandle className="resize-handle" />
-					<Panel minSize={100} maxSize={100}>
-						Hash
-					</Panel>
-				</PanelGroup>
-			</div>
+		<GraphTableLayout>
 			<AutoSizer>
 				{({ height, width }) => (
 					<VariableSizeList
@@ -92,7 +70,7 @@ export const GraphTable = () => {
 					/>
 				)}
 			</AutoSizer>
-		</div>
+		</GraphTableLayout>
 	);
 };
 

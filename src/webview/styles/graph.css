@@ -16,7 +16,7 @@
 		}
 
 		& .graph-row {
-			@apply graph-grid;
+			display: flex;
 			cursor: pointer;
 			height: 26px;
 			align-items: center;

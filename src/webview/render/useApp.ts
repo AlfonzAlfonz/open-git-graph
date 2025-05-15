@@ -5,6 +5,7 @@ import { bridge } from "../bridge";
 import { IAppContext } from "./components/AppContext";
 import { isRuntimeMessage } from "../../universal/message";
 import { Graph } from "../../runtime/GraphTabManager/createGraphNodes";
+import { GitRef } from "../../universal/git";
 
 interface App {
 	state: IAppContext;
@@ -13,6 +14,7 @@ interface App {
 export const useApp = (): App => {
 	const [repoPath, setRepoPath] = useState<string>();
 	const [graph, setGraph] = useState<Graph>();
+	const [refs, setRefs] = useState<GitRef[]>();
 
 	useEffect(() => {
 		window.addEventListener("message", (e) => {
@@ -25,6 +27,7 @@ export const useApp = (): App => {
 				switch (e.data.type) {
 					case "graph":
 						setGraph(e.data.data.graph);
+						setRefs(e.data.data.refs);
 						break;
 				}
 			}
@@ -39,7 +42,7 @@ export const useApp = (): App => {
 			graph,
 			expandedCommit: undefined,
 			scroll: 0,
-			refs: [],
+			refs,
 		},
 	};
 };

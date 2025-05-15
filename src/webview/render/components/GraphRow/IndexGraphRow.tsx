@@ -13,13 +13,20 @@ export const IndexGraphRow = ({
 	return (
 		<div style={style}>
 			<div {...props}>
-				<div className="h-[26px] pl-3">{renderRails(node)}</div>
-				<div>
-					<div className="flex gap-2 items-center">
-						<p className="inline-block whitespace-nowrap text-ellipsis overflow-hidden leading-tight flex-grow-1">
-							Uncommited changes
-						</p>
-					</div>
+				<div
+					className="h-[26px] pl-3"
+					style={{ flex: "var(--table-graph-width) 1 0px" }}
+				>
+					{renderRails(node)}
+				</div>
+				<div
+					className="flex gap-2 items-center"
+					// TODO: stretch this automatically
+					style={{ flex: "var(--table-index-width) 1 0px" }}
+				>
+					<p className="inline-block whitespace-nowrap text-ellipsis overflow-hidden leading-tight flex-grow-1">
+						Uncommited changes
+					</p>
 				</div>
 			</div>
 			{open && <IndexInspector node={node} />}
