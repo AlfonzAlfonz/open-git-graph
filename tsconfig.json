@@ -9,6 +9,8 @@
 		"noUncheckedIndexedAccess": true,
 		"jsx": "react-jsx",
 		"skipLibCheck": true,
-		"esModuleInterop": true
+		"esModuleInterop": true,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false
 	}
 }

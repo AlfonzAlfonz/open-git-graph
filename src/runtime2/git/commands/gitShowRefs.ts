@@ -1,4 +1,4 @@
-import { GitRef } from "../../../universal/git";
+import { GitRef } from "../../../../universal/git";
 import { toLineGenerator } from "../toLineGenerator";
 import { GitCommand } from "./utils";
 

@@ -6,7 +6,7 @@ export const handleError = (e: unknown) => {
 	if (e instanceof Error) {
 		vscode.window.showErrorMessage(e.message);
 	}
-	ensureLogger("[handleError]").appendLine(errorToString(e));
+	ensureLogger().append(errorToString(e));
 };
 
 export const catchErrors =

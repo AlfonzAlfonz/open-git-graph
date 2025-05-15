@@ -1,4 +1,4 @@
-import { errors } from "../../handleError";
+import { errors } from "../../../../runtime2/handleError";
 import { GitCommand } from "./utils";
 
 export const gitCheckout = (branch: string): GitCommand<Promise<void>> => ({

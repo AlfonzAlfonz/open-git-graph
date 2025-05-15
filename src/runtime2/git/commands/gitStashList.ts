@@ -1,4 +1,4 @@
-import { GitCommit } from "../../../universal/git";
+import { GitCommit } from "../../../../universal/git";
 import { gitLogCommits } from "./gitLogCommits";
 import { GitCommand, commitFormat } from "./utils";
 

@@ -3,7 +3,7 @@ import { Readable } from "node:stream";
 
 export async function* toLineGenerator(
 	stream: Readable,
-): AsyncGenerator<string, undefined, unknown> {
+): AsyncGenerator<string, void, unknown> {
 	let queue: string[] = [];
 	let resolve: () => void;
 	let promise = new Promise<void>((r) => (resolve = r));
@@ -24,6 +24,4 @@ export async function* toLineGenerator(
 		yield* queue as any;
 		queue = [];
 	}
-
-	return undefined;
 }

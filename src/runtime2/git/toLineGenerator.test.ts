@@ -1,6 +1,6 @@
 import { Readable } from "stream";
 import { toLineGenerator } from "./toLineGenerator";
-import { buffer } from "../utils";
+import { buffer } from "../../../runtime2/utils";
 
 test("toLineGenerator", async () => {
 	const input = `

@@ -1,5 +1,5 @@
 import { $ } from "zx";
-import { getFixtureRepoPath } from "../../../../test/_utils.test";
+import { getFixtureRepoPath } from "../../../../../test/_utils.test";
 import { fs } from "zx";
 
 export const setupRepoFixture = async (

@@ -1,4 +1,4 @@
-import { GitCommitFile, GitFileMode } from "../../../universal/git";
+import { GitCommitFile, GitFileMode } from "../../../../universal/git";
 import { toLineGenerator } from "../toLineGenerator";
 import { GitCommand } from "./utils";
 

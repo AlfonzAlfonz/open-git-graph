@@ -17,6 +17,7 @@
 		"@tanstack/query-sync-storage-persister": "^5.0.5",
 		"@tanstack/react-query": "^5.0.5",
 		"@tanstack/react-query-persist-client": "^5.0.5",
+		"@types/debug": "^4.1.12",
 		"@types/jest": "^29.5.4",
 		"@types/lodash-es": "^4.17.10",
 		"@types/mocha": "^10.0.1",
@@ -120,5 +121,9 @@
 		"overrides": {
 			"vscode": "npm:nop@1.0.0"
 		}
+	},
+	"dependencies": {
+		"asxnc": "link:../../Library/pnpm/global/5/node_modules/asxnc",
+		"debug": "^4.4.1"
 	}
 }

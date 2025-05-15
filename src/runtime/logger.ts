@@ -2,7 +2,15 @@ import * as vscode from "vscode";
 
 let logger: vscode.OutputChannel;
 
-export const ensureLogger = () => {
-	if (!logger) logger = vscode.window.createOutputChannel("Open git graph");
-	return logger;
+export interface Logger {
+	appendLine: (value: string) => void;
+}
+
+export const ensureLogger = (name: string): Logger => {
+	return {
+		appendLine: (value: string) => {
+			if (!logger) logger = vscode.window.createOutputChannel("Open git graph");
+			logger.appendLine(`[${name}]: ${value}`);
+		},
+	};
 };

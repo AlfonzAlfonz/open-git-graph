@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { RuntimeToWebBridge } from "../../universal/protocol/index";
-import { GitRepository } from "../git/GitRepository";
+import { GitRepository } from "../../runtime/RepositoryManager/git/GitRepository";
 import { ensureGitExtension } from "./vscode.git/index";
 import { GitExtension, Repository } from "./vscode.git/types";
 import { Lazy, RuntimeState } from "./types";

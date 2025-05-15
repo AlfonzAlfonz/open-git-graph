@@ -1,8 +1,8 @@
 import { OutputChannel } from "vscode";
-import { GitCommit, GitIndex, GitRef } from "../../universal/git";
-import { handleError } from "../handleError";
-import { GitExtension, Repository } from "../store/vscode.git/types";
-import { buffer } from "../utils";
+import { GitCommit, GitIndex, GitRef } from "../../../universal/git";
+import { handleError } from "../../../runtime2/handleError";
+import { GitExtension, Repository } from "../../../runtime2/store/vscode.git/types";
+import { buffer } from "../../../runtime2/utils";
 import { gitCheckout } from "./commands/gitCheckout";
 import { gitLogCommits } from "./commands/gitLogCommits";
 import { gitLogHeadHash } from "./commands/gitLogHeadHash";
