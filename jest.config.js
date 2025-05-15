@@ -7,6 +7,7 @@ export default {
 	testPathIgnorePatterns: ["/node_modules/", "_utils.test.ts"],
 	collectCoverage: true,
 	collectCoverageFrom: ["./src/**"],
+	setupFiles: ["./test/setup.ts"],
 	coveragePathIgnorePatterns: [
 		"/node_modules/",
 		"/src/runtime/store/vscode.git",

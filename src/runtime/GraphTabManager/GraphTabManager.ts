@@ -1,23 +1,13 @@
 import * as vscode from "vscode";
-import {
-	createClientProxy,
-	createResponse,
-	isBridgeRequest,
-	isBridgeResponse,
-} from "../../universal/bridge";
-import {
-	GraphState,
-	RuntimeToWebBridge,
-	WebToRuntimeBridge,
-} from "../../universal/protocol";
+import { createResponse, isBridgeRequest } from "../../universal/bridge";
+import { GitIndex, GitRef } from "../../universal/git";
+import { GraphState, WebToRuntimeBridge } from "../../universal/protocol";
 import { GitRepository } from "../RepositoryManager/git/GitRepository";
 import { handleError } from "../handleError";
 import { ensureLogger } from "../logger";
 import { renderHtmlShell } from "./HtmlShell";
 import { Graph, createGraphNodes } from "./createGraphNodes";
 import { WebviewRequestHandler } from "./requestHandler";
-import { collect, fork } from "asxnc";
-import { GitIndex, GitRef } from "../../universal/git";
 
 interface GraphTabState extends GraphState {
 	index?: GitIndex;
@@ -53,30 +43,12 @@ export class GraphTabManager {
 			scroll: 0,
 		};
 
-		fork([
-			async () => {
-				const data = await this.getGraphData(repository);
-
-				state.index = data.index;
-				state.refs = data.refs;
-			},
-		]);
-
 		panel.webview.html = renderHtmlShell({
 			styleUri: styleUri.toString(),
 			scriptUri: scriptUri.toString(),
 		});
 
-		const [bridge, handleResponse] = createClientProxy<RuntimeToWebBridge>(
-			panel.webview.postMessage,
-		);
-
 		panel.webview.onDidReceiveMessage(async (data) => {
-			// handle responses from previous runtimeToWeb requests
-			if (isBridgeResponse<RuntimeToWebBridge>(data)) {
-				handleResponse(data);
-			}
-
 			// handle webToRuntime requests
 			if (isBridgeRequest<WebToRuntimeBridge>(data)) {
 				ensureLogger("GraphTabManager.onRequest").appendLine(
@@ -103,23 +75,5 @@ export class GraphTabManager {
 		// panel.onDidDispose(() => store.removePanel(panel));
 
 		return panel;
-	}
-
-	public async getGraphData(repository: GitRepository) {
-		const dispatchRefs = async () => {
-			return await collect(repository.getRefs());
-		};
-
-		const [refs, index] = await Promise.all([
-			dispatchRefs(),
-			repository.getIndex(),
-		]);
-
-		return {
-			repoPath: repository.getPath(),
-			index,
-			commits: (await repository.getCommits()).commits,
-			refs,
-		};
 	}
 }

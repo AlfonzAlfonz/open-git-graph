@@ -6,8 +6,11 @@ import { GitRepository } from "../RepositoryManager/git/GitRepository";
 import { ShowFileTextDocumentContentProvider } from "../ShowFileTextDocumentContentProvider";
 import { GraphTabManager } from "./GraphTabManager";
 import { createGraphNodes } from "./createGraphNodes";
+import { ensureLogger } from "../logger";
 
 export class WebviewRequestHandler implements WebToRuntimeBridge {
+	private log = ensureLogger("WebviewRequestHandler");
+
 	constructor(
 		private manager: GraphTabManager,
 		private repository: GitRepository,
@@ -32,11 +35,15 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 			this.repository.getIndex(),
 		]);
 
-		const commits = await collect((await this.repository.getCommits()).commits);
+		const commits = await AsyncIterator.from(
+			(await this.repository.getCommits()).commits,
+		)
+			.take(100)
+			.toArray();
 
 		this.postMessage(
 			runtimeMessage("graph", {
-				graph: createGraphNodes(commits.slice(0, 100), index),
+				graph: createGraphNodes(commits, index),
 				refs,
 			}),
 		);

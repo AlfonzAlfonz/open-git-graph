@@ -6,7 +6,7 @@ import { command } from "../utils";
 
 export const graphCommand = command({
 	id: "open-git-graph.graph",
-	command: async (backend) => {
+	command: (backend) => async () => {
 		const repositories = await backend.git.repositories.read();
 		ensureLogger("zz").appendLine(Object.keys(repositories).join());
 		const repo = await selectRepo(repositories);

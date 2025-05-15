@@ -1,5 +1,5 @@
+import { collect } from "asxnc";
 import { handleError } from "../../../runtime2/handleError";
-import { buffer } from "../../../runtime2/utils";
 import { GitCommit, GitIndex, GitRef } from "../../../universal/git";
 import { Logger, ensureLogger } from "../../logger";
 import { GitExtension, Repository } from "../vscode.git/types";
@@ -32,7 +32,8 @@ export class GitRepository {
 		stashes: GitRef[];
 		commits: AsyncIterable<GitCommit>;
 	}> {
-		const stashes = await buffer(this.execGit(gitStashList()));
+		const stashes = await collect(this.execGit(gitStashList()));
+
 		const commits = this.execGit(gitLogCommits());
 
 		return {

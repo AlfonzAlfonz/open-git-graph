@@ -2,18 +2,10 @@ import { Backend } from "./createBackend";
 
 export type Command<TId extends string> = {
 	id: TId;
-	command: (backend: Backend) => Promise<void>;
+	command: (backend: Backend) => () => Promise<void>;
 };
 
 export const command = <TId extends string>(command: Command<TId>) => command;
-
-// export const buffer = async <T>(iterable: AsyncIterable<T>) => {
-// 	const result = [];
-// 	for await (const itm of iterable) {
-// 		result.push(itm);
-// 	}
-// 	return result;
-// };
 
 // export async function* batch<T>(
 // 	iterable: AsyncIterable<T>,
