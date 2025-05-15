@@ -12,5 +12,6 @@
 		"esModuleInterop": true,
 		"noUnusedLocals": false,
 		"noUnusedParameters": false
-	}
+	},
+	"exclude": ["./src/runtime2"]
 }

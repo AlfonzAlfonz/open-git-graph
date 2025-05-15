@@ -1,11 +1,11 @@
 import { bridge } from "../../../bridge";
 import { GraphTag } from "../../../state/toGraphTags";
-import { invalidate, useBridge } from "../../useBridge/useBridge";
 import { useBridgeMutation } from "../../useBridge/useBridgeMutation";
+import { useAppContext } from "../AppContext";
 
 export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
-	const { data } = useBridge(bridge.getGraphData, []);
-	const checkout = useBridgeMutation(bridge.checkout);
+	const { repoPath } = useAppContext();
+	const [checkout] = useBridgeMutation(bridge.checkout);
 
 	return (
 		<>
@@ -16,8 +16,7 @@ export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 							onDoubleClick={
 								r.type === "branch"
 									? async () => {
-											await checkout.mutateAsync([r.label]);
-											await invalidate(bridge.getGraphData, []);
+											await checkout(r.label);
 									  }
 									: undefined
 							}
@@ -27,7 +26,7 @@ export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 									? JSON.stringify({
 											webviewSection: "branch",
 											preventDefaultContextMenuItems: true,
-											repo: data?.repoPath,
+											repo: repoPath,
 											branch: r.label,
 									  })
 									: undefined

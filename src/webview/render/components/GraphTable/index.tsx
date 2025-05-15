@@ -1,34 +1,30 @@
+import debounce from "lodash-es/debounce";
 import { useEffect, useMemo, useRef } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { ListChildComponentProps, VariableSizeList } from "react-window";
 import { GitCommit, GitIndex } from "../../../../universal/git";
 import { bridge } from "../../../bridge";
-import { GraphNode, createGraphNodes } from "../../../state/createGraphNodes";
 import { groupBy } from "../../../state/groupBy";
 import { GraphTag, toGraphTags } from "../../../state/toGraphTags";
-import { useBridge } from "../../useBridge/useBridge";
+import { useGetState } from "../../useGetState";
+import { useAppContext } from "../AppContext";
 import { CommitGraphRow } from "../GraphRow/CommitGraphRow";
 import { IndexGraphRow } from "../GraphRow/IndexGraphRow";
 import { HEIGHT } from "../GraphRow/renderRails";
-import debounce from "lodash-es/debounce";
+import { GraphNode } from "../../../../runtime/GraphTabManager/createGraphNodes";
 
 export const GraphTable = () => {
 	const initScrollRef = useRef(false);
 	const listRef = useRef<VariableSizeList>(null!);
 
-	const state = useBridge(bridge.getState, []);
+	const state = useGetState();
 	const expandedCommit = state.data?.expandedCommit;
-	const { data } = useBridge(bridge.getGraphData, []);
-
-	const graph = useMemo(
-		() => data && createGraphNodes(data.commits, data.index),
-		[data],
-	);
+	const { graph, refs } = useAppContext();
 
 	const tags = useMemo(
-		() => data && new Map(toGraphTags(groupBy(data.refs, (r) => r.hash))),
-		[data],
+		() => refs && new Map(toGraphTags(groupBy(refs, (r) => r.hash))),
+		[refs],
 	);
 
 	const ref = useRef<HTMLDivElement>(null);

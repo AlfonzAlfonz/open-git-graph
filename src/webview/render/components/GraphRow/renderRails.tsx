@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
-import { getColor } from "../../../state/createGraphNodes/Rails";
-import { GraphNode } from "../../../state/createGraphNodes/index";
+import { GraphNode } from "../../../../runtime/GraphTabManager/createGraphNodes";
+import { getColor } from "../../utils";
 
 const WIDTH = 16;
 export const HEIGHT = 26;

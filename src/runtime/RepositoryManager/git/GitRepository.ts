@@ -18,10 +18,14 @@ export class GitRepository {
 	private log: Logger;
 
 	constructor(
-		public readonly repository: Repository,
+		private repository: Repository,
 		private extension: GitExtension,
 	) {
 		this.log = ensureLogger(`git`);
+	}
+
+	public getPath() {
+		return this.repository.rootUri.toString();
 	}
 
 	public async getCommits(): Promise<{

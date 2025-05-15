@@ -1,18 +1,20 @@
-import { useMutation } from "@tanstack/react-query";
 import { useLoading } from "../components/LoadingModal";
 
 export const useBridgeMutation = <TArgs extends unknown[], TResult>(
 	fetch: (...args: TArgs) => Promise<TResult>,
 ) => {
-	const [, setLoading] = useLoading();
+	const [loading, setLoading] = useLoading();
 
-	const query = useMutation({
-		mutationKey: [fetch.name],
-		mutationFn: wrapFetch(fetch, setLoading),
-		networkMode: "always",
-	});
+	const fire = async (...args: TArgs) => {
+		setLoading(true);
+		try {
+			await fetch(...args);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-	return query;
+	return [fire, loading] as const;
 };
 
 export const wrapFetch =

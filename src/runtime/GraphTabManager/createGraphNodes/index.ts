@@ -3,8 +3,8 @@ import { RailId, Rails, RailsState } from "./Rails";
 
 /**
  * Structure representing node ordered by date descending.
- * This may be confusing, because one commit commited before
- * another is first in the structure but refered to as after.
+ * This may be confusing, because one commit committed before
+ * another is first in the structure but referred to as after.
  */
 export type Graph = {
 	nodes: GraphNode<GitCommit | GitIndex>[];

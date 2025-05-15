@@ -1,11 +1,11 @@
 import { MouseEvent } from "react";
+import { GraphNode } from "../../../../runtime/GraphTabManager/createGraphNodes";
 import { GitCommit, GitIndex } from "../../../../universal/git";
 import { bridge } from "../../../bridge";
-import { getColor } from "../../../state/createGraphNodes/Rails";
-import { GraphNode } from "../../../state/createGraphNodes/index";
 import { GraphTag } from "../../../state/toGraphTags";
-import { invalidate, useBridge } from "../../useBridge/useBridge";
 import { useBridgeMutation } from "../../useBridge/useBridgeMutation";
+import { useGetState } from "../../useGetState";
+import { getColor } from "../../utils";
 
 export type UseGraphRowOptions<T extends GitCommit | GitIndex> = {
 	node: GraphNode<T>;
@@ -16,18 +16,15 @@ export const useGraphRow = <T extends GitCommit | GitIndex>({
 	node,
 	tags,
 }: UseGraphRowOptions<T>) => {
-	const expandCommit = useBridgeMutation(bridge.expandCommit);
+	const [expandCommit] = useBridgeMutation(bridge.expandCommit);
 
-	const state = useBridge(bridge.getState, []);
+	const state = useGetState();
 	const id = "hash" in node.commit ? node.commit.hash : "index";
 
 	const onClick = async (e: MouseEvent) => {
 		if (e.detail > 1) return;
 
-		await expandCommit.mutateAsync([
-			state.data?.expandedCommit === id ? undefined : id,
-		]);
-		await invalidate(bridge.getState, []);
+		await expandCommit(state.data?.expandedCommit === id ? undefined : id);
 	};
 
 	const isHead = tags?.some((r) => r.type === "head");

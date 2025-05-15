@@ -1,6 +1,5 @@
 import { GitCommit } from "../../../../universal/git";
-import { bridge } from "../../../bridge";
-import { useBridge } from "../../useBridge/useBridge";
+import { useAppContext } from "../AppContext";
 import { CommitInspector } from "../inspectors/CommitInspector";
 import { CommitTags } from "./CommitTags";
 import { renderRails } from "./renderRails";
@@ -11,7 +10,7 @@ export const CommitGraphRow = ({
 	tags,
 	style,
 }: UseGraphRowOptions<GitCommit> & { style: any }) => {
-	const { data } = useBridge(bridge.getGraphData, []);
+	const { repoPath } = useAppContext();
 	const { open, ...props } = useGraphRow({ node, tags });
 
 	return (
@@ -21,7 +20,7 @@ export const CommitGraphRow = ({
 				data-vscode-context={JSON.stringify({
 					webviewSection: "commit",
 					preventDefaultContextMenuItems: true,
-					repo: data?.repoPath,
+					repo: repoPath,
 					ref: node.commit.hash,
 				})}
 			>

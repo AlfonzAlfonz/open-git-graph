@@ -1,45 +1,49 @@
+import { collect } from "asxnc";
 import * as vscode from "vscode";
-import { WebToRuntimeBridge } from "../../universal/protocol";
-import { buffer } from "../utils";
-import { ShowFileTextDocumentContentProvider } from "../ShowFileTextDocumentContentProvider";
-import { handleError } from "../handleError";
+import { RuntimeMessage, runtimeMessage } from "../../universal/message";
+import { GraphState, WebToRuntimeBridge } from "../../universal/protocol";
 import { GitRepository } from "../RepositoryManager/git/GitRepository";
+import { ShowFileTextDocumentContentProvider } from "../ShowFileTextDocumentContentProvider";
+import { GraphTabManager } from "./GraphTabManager";
+import { createGraphNodes } from "./createGraphNodes";
 
 export class WebviewRequestHandler implements WebToRuntimeBridge {
 	constructor(
+		private manager: GraphTabManager,
 		private repository: GitRepository,
+		private getOwnState: () => GraphState,
 		private panel: vscode.WebviewPanel,
+		private postMessage: (msg: RuntimeMessage) => void,
 	) {}
 
+	async ready(repoPath?: string | undefined) {
+		this.getGraphData();
+
+		return this.repository.getPath();
+	}
+
 	async getGraphData() {
-		const { repoPath } = this.getOwnState();
-
-		const dispatchCommits = async () => {
-			const log = await this.repository.getCommits();
-			const commits = await buffer(log.commits);
-			return { commits };
-		};
-
 		const dispatchRefs = async () => {
-			return await buffer(this.repository.getRefs());
+			return await collect(this.repository.getRefs());
 		};
 
-		const [{ commits }, refs, index] = await Promise.all([
-			dispatchCommits(),
+		const [refs, index] = await Promise.all([
 			dispatchRefs(),
 			this.repository.getIndex(),
 		]);
 
-		return {
-			repoPath,
-			index,
-			commits,
-			refs,
-		};
+		const commits = await collect((await this.repository.getCommits()).commits);
+
+		this.postMessage(
+			runtimeMessage("graph", {
+				graph: createGraphNodes(commits.slice(0, 100), index),
+				refs,
+			}),
+		);
 	}
 
 	async showDiff(path: string, a?: string, b?: string) {
-		const repoPath = this.getOwnState().repoPath;
+		const repoPath = this.repository.getPath();
 
 		await vscode.commands.executeCommand(
 			"vscode.diff",
@@ -53,14 +57,9 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 		await this.repository.checkout(branch);
 	}
 
-	async logError(content: string) {
-		handleError(content);
-	}
-
-	async getState() {
-		const { expandedCommit, scroll } = this.getOwnState();
-		return { expandedCommit, scroll };
-	}
+	// async logError(content: string) {
+	// 	handleError(content);
+	// }
 
 	async expandCommit(value?: string | undefined) {
 		const state = this.getOwnState();
@@ -72,11 +71,7 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 		state.scroll = value;
 	}
 
-	private getOwnState() {
-		return {
-			repoPath: this.repository.repository.rootUri.toString(),
-			expandedCommit: undefined as string | undefined,
-			scroll: 0,
-		};
-	}
+	// async getState(): Promise<GraphState> {
+	// 	return this.getOwnState();
+	// }
 }
