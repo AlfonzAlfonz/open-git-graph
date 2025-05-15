@@ -7,6 +7,11 @@ export interface IAppContext extends Partial<GraphState> {
 	repoPath?: string;
 	graph?: Graph;
 	refs?: GitRef[];
+
+	actions: {
+		expandCommit: (value: string | undefined) => void;
+		scroll: (value: number) => void;
+	};
 }
 
 export const AppContext = createContext<IAppContext>(null!);

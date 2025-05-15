@@ -6,6 +6,7 @@ import { isRuntimeMessage } from "../../universal/message";
 import { GraphState, WebToRuntimeBridge } from "../../universal/protocol";
 import { bridge } from "../bridge";
 import { IAppContext } from "./components/AppContext";
+import debounce from "lodash-es/debounce";
 
 interface App {
 	state: IAppContext;
@@ -24,7 +25,6 @@ export const useApp = (): App => {
 			}
 
 			if (isRuntimeMessage(e.data)) {
-				console.log("message", e.data);
 				switch (e.data.type) {
 					case "graph":
 						setGraph(e.data.data.graph);
@@ -47,6 +47,16 @@ export const useApp = (): App => {
 			...state,
 			graph,
 			refs,
+			actions: {
+				expandCommit: (value) => {
+					bridge.expandCommit(value);
+					setState((s) => ({ ...s!, expandedCommit: value }));
+				},
+				scroll: debounce((value: number) => {
+					bridge.scroll(value);
+					setState((s) => ({ ...s!, scroll: value }));
+				}, 100),
+			},
 		},
 	};
 };

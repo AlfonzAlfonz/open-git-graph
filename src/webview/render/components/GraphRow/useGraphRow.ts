@@ -1,9 +1,7 @@
 import { MouseEvent } from "react";
 import { GraphNode } from "../../../../runtime/GraphTabManager/createGraphNodes";
 import { GitCommit, GitIndex } from "../../../../universal/git";
-import { bridge } from "../../../bridge";
 import { GraphTag } from "../../../state/toGraphTags";
-import { useBridgeMutation } from "../../useBridge/useBridgeMutation";
 import { getColor } from "../../utils";
 import { useAppContext } from "../AppContext";
 
@@ -16,7 +14,7 @@ export const useGraphRow = <T extends GitCommit | GitIndex>({
 	node,
 	tags,
 }: UseGraphRowOptions<T>) => {
-	const [expandCommit] = useBridgeMutation(bridge.expandCommit);
+	const { actions } = useAppContext();
 
 	const { expandedCommit } = useAppContext();
 	const id = "hash" in node.commit ? node.commit.hash : "index";
@@ -24,7 +22,7 @@ export const useGraphRow = <T extends GitCommit | GitIndex>({
 	const onClick = async (e: MouseEvent) => {
 		if (e.detail > 1) return;
 
-		await expandCommit(expandedCommit === id ? undefined : id);
+		actions.expandCommit(expandedCommit === id ? undefined : id);
 	};
 
 	const isHead = tags?.some((r) => r.type === "head");

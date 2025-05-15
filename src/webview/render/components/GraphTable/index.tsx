@@ -18,7 +18,7 @@ export const GraphTable = () => {
 	const initScrollRef = useRef(false);
 	const listRef = useRef<VariableSizeList>(null!);
 
-	const { graph, refs, expandedCommit, scroll } = useAppContext();
+	const { graph, refs, expandedCommit, scroll, actions } = useAppContext();
 
 	const tags = useMemo(
 		() => refs && new Map(toGraphTags(groupBy(refs, (r) => r.hash))),
@@ -69,7 +69,7 @@ export const GraphTable = () => {
 								onItemsRendered={onItemsRendered}
 								onScroll={({ scrollOffset }) => {
 									if (initScrollRef.current) {
-										sendDebouncedScroll(scrollOffset);
+										actions.scroll(scrollOffset);
 									}
 								}}
 							/>
@@ -99,7 +99,3 @@ const Row = ({ data, index, style }: ListChildComponentProps<RowData>) => {
 		<IndexGraphRow node={node as GraphNode<GitIndex>} style={style} />
 	);
 };
-
-const sendDebouncedScroll = debounce((scroll: number) => {
-	bridge.scroll(scroll);
-}, 100);
