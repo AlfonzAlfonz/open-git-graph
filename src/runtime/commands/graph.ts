@@ -8,6 +8,7 @@ export const graphCommand = command({
 	id: "open-git-graph.graph",
 	command: async (backend) => {
 		const repositories = await backend.git.repositories.read();
+		ensureLogger("zz").appendLine(Object.keys(repositories).join());
 		const repo = await selectRepo(repositories);
 
 		ensureLogger("graphCommand").appendLine(`Opening repo ${repo}`);
@@ -24,7 +25,7 @@ export const selectRepo = async (repos: Record<string, GitRepository>) => {
 	}
 
 	if (keys.length === 1) {
-		return repos[0]!;
+		return repos[keys[0]!]!;
 	}
 
 	const selected = await vscode.window.showQuickPick(keys);

@@ -1,34 +1,33 @@
 import * as vscode from "vscode";
-import { WebToRuntimeBridge } from "../../../universal/protocol";
-import { RuntimeStore } from "../../store";
-import { buffer } from "../../utils";
-import { ShowFileTextDocumentContentProvider } from "../../ShowFileTextDocumentContentProvider";
-import { handleError } from "../../handleError";
+import { WebToRuntimeBridge } from "../../universal/protocol";
+import { buffer } from "../utils";
+import { ShowFileTextDocumentContentProvider } from "../ShowFileTextDocumentContentProvider";
+import { handleError } from "../handleError";
+import { GitRepository } from "../RepositoryManager/git/GitRepository";
 
 export class WebviewRequestHandler implements WebToRuntimeBridge {
 	constructor(
-		private store: RuntimeStore,
+		private repository: GitRepository,
 		private panel: vscode.WebviewPanel,
 	) {}
 
 	async getGraphData() {
 		const { repoPath } = this.getOwnState();
-		const git = this.store.getGitRepository(repoPath);
 
 		const dispatchCommits = async () => {
-			const log = await git.getCommits();
+			const log = await this.repository.getCommits();
 			const commits = await buffer(log.commits);
 			return { commits };
 		};
 
 		const dispatchRefs = async () => {
-			return await buffer(git.getRefs());
+			return await buffer(this.repository.getRefs());
 		};
 
 		const [{ commits }, refs, index] = await Promise.all([
 			dispatchCommits(),
 			dispatchRefs(),
-			git.getIndex(),
+			this.repository.getIndex(),
 		]);
 
 		return {
@@ -51,8 +50,7 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 	}
 
 	async checkout(branch: string) {
-		const git = this.store.getGitRepository(this.panel);
-		await git.checkout(branch);
+		await this.repository.checkout(branch);
 	}
 
 	async logError(content: string) {
@@ -75,6 +73,10 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 	}
 
 	private getOwnState() {
-		return this.store.getPanelState(this.panel)!;
+		return {
+			repoPath: this.repository.repository.rootUri.toString(),
+			expandedCommit: undefined as string | undefined,
+			scroll: 0,
+		};
 	}
 }

@@ -18,7 +18,7 @@ export class GitRepository {
 	private log: Logger;
 
 	constructor(
-		private repository: Repository,
+		public readonly repository: Repository,
 		private extension: GitExtension,
 	) {
 		this.log = ensureLogger(`git`);

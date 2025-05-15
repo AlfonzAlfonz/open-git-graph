@@ -1,6 +1,19 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import * as vscode from "vscode";
-import { GitRepository } from "./RepositoryManager/git/GitRepository";
+import { GitRepository } from "../RepositoryManager/git/GitRepository";
+import {
+	createClientProxy,
+	createResponse,
+	isBridgeRequest,
+	isBridgeResponse,
+} from "../../universal/bridge";
+import {
+	RuntimeToWebBridge,
+	WebToRuntimeBridge,
+} from "../../universal/protocol";
+import { ensureLogger } from "../logger";
+import { WebviewRequestHandler } from "./requestHandler";
+import { handleError } from "../handleError";
 
 export class GraphTabManager {
 	constructor(private context: vscode.ExtensionContext) {}
@@ -23,30 +36,30 @@ export class GraphTabManager {
 			<Shell styleUri={styleUri.toString()} scriptUri={scriptUri.toString()} />,
 		);
 
-		// const [bridge, handleResponse] = createClientProxy<RuntimeToWebBridge>(
-		// 	panel.webview.postMessage,
-		// );
+		const [bridge, handleResponse] = createClientProxy<RuntimeToWebBridge>(
+			panel.webview.postMessage,
+		);
 
-		// panel.webview.onDidReceiveMessage(async (data) => {
-		// 	// handle responses from previous runtimeToWeb requests
-		// 	if (isBridgeResponse<RuntimeToWebBridge>(data)) {
-		// 		handleResponse(data);
-		// 	}
+		panel.webview.onDidReceiveMessage(async (data) => {
+			// handle responses from previous runtimeToWeb requests
+			if (isBridgeResponse<RuntimeToWebBridge>(data)) {
+				handleResponse(data);
+			}
 
-		// 	// handle webToRuntime requests
-		// 	if (isBridgeRequest<WebToRuntimeBridge>(data)) {
-		// 		ensureLogger().appendLine(
-		// 			`[run] Received request ${data.method} id: ${data.id}`,
-		// 		);
-		// 		panel.webview.postMessage(
-		// 			await createResponse(
-		// 				new WebviewRequestHandler(store, panel),
-		// 				data,
-		// 				handleError,
-		// 			),
-		// 		);
-		// 	}
-		// });
+			// handle webToRuntime requests
+			if (isBridgeRequest<WebToRuntimeBridge>(data)) {
+				ensureLogger("GraphTabManager.onRequest").appendLine(
+					`[run] Received request ${data.method} id: ${data.id}`,
+				);
+				panel.webview.postMessage(
+					await createResponse(
+						new WebviewRequestHandler(repository, panel),
+						data,
+						handleError,
+					),
+				);
+			}
+		});
 
 		// store.addPanel(panel, repoPath, bridge);
 

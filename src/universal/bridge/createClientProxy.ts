@@ -31,7 +31,7 @@ export const createClientProxy = <TBridge extends object>(
 
 				return {
 					[key]: (...args: any[]) => {
-						const id = createGuid();
+						const id = createGuid(key);
 						const method = key as keyof TBridge;
 
 						postMessage({
@@ -63,4 +63,4 @@ export const createClientProxy = <TBridge extends object>(
 
 type Listener = [resolve: (x: never) => void, reject: (e: unknown) => void];
 
-const createGuid = () => nanoid();
+const createGuid = (key: string) => key + "#" + nanoid();

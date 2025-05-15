@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { RepositoryManager } from "./RepositoryManager/RepositoryManager";
-import { GraphTabManager } from "./GraphTabManager";
+import { GraphTabManager } from "./GraphTabManager/GraphTabManager";
 
 export type Backend = ReturnType<typeof createBackend>;
 

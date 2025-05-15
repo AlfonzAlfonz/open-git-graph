@@ -1,28 +1,27 @@
 export const errorToString = (e: unknown) => {
 	if (typeof e === "object" && e instanceof Error) {
 		return `
-Error occured
+Error occurred:
   ${e.message}
   ${e.stack}
-  ${tryStringify(e)}
-    `;
+`.trim();
 	}
 
 	return `
-Error occured
+Error occurred:
   ${
 		typeof e === "object" && e && ("toString" in e || Symbol.toStringTag in e)
 			? String(e)
 			: ""
 	}
   ${tryStringify(e)}
-`;
+`.trim();
 };
 
 const tryStringify = (e: unknown) => {
 	try {
 		return JSON.stringify(e);
 	} catch {
-		return "{ not stringifiable ) }";
+		return "{ not stringifyable ) }";
 	}
 };

@@ -7,13 +7,13 @@ export type Command<TId extends string> = {
 
 export const command = <TId extends string>(command: Command<TId>) => command;
 
-// export const buffer = async <T>(iterable: AsyncIterable<T>) => {
-// 	const result = [];
-// 	for await (const itm of iterable) {
-// 		result.push(itm);
-// 	}
-// 	return result;
-// };
+export const buffer = async <T>(iterable: AsyncIterable<T>) => {
+	const result = [];
+	for await (const itm of iterable) {
+		result.push(itm);
+	}
+	return result;
+};
 
 // export async function* batch<T>(
 // 	iterable: AsyncIterable<T>,
@@ -30,4 +30,4 @@ export const command = <TId extends string>(command: Command<TId>) => command;
 // 	return batchArray;
 // }
 
-// export const only = <T>(x: T | T[]) => (Array.isArray(x) ? x[0] : x);
+export const only = <T>(x: T | T[]) => (Array.isArray(x) ? x[0] : x);
