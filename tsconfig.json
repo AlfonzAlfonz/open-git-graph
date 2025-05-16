@@ -3,7 +3,7 @@
 		"module": "ESNext",
 		"moduleResolution": "Bundler",
 		"target": "esnext",
-		"lib": ["ES2020", "DOM"],
+		"lib": ["ES2020", "DOM", "esnext"],
 		"sourceMap": true,
 		"strict": true,
 		"noUncheckedIndexedAccess": true,

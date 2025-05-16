@@ -1,14 +1,13 @@
 import debounce from "lodash-es/debounce";
 import { useEffect, useMemo, useRef } from "react";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { ListChildComponentProps, VariableSizeList } from "react-window";
+import InfiniteLoader from "react-window-infinite-loader";
 import { GraphNode } from "../../../../runtime/GraphTabManager/createGraphNodes";
 import { GitCommit, GitIndex } from "../../../../universal/git";
 import { bridge } from "../../../bridge";
 import { groupBy } from "../../../state/groupBy";
 import { GraphTag, toGraphTags } from "../../../state/toGraphTags";
-import { useGetState } from "../../useGetState";
 import { useAppContext } from "../AppContext";
 import { CommitGraphRow } from "../GraphRow/CommitGraphRow";
 import { IndexGraphRow } from "../GraphRow/IndexGraphRow";
@@ -19,9 +18,7 @@ export const GraphTable = () => {
 	const initScrollRef = useRef(false);
 	const listRef = useRef<VariableSizeList>(null!);
 
-	const state = useGetState();
-	const expandedCommit = state.data?.expandedCommit;
-	const { graph, refs } = useAppContext();
+	const { graph, refs, expandedCommit, scroll } = useAppContext();
 
 	const tags = useMemo(
 		() => refs && new Map(toGraphTags(groupBy(refs, (r) => r.hash))),
@@ -31,12 +28,8 @@ export const GraphTable = () => {
 	useEffect(() => listRef.current?.resetAfterIndex(0), [expandedCommit]);
 
 	useEffect(() => {
-		if (
-			listRef.current &&
-			!initScrollRef.current &&
-			state.data?.scroll !== undefined
-		) {
-			listRef.current.scrollTo(state.data.scroll);
+		if (listRef.current && !initScrollRef.current && scroll !== undefined) {
+			listRef.current.scrollTo(scroll);
 			initScrollRef.current = true;
 		}
 	});
@@ -45,29 +38,43 @@ export const GraphTable = () => {
 		<GraphTableLayout>
 			<AutoSizer>
 				{({ height, width }) => (
-					<VariableSizeList
-						ref={listRef}
-						itemSize={(i) => {
-							const node = graph?.nodes[i]!;
-							if ("hash" in node.commit) {
-								return expandedCommit === node.commit.hash
-									? HEIGHT + 200
-									: HEIGHT;
-							} else {
-								return expandedCommit === "index" ? HEIGHT + 200 : HEIGHT;
-							}
+					<InfiniteLoader
+						isItemLoaded={(i) => !!graph && i < graph.nodes.length}
+						itemCount={graph ? graph.nodes.length * 2 : 0}
+						loadMoreItems={async () => {
+							await bridge.pollGraphData();
 						}}
-						width={width}
-						height={height}
-						itemData={{ nodes: graph?.nodes ?? [], tags }}
-						itemCount={graph?.nodes.length ?? 0}
-						children={Row}
-						onScroll={({ scrollOffset }) => {
-							if (initScrollRef.current) {
-								sendDebouncedScroll(scrollOffset);
-							}
-						}}
-					/>
+					>
+						{({ onItemsRendered, ref }) => (
+							<VariableSizeList
+								ref={(value) => {
+									ref(value);
+									listRef.current = value!;
+								}}
+								itemSize={(i) => {
+									const node = graph?.nodes[i]!;
+									if ("hash" in node.commit) {
+										return expandedCommit === node.commit.hash
+											? HEIGHT + 200
+											: HEIGHT;
+									} else {
+										return expandedCommit === "index" ? HEIGHT + 200 : HEIGHT;
+									}
+								}}
+								width={width}
+								height={height}
+								itemData={{ nodes: graph?.nodes ?? [], tags }}
+								itemCount={graph?.nodes.length ?? 0}
+								children={Row}
+								onItemsRendered={onItemsRendered}
+								onScroll={({ scrollOffset }) => {
+									if (initScrollRef.current) {
+										sendDebouncedScroll(scrollOffset);
+									}
+								}}
+							/>
+						)}
+					</InfiniteLoader>
 				)}
 			</AutoSizer>
 		</GraphTableLayout>

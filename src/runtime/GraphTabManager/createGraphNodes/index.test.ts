@@ -16,7 +16,7 @@ const commit = (
 	files: [],
 });
 
-test.skip("fork", () => {
+test("fork", () => {
 	const commits: GitCommit[] = [
 		commit("1", ["2a"], "1"),
 		commit("2a", ["3"], "2a"),
@@ -25,7 +25,7 @@ test.skip("fork", () => {
 		commit("4", [], "4"),
 	];
 
-	const { nodes } = createGraphNodes(commits);
+	const { nodes } = createGraphNodes(commits).toArray().at(-1)!;
 
 	const [n1, n2a, n2b, n3, n4] = nodes as [
 		GraphNode,
@@ -63,7 +63,7 @@ test("merge", () => {
 		commit("4", [], "4"),
 	];
 
-	const { nodes } = createGraphNodes(commits);
+	const { nodes } = createGraphNodes(commits).toArray().at(-1)!;
 
 	const [n1, n2a, n2b, n3, n4] = nodes as [
 		GraphNode,
@@ -108,7 +108,7 @@ test("merge2", () => {
 		commit("4", [], "4"),
 	];
 
-	const { nodes } = createGraphNodes(commits);
+	const { nodes } = createGraphNodes(commits).toArray().at(-1)!;
 
 	const [n1, n2c, n2a, n2b, n3, n4] = nodes as [
 		GraphNode,
@@ -148,7 +148,7 @@ test("merge2", () => {
 	expect(n4.merges).toMatchObject([]);
 });
 
-test.skip("index", () => {
+test("index", () => {
 	const commits: GitCommit[] = [
 		commit("1", ["2"], "1"),
 		commit("2", ["3"], "2a"),
@@ -156,9 +156,13 @@ test.skip("index", () => {
 		commit("4", [], "4"),
 	];
 
-	const index: GitIndex = { parents: ["2"], tracked: [], untracked: [] };
+	const index: GitIndex = {
+		parents: ["2"],
+		tracked: [{} as never],
+		untracked: [],
+	};
 
-	const { nodes } = createGraphNodes(commits, index);
+	const { nodes } = createGraphNodes(commits, index).toArray().at(-1)!;
 
 	const [i, n1, n2, n3, n4] = nodes as [
 		GraphNode,

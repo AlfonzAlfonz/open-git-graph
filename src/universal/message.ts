@@ -9,7 +9,14 @@ type GraphMessage = AnyRuntimeMessage<
 	}
 >;
 
-export type RuntimeMessage = GraphMessage;
+type GraphPollMessage = AnyRuntimeMessage<
+	"graph-poll",
+	{
+		graph: Graph;
+	}
+>;
+
+export type RuntimeMessage = GraphMessage | GraphPollMessage;
 
 interface AnyRuntimeMessage<TKey, T> {
 	message: true;
@@ -20,11 +27,12 @@ interface AnyRuntimeMessage<TKey, T> {
 export const runtimeMessage = <TKey extends RuntimeMessage["type"]>(
 	type: TKey,
 	data: (RuntimeMessage & { type: TKey })["data"],
-): RuntimeMessage & { type: TKey } => ({
-	message: true,
-	type,
-	data,
-});
+): RuntimeMessage & { type: TKey } =>
+	({
+		message: true,
+		type,
+		data,
+	}) as RuntimeMessage & { type: TKey };
 
 export const isRuntimeMessage = (x: unknown): x is RuntimeMessage =>
 	typeof x === "object" &&

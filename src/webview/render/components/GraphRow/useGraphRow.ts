@@ -4,8 +4,8 @@ import { GitCommit, GitIndex } from "../../../../universal/git";
 import { bridge } from "../../../bridge";
 import { GraphTag } from "../../../state/toGraphTags";
 import { useBridgeMutation } from "../../useBridge/useBridgeMutation";
-import { useGetState } from "../../useGetState";
 import { getColor } from "../../utils";
+import { useAppContext } from "../AppContext";
 
 export type UseGraphRowOptions<T extends GitCommit | GitIndex> = {
 	node: GraphNode<T>;
@@ -18,24 +18,22 @@ export const useGraphRow = <T extends GitCommit | GitIndex>({
 }: UseGraphRowOptions<T>) => {
 	const [expandCommit] = useBridgeMutation(bridge.expandCommit);
 
-	const state = useGetState();
+	const { expandedCommit } = useAppContext();
 	const id = "hash" in node.commit ? node.commit.hash : "index";
 
 	const onClick = async (e: MouseEvent) => {
 		if (e.detail > 1) return;
 
-		await expandCommit(state.data?.expandedCommit === id ? undefined : id);
+		await expandCommit(expandedCommit === id ? undefined : id);
 	};
 
 	const isHead = tags?.some((r) => r.type === "head");
 
 	return {
 		onClick,
-		open: state.data?.expandedCommit === id,
+		open: expandedCommit === id,
 		className: `graph-row ${isHead ? "head" : ""} ${
 			node.commit.parents.length > 1 ? "merge" : ""
-		} ${state.data?.expandedCommit === id ? "focused" : ""} ${getColor(
-			node.position,
-		)}`,
+		} ${expandedCommit === id ? "focused" : ""} ${getColor(node.position)}`,
 	};
 };

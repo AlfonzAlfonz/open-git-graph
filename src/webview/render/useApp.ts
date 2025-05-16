@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
+import { Graph } from "../../runtime/GraphTabManager/createGraphNodes";
 import { isBridgeResponse } from "../../universal/bridge";
-import { WebToRuntimeBridge } from "../../universal/protocol";
+import { GitRef } from "../../universal/git";
+import { isRuntimeMessage } from "../../universal/message";
+import { GraphState, WebToRuntimeBridge } from "../../universal/protocol";
 import { bridge } from "../bridge";
 import { IAppContext } from "./components/AppContext";
-import { isRuntimeMessage } from "../../universal/message";
-import { Graph } from "../../runtime/GraphTabManager/createGraphNodes";
-import { GitRef } from "../../universal/git";
 
 interface App {
 	state: IAppContext;
 }
 
 export const useApp = (): App => {
-	const [repoPath, setRepoPath] = useState<string>();
+	const [state, setState] = useState<GraphState>();
+
 	const [graph, setGraph] = useState<Graph>();
 	const [refs, setRefs] = useState<GitRef[]>();
 
@@ -29,19 +30,22 @@ export const useApp = (): App => {
 						setGraph(e.data.data.graph);
 						setRefs(e.data.data.refs);
 						break;
+					case "graph-poll":
+						setGraph(e.data.data.graph);
+						break;
+					default:
+						e.data satisfies never;
 				}
 			}
 		});
 
-		bridge.ready(repoPath).then(setRepoPath);
+		bridge.ready(state?.repoPath).then(setState);
 	}, []);
 
 	return {
 		state: {
-			repoPath,
+			...state,
 			graph,
-			expandedCommit: undefined,
-			scroll: 0,
 			refs,
 		},
 	};

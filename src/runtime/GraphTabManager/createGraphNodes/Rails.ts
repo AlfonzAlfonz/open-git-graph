@@ -16,8 +16,7 @@ export type RailId = number & { [idBrand]: typeof idBrand };
 
 export class Rails {
 	public constructor(
-		public state: RailsState = { rails: [], nextId: 0 },
-		private hashes: Set<string>,
+		public state: RailsState = { rails: [], nextId: 0 }, // private hashes: Set<string>,
 	) {}
 
 	add(commit: GitCommit | GitIndex): GraphNode {
@@ -57,7 +56,9 @@ export class Rails {
 		if (commit.parents.length > 1) {
 			const [, ...mergedParents] = [...commit.parents];
 			for (const parent of mergedParents) {
-				if (this.hashes.has(parent)) {
+				// unused but idk why
+				// if (this.hashes.has(parent)) {
+				if (true) {
 					const rail = { next: parent, id: this.id() };
 					this.state.rails.push(rail);
 					merges.push(rail.id);

@@ -25,16 +25,18 @@ export type GraphNode<T extends GitCommit | GitIndex = GitCommit | GitIndex> = {
 	merges: RailId[];
 };
 
-export const createGraphNodes = (
-	commits: GitCommit[],
+export type GraphGenerator = Generator<Graph, void, Iterable<GitCommit> | void>;
+
+export function* createGraphNodes(
+	commits: Iterable<GitCommit>,
 	index?: GitIndex,
-	prev?: Graph,
-): Graph => {
-	const hashes = new Set(commitHashes(commits, prev?.nodes));
+): GraphGenerator {
+	const queue = [commits];
+	// const hashes = new Set(commitHashes(commits));
 
-	const nodes = prev?.nodes ?? [];
+	const nodes = [];
 
-	let rails: Rails = new Rails(prev?.rails, hashes);
+	let rails: Rails = new Rails(undefined);
 	if (index && (index.tracked.length || index.untracked.length)) {
 		nodes.push(rails.add(index));
 	}
@@ -44,12 +46,21 @@ export const createGraphNodes = (
 		rails: rails.state,
 	};
 
-	for (const c of commits) {
-		graph.nodes.push(rails.add(c));
-	}
+	while (true) {
+		const commits = queue.shift();
 
-	return graph;
-};
+		if (!commits) {
+			break;
+		}
+
+		for (const c of commits) {
+			graph.nodes.push(rails.add(c));
+		}
+
+		const newCommits = yield graph;
+		newCommits && queue.push(newCommits);
+	}
+}
 
 function* commitHashes(commits: GitCommit[], prev?: GraphNode[]) {
 	for (const c of commits) {

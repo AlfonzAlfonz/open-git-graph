@@ -19,7 +19,7 @@ export class ShowFileTextDocumentContentProvider
 			authority: ref,
 			path: "/" + path,
 			query: `repo=${encodeURIComponent(
-				typeof repo === "string" ? repo : repo.repository.rootUri.toString(),
+				typeof repo === "string" ? repo : repo.getPath(),
 			)}`,
 		});
 	}

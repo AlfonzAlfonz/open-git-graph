@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { createResponse, isBridgeRequest } from "../../universal/bridge";
-import { GitIndex, GitRef } from "../../universal/git";
+import { GitCommit, GitIndex, GitRef } from "../../universal/git";
 import { GraphState, WebToRuntimeBridge } from "../../universal/protocol";
 import { GitRepository } from "../RepositoryManager/git/GitRepository";
 import { handleError } from "../handleError";
@@ -8,12 +8,13 @@ import { ensureLogger } from "../logger";
 import { renderHtmlShell } from "./HtmlShell";
 import { Graph, createGraphNodes } from "./createGraphNodes";
 import { WebviewRequestHandler } from "./requestHandler";
+import { Mutex } from "asxnc/Mutex";
 
-interface GraphTabState extends GraphState {
+export interface GraphTabState extends GraphState {
 	index?: GitIndex;
 	refs?: GitRef[];
 
-	graph: Graph;
+	graphIterator?: Mutex<AsyncIterator<Graph, void, Iterable<GitCommit>>>;
 }
 
 export class GraphTabManager {
@@ -38,7 +39,7 @@ export class GraphTabManager {
 		);
 
 		const state: GraphTabState = {
-			graph: createGraphNodes([], undefined, undefined),
+			repoPath: repository.getPath(),
 			expandedCommit: undefined,
 			scroll: 0,
 		};
@@ -57,10 +58,8 @@ export class GraphTabManager {
 				panel.webview.postMessage(
 					await createResponse(
 						new WebviewRequestHandler(
-							this,
 							repository,
 							() => state,
-							panel,
 							(x) => panel.webview.postMessage(x),
 						),
 						data,

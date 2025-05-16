@@ -1,15 +1,13 @@
 import { GitCommit, GitIndex, GitRef } from "../git";
 
 export interface WebToRuntimeBridge {
-	ready: (repoPath?: string) => Promise<string>;
+	ready: (repoPath?: string) => Promise<GraphState>;
 
-	// getGraphData(): Promise<GraphData>;
+	pollGraphData(): Promise<void>;
 
 	showDiff(path: string, a?: string, b?: string): Promise<void>;
 	checkout(branch: string): Promise<void>;
-	// logError(content: string): Promise<void>;
 
-	// getState(): Promise<GraphState>;
 	expandCommit(value?: string): Promise<void>;
 	scroll(value: number): Promise<void>;
 }
@@ -22,6 +20,7 @@ export type GraphData = {
 };
 
 export type GraphState = {
+	repoPath: string;
 	expandedCommit?: string;
 	scroll: number;
 };
