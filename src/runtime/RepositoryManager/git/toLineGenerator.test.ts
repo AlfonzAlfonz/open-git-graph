@@ -1,6 +1,6 @@
 import { Readable } from "stream";
 import { toLineGenerator } from "./toLineGenerator";
-import { buffer } from "../../../runtime2/utils";
+import { collect } from "asxnc/collect";
 
 test("toLineGenerator", async () => {
 	const input = `
@@ -14,7 +14,7 @@ d`;
 	readable.push(input);
 	readable.push(null);
 
-	const lines = await buffer(toLineGenerator(readable));
+	const lines = await collect(toLineGenerator(readable));
 
 	expect(lines).toMatchObject(["", "a", "b", "c", "", "d"]);
 });
