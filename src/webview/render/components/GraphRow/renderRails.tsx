@@ -98,8 +98,9 @@ export const renderEmptyRails = (node: GraphNode, height: number) => {
 		y * height,
 	];
 
-	const toRender = [...node.rails.filter((r) => node.forks.includes(r))];
-
+	let shift = 0;
+	let activeIndex = node.rails.findIndex((r) => node.position === r);
+	activeIndex = activeIndex === -1 ? node.rails.length : activeIndex;
 	const newRail = node.forks.find((f) => !node.rails.includes(f));
 	const width = node.rails.length + +!!newRail;
 
@@ -108,16 +109,36 @@ export const renderEmptyRails = (node: GraphNode, height: number) => {
 	for (const [x, r] of node.rails.entries()) {
 		const color = getColor(r);
 
-		const [x1, y1] = absoluteCoords(x, 0);
-		const [x2, y2] = absoluteCoords(x, 1);
+		const [x1, y1] = absoluteCoords(x - shift, 0);
+		const [x2, y2] = absoluteCoords(x - shift, 1);
+
+		if (node.forks.includes(r)) {
+			shift++;
+			continue;
+		}
 
 		rails.push(<path d={toBezier(x1, y1, x2, y2)} className={color} />);
 	}
-	if (!!newRail) {
+	if (newRail !== undefined) {
 		const [x1, y1] = absoluteCoords(node.rails.length, 0);
 		const [x2, y2] = absoluteCoords(node.rails.length, 1);
 		rails.push(
 			<path d={toBezier(x1, y1, x2, y2)} className={getColor(newRail)} />,
+		);
+	}
+
+	const newRailOffset = Number(newRail !== undefined);
+	for (const [i, m] of node.merges.entries()) {
+		const x = node.rails.length + newRailOffset - shift + i;
+		const [x1, y1] = absoluteCoords(x, 0);
+		const [x2, y2] = absoluteCoords(x, 1);
+
+		rails.push(
+			<path
+				key={rails.length}
+				d={toBezier(x1, y1, x2, y2)}
+				className={getColor(m)}
+			/>,
 		);
 	}
 
