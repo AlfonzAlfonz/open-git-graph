@@ -1,26 +1,25 @@
 import { Pylon, PylonIterator } from "asxnc";
 import * as vscode from "vscode";
-import { ensureLogger } from "../logger";
+import { log } from "../logger";
 import { GitRepository } from "./git/GitRepository";
 import { GitExtension } from "./vscode.git/types";
 
+const debug = log("VSCodeGitManager");
+
 export class RepositoryManager {
 	public repositories: PylonIterator<Record<string, GitRepository>> = null!;
-
-	private log = ensureLogger("VSCodeGitManager");
 
 	constructor(
 		public readonly extension: GitExtension = RepositoryManager.getExtension(),
 	) {}
 
 	start(): Disposable {
-		this.log.appendLine("VSCodeGitManager started");
+		debug("started");
 
 		const [repositories, swap] = Pylon.create<Record<string, GitRepository>>();
 		this.repositories = repositories;
 
 		const api = this.extension.getAPI(1);
-		console.log(api);
 
 		swap(
 			Object.fromEntries(
@@ -33,7 +32,7 @@ export class RepositoryManager {
 
 		const subs = [
 			api.onDidChangeState((a) => {
-				this.log.appendLine("[vscode.git] State changed");
+				debug("State changed");
 				// TODO: handle git state changes
 			}),
 			api.onDidOpenRepository((r) => {

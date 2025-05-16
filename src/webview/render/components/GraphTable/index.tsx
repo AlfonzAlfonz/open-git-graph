@@ -25,7 +25,7 @@ export const GraphTable = () => {
 		[refs],
 	);
 
-	useEffect(() => listRef.current?.resetAfterIndex(0), [expandedCommit]);
+	// useEffect(() => listRef.current?.resetAfterIndex(0), [expandedCommit]);
 
 	useEffect(() => {
 		if (listRef.current && !initScrollRef.current && scroll !== undefined) {

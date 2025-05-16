@@ -5,7 +5,7 @@ import { GitCommit, GitIndex, GitRef } from "../../universal/git";
 import { GraphState, WebToRuntimeBridge } from "../../universal/protocol";
 import { GitRepository } from "../RepositoryManager/git/GitRepository";
 import { handleError } from "../handleError";
-import { ensureLogger } from "../logger";
+import { log } from "../logger";
 import { renderHtmlShell } from "./HtmlShell";
 import { Graph } from "./createGraphNodes";
 import { WebviewRequestHandler } from "./requestHandler";
@@ -14,8 +14,12 @@ export interface GraphTabState extends GraphState {
 	index?: GitIndex;
 	refs?: GitRef[];
 
-	graphIterator?: Mutex<AsyncIterator<Graph, void, Iterable<GitCommit>>>;
+	graphIterator: Mutex<{
+		iterator: AsyncIterator<Graph, void, Iterable<GitCommit>> | undefined;
+	}>;
 }
+
+const debug = log("GraphTabManager");
 
 export class GraphTabManager {
 	constructor(private context: vscode.ExtensionContext) {}
@@ -40,6 +44,7 @@ export class GraphTabManager {
 			repoPath: repository.getPath(),
 			expandedCommit: undefined,
 			scroll: 0,
+			graphIterator: Mutex.create({ iterator: undefined }),
 		};
 
 		panel.webview.html = renderHtmlShell({
@@ -56,9 +61,7 @@ export class GraphTabManager {
 		panel.webview.onDidReceiveMessage(async (data) => {
 			// handle webToRuntime requests
 			if (isBridgeRequest<WebToRuntimeBridge>(data)) {
-				ensureLogger("GraphTabManager.onRequest").appendLine(
-					`[run] Received request ${data.id}`,
-				);
+				debug("onRequest", data.id, data.args);
 				panel.webview.postMessage(
 					await createResponse(handler, data, handleError),
 				);
@@ -66,7 +69,7 @@ export class GraphTabManager {
 		});
 
 		const changeDisposable = repository.onDidChange(() => {
-			handler.getGraphData(true);
+			// handler.getGraphData(true);
 		});
 
 		// store.addPanel(panel, repoPath, bridge);

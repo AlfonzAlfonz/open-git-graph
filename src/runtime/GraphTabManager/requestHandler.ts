@@ -1,17 +1,14 @@
-import { collect, Mutex } from "asxnc";
+import { collect, fork, Mutex } from "asxnc";
 import * as vscode from "vscode";
 import { RuntimeMessage, runtimeMessage } from "../../universal/message";
 import { WebToRuntimeBridge } from "../../universal/protocol";
 import { GitRepository } from "../RepositoryManager/git/GitRepository";
 import { ShowFileTextDocumentContentProvider } from "../ShowFileTextDocumentContentProvider";
-import { ensureLogger } from "../logger";
-import { GraphTabManager, GraphTabState } from "./GraphTabManager";
+import { GraphTabState } from "./GraphTabManager";
 import { createGraphNodes } from "./createGraphNodes";
 import { batch } from "../utils";
 
 export class WebviewRequestHandler implements WebToRuntimeBridge {
-	private log = ensureLogger("WebviewRequestHandler");
-
 	constructor(
 		private repository: GitRepository,
 		private getOwnState: () => GraphTabState,
@@ -30,7 +27,7 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 	async pollGraphData(): Promise<void> {
 		const state = this.getOwnState();
 		const graph = await state.graphIterator?.acquire(
-			async (it) => (await it.next()).value!,
+			async (value) => (await value.iterator!.next()).value!,
 		)!;
 
 		this.postMessage(runtimeMessage("graph-poll", { graph }));
@@ -39,44 +36,39 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 	async getGraphData(force?: boolean) {
 		const state = this.getOwnState();
 
-		if (!force && state.graph && state.refs) {
-			this.postMessage(
-				runtimeMessage("graph", {
-					graph: state.graph,
+		const data = await state.graphIterator.acquire(async (value) => {
+			if (!force && value.iterator && state.refs) {
+				return {
+					graph: (await value.iterator.next()).value!,
 					refs: state.refs,
-				}),
+				};
+			}
+
+			const [refs, index] = await fork([
+				async () => {
+					return await collect(this.repository.getRefs());
+				},
+				() => this.repository.getIndex(),
+			]);
+
+			const iterator = (await this.repository.getCommits()).commits[
+				Symbol.asyncIterator
+			]();
+
+			const graphIterator = createGraphNodes(
+				await collect(take(iterator, 100)),
+				index,
 			);
-			return;
-		}
 
-		const dispatchRefs = async () => {
-			return await collect(this.repository.getRefs());
-		};
+			value.iterator = pipeCommitsToGraph(iterator, graphIterator);
 
-		const [refs, index] = await Promise.all([
-			dispatchRefs(),
-			this.repository.getIndex(),
-		]);
-
-		const iterator = (await this.repository.getCommits()).commits[
-			Symbol.asyncIterator
-		]();
-
-		const graphIterator = createGraphNodes(
-			await collect(take(iterator, 100)),
-			index,
-		);
-
-		this.getOwnState().graphIterator = Mutex.create(
-			pipeCommitsToGraph(iterator, graphIterator),
-		);
-
-		this.postMessage(
-			runtimeMessage("graph", {
+			return {
 				graph: graphIterator.next().value!,
 				refs,
-			}),
-		);
+			};
+		});
+
+		this.postMessage(runtimeMessage("graph", data));
 	}
 
 	async showDiff(path: string, a?: string, b?: string) {

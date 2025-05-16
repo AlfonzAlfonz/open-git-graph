@@ -1,20 +1,44 @@
+import debug, { Debugger } from "debug";
+import util from "util";
 import * as vscode from "vscode";
 
-let logger: vscode.OutputChannel;
+const DEV_DEBUG = [
+	// "git",
+	"GraphTabManager",
+	"WebviewRequestHandler",
+	// force indent
+].join(",");
+
+export let output: vscode.OutputChannel;
 
 export interface Logger {
 	appendLine: (value: string) => void;
 	dispose: () => void;
 }
 
-export const ensureLogger = (name: string): Logger => {
-	return {
-		appendLine: (value: string) => {
-			if (!logger) logger = vscode.window.createOutputChannel("Open git graph");
-			logger.appendLine(`[${name}]: ${value}`);
-		},
-		dispose: () => {
-			logger.dispose();
-		},
+export const log = (name: string) => {
+	if (!output) {
+		output = vscode.window.createOutputChannel("Open git graph");
+
+		debug.inspectOpts = {
+			colors: false,
+			hideDate: true,
+		};
+
+		debug.enable(DEV_DEBUG);
+	}
+
+	const d = debug(name);
+
+	d.log = (...[_, first, ...args]: unknown[]) => {
+		output.appendLine(
+			`[${name}] ${
+				typeof first === "string" ? first : util.inspect(first, false, 2, false)
+			} ${args.map((a) => util.inspect(a, false, 2, false)).join(" ")}`,
+		);
+	};
+
+	return (...args: unknown[]) => {
+		d("", ...args);
 	};
 };

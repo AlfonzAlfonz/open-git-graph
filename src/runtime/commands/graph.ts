@@ -1,17 +1,19 @@
 import * as vscode from "vscode";
 import { GitRepository } from "../RepositoryManager/git/GitRepository";
 import { errors } from "../handleError";
-import { ensureLogger } from "../logger";
+import { log } from "../logger";
 import { command } from "../utils";
+
+const debug = log("graphCommand");
 
 export const graphCommand = command({
 	id: "open-git-graph.graph",
 	command: (backend) => async () => {
 		const repositories = await backend.git.repositories.read();
-		ensureLogger("zz").appendLine(Object.keys(repositories).join());
+
 		const repo = await selectRepo(repositories);
 
-		ensureLogger("graphCommand").appendLine(`Opening repo ${repo}`);
+		debug(`Opening graph ${repo}`);
 
 		backend.graphTab.open(repo);
 	},

@@ -1,5 +1,8 @@
 import { spawn } from "node:child_process";
 import { GitCommand } from "./commands/utils";
+import { log } from "../../logger";
+
+const debug = log("git");
 
 export const execGit = <T>(
 	cmd: GitCommand<T>,
@@ -7,6 +10,8 @@ export const execGit = <T>(
 	repoPath: string,
 	onError: (e: unknown) => unknown,
 ): T => {
+	debug(gitPath, cmd.args);
+
 	const child = spawn(gitPath, cmd.args, {
 		cwd: repoPath,
 	});

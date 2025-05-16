@@ -1,8 +1,8 @@
-import * as vscode from "vscode";
 import { collect } from "asxnc";
-import { handleError } from "../../../runtime2/handleError";
+import * as vscode from "vscode";
 import { GitCommit, GitIndex, GitRef } from "../../../universal/git";
-import { Logger, ensureLogger } from "../../logger";
+import { handleError } from "../../handleError";
+import { log } from "../../logger";
 import { GitExtension, Repository } from "../vscode.git/types";
 import { gitCheckout } from "./commands/gitCheckout";
 import { gitLogCommits } from "./commands/gitLogCommits";
@@ -16,14 +16,10 @@ import { GitCommand } from "./commands/utils";
 import { execGit } from "./execGit";
 
 export class GitRepository {
-	private log: Logger;
-
 	constructor(
 		private repository: Repository,
 		private extension: GitExtension,
-	) {
-		this.log = ensureLogger(`git`);
-	}
+	) {}
 
 	public getPath() {
 		return this.repository.rootUri.toString();
@@ -91,8 +87,6 @@ export class GitRepository {
 	private execGit = <T>(cmd: GitCommand<T>): T => {
 		const api = this.extension.getAPI(1);
 		const repository = this.repository;
-
-		this.log.appendLine(`${api.git.path} ${cmd.args.join(" ")}`);
 
 		return execGit(cmd, api.git.path, repository.rootUri.fsPath, handleError);
 	};

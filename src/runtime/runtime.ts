@@ -3,13 +3,11 @@ import "core-js/proposals/async-iterator-helpers";
 import * as vscode from "vscode";
 import { graphCommand } from "./commands/graph";
 import { createBackend } from "./createBackend";
-import { ensureLogger } from "./logger";
 import { catchErrors } from "./handleError";
+import { output } from "./logger";
 import { ShowFileTextDocumentContentProvider } from "./ShowFileTextDocumentContentProvider";
 
 export function activate(context: vscode.ExtensionContext) {
-	ensureLogger("activate").appendLine("Activating extension");
-
 	const backend = createBackend(context);
 
 	context.subscriptions.push(
@@ -29,5 +27,5 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-	ensureLogger("").dispose();
+	output.dispose();
 }
