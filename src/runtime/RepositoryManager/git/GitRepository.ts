@@ -1,3 +1,4 @@
+import * as vscode from "vscode";
 import { collect } from "asxnc";
 import { handleError } from "../../../runtime2/handleError";
 import { GitCommit, GitIndex, GitRef } from "../../../universal/git";
@@ -81,6 +82,10 @@ export class GitRepository {
 
 	public async checkout(branch: string) {
 		return await this.execGit(gitCheckout(branch));
+	}
+
+	public onDidChange(fn: () => void): vscode.Disposable {
+		return this.repository.state.onDidChange(fn);
 	}
 
 	private execGit = <T>(cmd: GitCommand<T>): T => {

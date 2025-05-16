@@ -1,3 +1,4 @@
+import { Mutex } from "asxnc/Mutex";
 import * as vscode from "vscode";
 import { createResponse, isBridgeRequest } from "../../universal/bridge";
 import { GitCommit, GitIndex, GitRef } from "../../universal/git";
@@ -6,9 +7,8 @@ import { GitRepository } from "../RepositoryManager/git/GitRepository";
 import { handleError } from "../handleError";
 import { ensureLogger } from "../logger";
 import { renderHtmlShell } from "./HtmlShell";
-import { Graph, createGraphNodes } from "./createGraphNodes";
+import { Graph } from "./createGraphNodes";
 import { WebviewRequestHandler } from "./requestHandler";
-import { Mutex } from "asxnc/Mutex";
 
 export interface GraphTabState extends GraphState {
 	index?: GitIndex;
@@ -18,8 +18,6 @@ export interface GraphTabState extends GraphState {
 }
 
 export class GraphTabManager {
-	private state: Record<string, {}> = {};
-
 	constructor(private context: vscode.ExtensionContext) {}
 
 	open(repository: GitRepository) {
@@ -29,7 +27,7 @@ export class GraphTabManager {
 			"open-git-graph.graph",
 			"Open Git Graph",
 			vscode.ViewColumn.One,
-			{ enableScripts: true },
+			{ enableScripts: true, retainContextWhenHidden: true },
 		);
 		const styleUri = panel.webview.asWebviewUri(
 			vscode.Uri.joinPath(this.context.extensionUri, "dist", "output.css"),
@@ -49,6 +47,12 @@ export class GraphTabManager {
 			scriptUri: scriptUri.toString(),
 		});
 
+		const handler = new WebviewRequestHandler(
+			repository,
+			() => state,
+			(x) => panel.webview.postMessage(x),
+		);
+
 		panel.webview.onDidReceiveMessage(async (data) => {
 			// handle webToRuntime requests
 			if (isBridgeRequest<WebToRuntimeBridge>(data)) {
@@ -56,22 +60,20 @@ export class GraphTabManager {
 					`[run] Received request ${data.id}`,
 				);
 				panel.webview.postMessage(
-					await createResponse(
-						new WebviewRequestHandler(
-							repository,
-							() => state,
-							(x) => panel.webview.postMessage(x),
-						),
-						data,
-						handleError,
-					),
+					await createResponse(handler, data, handleError),
 				);
 			}
 		});
 
+		const changeDisposable = repository.onDidChange(() => {
+			handler.getGraphData(true);
+		});
+
 		// store.addPanel(panel, repoPath, bridge);
 
-		// panel.onDidDispose(() => store.removePanel(panel));
+		panel.onDidDispose(() => {
+			changeDisposable.dispose();
+		});
 
 		return panel;
 	}

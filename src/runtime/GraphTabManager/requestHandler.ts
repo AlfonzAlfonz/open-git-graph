@@ -36,7 +36,19 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 		this.postMessage(runtimeMessage("graph-poll", { graph }));
 	}
 
-	async getGraphData() {
+	async getGraphData(force?: boolean) {
+		const state = this.getOwnState();
+
+		if (!force && state.graph && state.refs) {
+			this.postMessage(
+				runtimeMessage("graph", {
+					graph: state.graph,
+					refs: state.refs,
+				}),
+			);
+			return;
+		}
+
 		const dispatchRefs = async () => {
 			return await collect(this.repository.getRefs());
 		};
