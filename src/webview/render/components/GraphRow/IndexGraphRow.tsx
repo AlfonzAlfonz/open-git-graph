@@ -25,7 +25,7 @@ export const IndexGraphRow = ({
 					style={{ flex: "var(--table-index-width) 1 0px" }}
 				>
 					<p className="inline-block whitespace-nowrap text-ellipsis overflow-hidden leading-tight flex-grow-1">
-						Uncommited changes
+						Uncommitted changes
 					</p>
 				</div>
 			</div>

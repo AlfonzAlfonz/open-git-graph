@@ -13,6 +13,9 @@ export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 				(r) =>
 					r.type !== "head" && (
 						<div
+							onClick={(e) => {
+								e.stopPropagation();
+							}}
 							onDoubleClick={
 								r.type === "branch"
 									? async () => {

@@ -20,8 +20,6 @@ export const useGraphRow = <T extends GitCommit | GitIndex>({
 	const id = "hash" in node.commit ? node.commit.hash : "index";
 
 	const onClick = async (e: MouseEvent) => {
-		if (e.detail > 1) return;
-
 		actions.expandCommit(expandedCommit === id ? undefined : id);
 	};
 
