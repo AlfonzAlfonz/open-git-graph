@@ -1,14 +1,13 @@
 import * as vscode from "vscode";
 import { errorToString } from "../universal/errorToString";
-import { log } from "./logger";
-
-const debug = log("handleError");
+import { output } from "./logger";
 
 export const handleError = (e: unknown) => {
 	if (e instanceof Error) {
 		vscode.window.showErrorMessage(e.message);
 	}
-	debug(errorToString(e));
+
+	output.error(errorToString(e));
 };
 
 export const catchErrors =

@@ -13,7 +13,7 @@ export const graphCommand = command({
 
 		const repo = await selectRepo(repositories);
 
-		debug(`Opening graph ${repo}`);
+		debug("Path: ", repo);
 
 		backend.graphTab.open(repo);
 	},

@@ -8,6 +8,8 @@ import { output } from "./logger";
 import { ShowFileTextDocumentContentProvider } from "./ShowFileTextDocumentContentProvider";
 
 export function activate(context: vscode.ExtensionContext) {
+	output.appendLine("Activating extension");
+
 	const backend = createBackend(context);
 
 	context.subscriptions.push(

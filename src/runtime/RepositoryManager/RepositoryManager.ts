@@ -4,7 +4,7 @@ import { log } from "../logger";
 import { GitRepository } from "./git/GitRepository";
 import { GitExtension } from "./vscode.git/types";
 
-const debug = log("VSCodeGitManager");
+const debug = log("RepositoryManager");
 
 export class RepositoryManager {
 	public repositories: PylonIterator<Record<string, GitRepository>> = null!;

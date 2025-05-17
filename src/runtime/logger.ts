@@ -1,15 +1,16 @@
-import debug, { Debugger } from "debug";
+import debug from "debug";
 import util from "util";
 import * as vscode from "vscode";
 
 const DEV_DEBUG = [
-	// "git",
+	"git",
 	"GraphTabManager",
 	"WebviewRequestHandler",
+	"RepositoryManager",
 	// force indent
 ].join(",");
 
-export let output: vscode.OutputChannel;
+export let output: vscode.LogOutputChannel;
 
 export interface Logger {
 	appendLine: (value: string) => void;
@@ -18,7 +19,7 @@ export interface Logger {
 
 export const log = (name: string) => {
 	if (!output) {
-		output = vscode.window.createOutputChannel("Open git graph");
+		output = vscode.window.createOutputChannel("Open git graph", { log: true });
 
 		debug.inspectOpts = {
 			colors: false,
@@ -31,7 +32,7 @@ export const log = (name: string) => {
 	const d = debug(name);
 
 	d.log = (...[_, first, ...args]: unknown[]) => {
-		output.appendLine(
+		output.info(
 			`[${name}] ${
 				typeof first === "string" ? first : util.inspect(first, false, 2, false)
 			} ${args.map((a) => util.inspect(a, false, 2, false)).join(" ")}`,
