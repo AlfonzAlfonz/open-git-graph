@@ -1,7 +1,7 @@
 import { GitCommit, GitIndex, GitRef } from "../git";
 
 export interface WebToRuntimeBridge {
-	ready: (repoPath?: string) => Promise<GraphState>;
+	ready: (repoPath?: string) => Promise<GraphTabState>;
 
 	pollGraphData(): Promise<void>;
 
@@ -19,7 +19,7 @@ export type GraphData = {
 	commits: GitCommit[];
 };
 
-export type GraphState = {
+export type GraphTabState = {
 	repoPath: string;
 	expandedCommit?: string;
 	scroll: number;

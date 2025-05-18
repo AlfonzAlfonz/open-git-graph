@@ -1,82 +1,29 @@
-import { collect, fork } from "asxnc";
 import * as vscode from "vscode";
 import { RuntimeMessage, runtimeMessage } from "../../universal/message";
-import { WebToRuntimeBridge } from "../../universal/protocol";
-import { GitRepository } from "../RepositoryManager/git/GitRepository";
+import { GraphTabState, WebToRuntimeBridge } from "../../universal/protocol";
+import { RepositoryStateHandle } from "../RepositoryManager/RepositoryStateHandle";
 import { ShowFileTextDocumentContentProvider } from "../ShowFileTextDocumentContentProvider";
 import { batch } from "../utils";
-import { GraphTabState } from "./GraphTabManager";
-import { createGraphNodes } from "./createGraphNodes";
 
 export class WebviewRequestHandler implements WebToRuntimeBridge {
 	constructor(
-		private repository: GitRepository,
-		private getOwnState: () => GraphTabState,
+		private handle: RepositoryStateHandle,
+		private state: GraphTabState,
 		private postMessage: (msg: RuntimeMessage) => void,
 	) {}
 
 	async ready(repoPath?: string | undefined) {
-		this.getGraphData();
+		await this.handle.getGraphData();
 
-		return {
-			...this.getOwnState(),
-			repoPath: this.repository.getPath(),
-		};
+		return this.state;
 	}
 
 	async pollGraphData(): Promise<void> {
-		const state = this.getOwnState();
-		const graph = await state.graphIterator?.acquire(
-			async (value) => (await value.iterator!.next()).value!,
-		)!;
-
-		this.postMessage(runtimeMessage("graph-poll", { graph }));
-	}
-
-	async getGraphData(force?: boolean) {
-		const state = this.getOwnState();
-
-		const data = await state.graphIterator.acquire(async (value) => {
-			if (!force && value.iterator && state.refs) {
-				return {
-					graph: (await value.iterator.next()).value!,
-					refs: state.refs,
-				};
-			}
-
-			const [refs, index] = await fork([
-				async () => {
-					return await collect(this.repository.getRefs());
-				},
-				() => this.repository.getIndex(),
-			]);
-
-			const { commits, stashes } = await this.repository.getCommits();
-
-			const iterator = commits[Symbol.asyncIterator]();
-
-			const graphIterator = createGraphNodes(
-				await collect(take(iterator, 100)),
-				index,
-				stashes,
-			);
-
-			value.iterator = pipeCommitsToGraph(iterator, graphIterator);
-
-			return {
-				graph: graphIterator.next().value!,
-				refs: [
-					...refs,
-					...stashes.map((s) => ({ type: "stash" as const, hash: s.hash })),
-				],
-			};
-		});
-
-		this.postMessage(runtimeMessage("graph", data));
+		await this.handle.pollGraphData();
 	}
 
 	async showDiff(path: string, a?: string, b?: string) {
-		const repoPath = this.repository.getPath();
+		const repoPath = this.state.repoPath;
 
 		await vscode.commands.executeCommand(
 			"vscode.diff",
@@ -87,15 +34,15 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 	}
 
 	async checkout(branch: string) {
-		await this.repository.checkout(branch);
+		await this.handle.checkout(branch);
 	}
 
 	async expandCommit(value?: string | undefined) {
-		this.getOwnState().expandedCommit = value;
+		this.state.expandedCommit = value;
 	}
 
 	async scroll(value: number) {
-		this.getOwnState().scroll = value;
+		this.state.scroll = value;
 	}
 }
 

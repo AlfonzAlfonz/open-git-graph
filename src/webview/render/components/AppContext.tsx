@@ -1,9 +1,9 @@
 import { createContext, useContext } from "react";
-import { GraphState } from "../../../universal/protocol";
+import { GraphTabState } from "../../../universal/protocol";
 import { Graph } from "../../../runtime/GraphTabManager/createGraphNodes";
 import { GitRef } from "../../../universal/git";
 
-export interface IAppContext extends Partial<GraphState> {
+export interface IAppContext extends Partial<GraphTabState> {
 	repoPath?: string;
 	graph?: Graph;
 	refs?: GitRef[];

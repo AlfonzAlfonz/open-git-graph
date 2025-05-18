@@ -1,19 +1,48 @@
-import { Pylon, PylonIterator } from "asxnc";
+import { fork, Pylon, PylonIterator } from "asxnc";
 import * as vscode from "vscode";
 import { log } from "../logger";
 import { GitRepository } from "./git/GitRepository";
 import { GitExtension } from "./vscode.git/types";
+import { RepositoryStateHandle } from "./RepositoryStateHandle";
+import { aggregateGitEvents, watchGit } from "./gitWatch/watchGit";
+import { signalDisposable } from "../utils";
 
 const debug = log("RepositoryManager");
 
 export class RepositoryManager {
 	public repositories: PylonIterator<Record<string, GitRepository>> = null!;
 
+	private state: Record<string, RepositoryStateHandle> = {};
+
 	constructor(
+		private appSignal: AbortSignal,
 		public readonly extension: GitExtension = RepositoryManager.getExtension(),
 	) {}
 
-	start(): Disposable {
+	public getStateHandle(repository: GitRepository) {
+		const path = repository.getPath();
+
+		if (path in this.state) {
+			return this.state[path]!;
+		}
+
+		const handle = new RepositoryStateHandle(repository);
+		this.state[path] = handle;
+
+		fork(async () => {
+			const watcher = aggregateGitEvents(
+				watchGit(repository.getFsPath(), this.appSignal),
+			);
+
+			for await (const _ of watcher) {
+				this.state[path]?.getGraphData(true);
+			}
+		});
+
+		return handle;
+	}
+
+	start() {
 		debug("started");
 
 		const [repositories, swap] = Pylon.create<Record<string, GitRepository>>();
@@ -30,11 +59,8 @@ export class RepositoryManager {
 			),
 		);
 
-		const subs = [
-			api.onDidChangeState((a) => {
-				debug("State changed");
-				// TODO: handle git state changes
-			}),
+		signalDisposable(
+			this.appSignal,
 			api.onDidOpenRepository((r) => {
 				swap({
 					...repositories.readSync(),
@@ -48,15 +74,7 @@ export class RepositoryManager {
 				delete repository[e.rootUri.toString()];
 				swap(repository);
 			}),
-		];
-
-		return {
-			[Symbol.dispose]: () => {
-				for (const sub of subs) {
-					sub.dispose();
-				}
-			},
-		};
+		);
 	}
 
 	static getExtension() {

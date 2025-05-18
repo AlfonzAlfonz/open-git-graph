@@ -9,11 +9,11 @@ const debug = log("graphCommand");
 export const graphCommand = command({
 	id: "open-git-graph.graph",
 	command: (backend) => async () => {
-		const repositories = await backend.git.repositories.read();
+		const repositories = await backend.repositoryManager.repositories.read();
 
 		const repo = await selectRepo(repositories);
 
-		debug("Path: ", repo);
+		debug("path: ", repo.getPath());
 
 		backend.graphTab.open(repo);
 	},

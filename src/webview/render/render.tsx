@@ -1,12 +1,9 @@
 import { createRoot } from "react-dom/client";
-import { errorToString } from "../../universal/errorToString";
-import { bridge } from "../bridge";
 import { ErrorBoundary } from "./ErrorBoundary";
-import { WIP } from "./WIP";
 import { AppContext } from "./components/AppContext";
-import { useApp } from "./useApp";
-import { LoadingModal } from "./components/LoadingModal";
 import { GraphTable } from "./components/GraphTable";
+import { LoadingModal } from "./components/LoadingModal";
+import { useApp } from "./useApp";
 
 export const render = () => {
 	createRoot(document.querySelector("#root")!).render(<App />);

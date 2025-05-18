@@ -1,0 +1,60 @@
+import { Queue } from "asxnc/Queue";
+import path from "path";
+import * as vscode from "vscode";
+import { log } from "../../logger";
+
+const debug = log("watchGit");
+
+type FsEvent = {
+	type: "changed" | "created" | "deleted";
+	path: string;
+};
+
+export function watchGit(repoPath: string, signal: AbortSignal) {
+	const watcher = vscode.workspace.createFileSystemWatcher(
+		path.join(repoPath, ".git", "/**"),
+	);
+
+	const [it, dispatch] = Queue.create<FsEvent>();
+
+	const listener = (type: FsEvent["type"]) => (uri: vscode.Uri) => {
+		debug("fs event", type, path.relative(repoPath, uri.fsPath));
+		dispatch(
+			{
+				type,
+				path: path.relative(repoPath, uri.fsPath),
+			},
+			false,
+		);
+	};
+
+	const dis = [
+		watcher.onDidChange(listener("changed")),
+		watcher.onDidCreate(listener("created")),
+		watcher.onDidDelete(listener("deleted")),
+	];
+
+	signal.addEventListener("abort", () => {
+		dis.forEach((d) => d.dispose());
+		dispatch(undefined, true);
+	});
+
+	return it;
+}
+
+export async function* aggregateGitEvents(it: AsyncIterableIterator<FsEvent>) {
+	for await (const { type, path } of it) {
+		if (
+			type === "deleted" &&
+			path.startsWith(".git/refs/") &&
+			path.endsWith(".lock")
+		) {
+			debug("ref-update");
+			yield { type: "ref-update" };
+		}
+		if (type === "deleted" && path === ".git/packed-refs.lock") {
+			debug("ref-update");
+			yield { type: "ref-update" };
+		}
+	}
+}

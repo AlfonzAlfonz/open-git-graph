@@ -1,5 +1,5 @@
 import { Backend } from "./createBackend";
-import { output } from "./logger";
+import * as vscode from "vscode";
 
 export type Command<TId extends string> = {
 	id: TId;
@@ -12,8 +12,8 @@ export const command = <TId extends string>(command: Command<TId>) => {
 		command:
 			(backend: Backend) =>
 			(...args: Parameters<ReturnType<Command<TId>["command"]>>) => {
-				output.info("");
-				output.info(`Executing command "${command.id}"`);
+				console.info("");
+				console.info(`Executing command "${command.id}"`);
 
 				return command.command(backend)(...args);
 			},
@@ -36,3 +36,12 @@ export async function* batch<T>(
 }
 
 export const only = <T>(x: T | T[]) => (Array.isArray(x) ? x[0] : x);
+
+export const signalDisposable = (
+	signal: AbortSignal,
+	...disposables: vscode.Disposable[]
+) => {
+	signal.addEventListener("abort", () => {
+		disposables.forEach((d) => d.dispose());
+	});
+};

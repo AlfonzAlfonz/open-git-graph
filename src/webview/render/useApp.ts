@@ -3,7 +3,7 @@ import { Graph } from "../../runtime/GraphTabManager/createGraphNodes";
 import { isBridgeResponse } from "../../universal/bridge";
 import { GitRef } from "../../universal/git";
 import { isRuntimeMessage } from "../../universal/message";
-import { GraphState, WebToRuntimeBridge } from "../../universal/protocol";
+import { GraphTabState, WebToRuntimeBridge } from "../../universal/protocol";
 import { bridge } from "../bridge";
 import { IAppContext } from "./components/AppContext";
 import debounce from "lodash-es/debounce";
@@ -13,7 +13,7 @@ interface App {
 }
 
 export const useApp = (): App => {
-	const [state, setState] = useState<GraphState>();
+	const [state, setState] = useState<GraphTabState>();
 
 	const [graph, setGraph] = useState<Graph>();
 	const [refs, setRefs] = useState<GitRef[]>();

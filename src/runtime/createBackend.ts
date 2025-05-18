@@ -4,14 +4,17 @@ import { GraphTabManager } from "./GraphTabManager/GraphTabManager";
 
 export type Backend = ReturnType<typeof createBackend>;
 
-export const createBackend = (context: vscode.ExtensionContext) => {
-	const git = new RepositoryManager();
-	git.start();
+export const createBackend = (
+	context: vscode.ExtensionContext,
+	appSignal: AbortSignal,
+) => {
+	const repositoryManager = new RepositoryManager(appSignal);
+	repositoryManager.start();
 
-	const graphTab = new GraphTabManager(context);
+	const graphTab = new GraphTabManager(context, appSignal, repositoryManager);
 
 	return {
-		git,
+		repositoryManager,
 		graphTab,
 	};
 };

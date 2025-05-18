@@ -1,8 +1,7 @@
 import { collect } from "asxnc";
 import * as vscode from "vscode";
-import { GitCommit, GitIndex, GitRef } from "../../../universal/git";
+import { GitCommit, GitIndex } from "../../../universal/git";
 import { handleError } from "../../handleError";
-import { log } from "../../logger";
 import { GitExtension, Repository } from "../vscode.git/types";
 import { gitCheckout } from "./commands/gitCheckout";
 import { gitLogCommits } from "./commands/gitLogCommits";
@@ -23,6 +22,10 @@ export class GitRepository {
 
 	public getPath() {
 		return this.repository.rootUri.toString();
+	}
+
+	public getFsPath() {
+		return this.repository.rootUri.fsPath;
 	}
 
 	public async getCommits(): Promise<{
