@@ -73,29 +73,78 @@
 	],
 	"contributes": {
 		"menus": {
+			"commandPalette": [
+				{
+					"command": "open-git-graph.reset-soft",
+					"when": "false"
+				},
+				{
+					"command": "open-git-graph.reset-mixed",
+					"when": "false"
+				},
+				{
+					"command": "open-git-graph.reset-hard",
+					"when": "false"
+				}
+			],
 			"webview/context": [
+				{
+					"command": "open-git-graph.checkout",
+					"when": "webviewId == 'open-git-graph.graph' && webviewSection == 'branch'",
+					"group": "1_branch@1"
+				},
+				{
+					"command": "open-git-graph.add-tag",
+					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch')",
+					"group": "2_tag@1"
+				},
+				{
+					"command": "open-git-graph.cherry-pick",
+					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch')",
+					"group": "3_commit@1"
+				},
+				{
+					"command": "open-git-graph.revert",
+					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch')",
+					"group": "3_commit@2"
+				},
 				{
 					"command": "open-git-graph.merge-head",
 					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch')",
-					"group": "1_commit@1"
+					"group": "4_commit_branch@1"
 				},
 				{
 					"command": "open-git-graph.rebase-head",
 					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch')",
-					"group": "1_commit@2"
+					"group": "4_commit_branch@2"
 				},
 				{
-					"command": "open-git-graph.reset-head",
+					"submenu": "open-git-graph.reset",
 					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch')",
-					"group": "1_commit@3"
+					"group": "4_commit_branch@3"
+				}
+			],
+			"open-git-graph.reset": [
+				{
+					"command": "open-git-graph.reset-soft",
+					"group": "2_commit@4"
 				},
 				{
-					"command": "open-git-graph.checkout",
-					"when": "webviewId == 'open-git-graph.graph' && webviewSection == 'branch'",
-					"group": "2_branch@1"
+					"command": "open-git-graph.reset-mixed",
+					"group": "2_commit@5"
+				},
+				{
+					"command": "open-git-graph.reset-hard",
+					"group": "2_commit@6"
 				}
 			]
 		},
+		"submenus": [
+			{
+				"id": "open-git-graph.reset",
+				"label": "Reset current branch to this commit"
+			}
+		],
 		"commands": [
 			{
 				"command": "open-git-graph.graph",
@@ -110,12 +159,42 @@
 				"title": "Rebase current branch on this commit"
 			},
 			{
-				"command": "open-git-graph.reset-head",
+				"command": "open-git-graph.reset",
 				"title": "Reset current branch to this commit"
+			},
+			{
+				"command": "open-git-graph.reset-soft",
+				"title": "Soft",
+				"shortTitle": "Soft"
+			},
+			{
+				"command": "open-git-graph.reset-mixed",
+				"title": "Mixed",
+				"shortTitle": "Mixed"
+			},
+			{
+				"command": "open-git-graph.reset-hard",
+				"title": "Hard",
+				"shortTitle": "Hard"
 			},
 			{
 				"command": "open-git-graph.checkout",
 				"title": "Checkout branch"
+			},
+			{
+				"command": "open-git-graph.add-tag",
+				"title": "Add tag",
+				"enablement": "false"
+			},
+			{
+				"command": "open-git-graph.cherry-pick",
+				"title": "Cherry pick",
+				"enablement": "false"
+			},
+			{
+				"command": "open-git-graph.revert",
+				"title": "Revert",
+				"enablement": "false"
 			}
 		]
 	},
