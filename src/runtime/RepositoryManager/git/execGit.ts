@@ -10,7 +10,7 @@ export const execGit = <T>(
 	repoPath: string,
 	onError: (e: unknown) => unknown,
 ): T => {
-	debug(gitPath, cmd.args);
+	debug(`${gitPath} ${cmd.args.join(" ")}`);
 
 	const child = spawn(gitPath, cmd.args, {
 		cwd: repoPath,

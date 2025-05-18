@@ -37,6 +37,8 @@ export function* toGraphTags(refs: Iterable<[string, GitRef[]]>) {
 			}
 		}
 
+		tags.sort((a, b) => a.type.localeCompare(b.type)); // branches should go before tags
+
 		yield [k, tags] as [string, GraphTag[]];
 	}
 }

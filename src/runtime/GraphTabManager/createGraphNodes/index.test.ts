@@ -25,7 +25,7 @@ test("fork", () => {
 		commit("4", [], "4"),
 	];
 
-	const { nodes } = createGraphNodes(commits).toArray().at(-1)!;
+	const { nodes } = createGraphNodes(commits, undefined, []).toArray().at(-1)!;
 
 	const [n1, n2a, n2b, n3, n4] = nodes as [
 		GraphNode,
@@ -63,7 +63,7 @@ test("merge", () => {
 		commit("4", [], "4"),
 	];
 
-	const { nodes } = createGraphNodes(commits).toArray().at(-1)!;
+	const { nodes } = createGraphNodes(commits, undefined, []).toArray().at(-1)!;
 
 	const [n1, n2a, n2b, n3, n4] = nodes as [
 		GraphNode,
@@ -108,7 +108,7 @@ test("merge2", () => {
 		commit("4", [], "4"),
 	];
 
-	const { nodes } = createGraphNodes(commits).toArray().at(-1)!;
+	const { nodes } = createGraphNodes(commits, undefined, []).toArray().at(-1)!;
 
 	const [n1, n2c, n2a, n2b, n3, n4] = nodes as [
 		GraphNode,
@@ -162,7 +162,7 @@ test("index", () => {
 		untracked: [],
 	};
 
-	const { nodes } = createGraphNodes(commits, index).toArray().at(-1)!;
+	const { nodes } = createGraphNodes(commits, index, []).toArray().at(-1)!;
 
 	const [i, n1, n2, n3, n4] = nodes as [
 		GraphNode,

@@ -1,4 +1,5 @@
 import { Readable } from "node:stream";
+import { GitCommit } from "../../../../universal/git";
 
 export type GitCommand<T> = {
 	args: string[];
@@ -12,7 +13,8 @@ export const FORMAT_SEPARATOR = "XX7Nal-YARtTpjCikii9nJxER19D6diSyk-AWkPb";
 export const commitFormat = ["%H", "%P", "%aN", "%aE", "%at", "%s", "%ct"].join(
 	FORMAT_SEPARATOR,
 );
-export const parseCommitFormat = (value: string) => {
+
+export const parseCommitFormat = (value: string): Omit<GitCommit, "files"> => {
 	type SplittedCommitHeader = [
 		string,
 		string,

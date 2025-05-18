@@ -1,12 +1,12 @@
-import { collect, fork, Mutex } from "asxnc";
+import { collect, fork } from "asxnc";
 import * as vscode from "vscode";
 import { RuntimeMessage, runtimeMessage } from "../../universal/message";
 import { WebToRuntimeBridge } from "../../universal/protocol";
 import { GitRepository } from "../RepositoryManager/git/GitRepository";
 import { ShowFileTextDocumentContentProvider } from "../ShowFileTextDocumentContentProvider";
+import { batch } from "../utils";
 import { GraphTabState } from "./GraphTabManager";
 import { createGraphNodes } from "./createGraphNodes";
-import { batch } from "../utils";
 
 export class WebviewRequestHandler implements WebToRuntimeBridge {
 	constructor(
@@ -51,20 +51,24 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 				() => this.repository.getIndex(),
 			]);
 
-			const iterator = (await this.repository.getCommits()).commits[
-				Symbol.asyncIterator
-			]();
+			const { commits, stashes } = await this.repository.getCommits();
+
+			const iterator = commits[Symbol.asyncIterator]();
 
 			const graphIterator = createGraphNodes(
 				await collect(take(iterator, 100)),
 				index,
+				stashes,
 			);
 
 			value.iterator = pipeCommitsToGraph(iterator, graphIterator);
 
 			return {
 				graph: graphIterator.next().value!,
-				refs,
+				refs: [
+					...refs,
+					...stashes.map((s) => ({ type: "stash" as const, hash: s.hash })),
+				],
 			};
 		});
 

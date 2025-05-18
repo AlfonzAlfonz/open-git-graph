@@ -17,6 +17,7 @@ export const gitLogCommits = (
 			`--format=${commitFormat}`,
 			"-m",
 			...(logFiles ? ["--raw"] : []),
+			"HEAD",
 		],
 		parse: async function* (stdout) {
 			const lines = toLineGenerator(stdout);

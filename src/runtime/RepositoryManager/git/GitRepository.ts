@@ -26,7 +26,7 @@ export class GitRepository {
 	}
 
 	public async getCommits(): Promise<{
-		stashes: GitRef[];
+		stashes: GitCommit[];
 		commits: AsyncIterable<GitCommit>;
 	}> {
 		const stashes = await collect(this.execGit(gitStashList()));
@@ -34,7 +34,7 @@ export class GitRepository {
 		const commits = this.execGit(gitLogCommits());
 
 		return {
-			stashes: stashes.map((s) => ({ type: "stash", hash: s.hash })),
+			stashes: stashes,
 			commits: this.addStashes(commits, stashes),
 		};
 	}

@@ -29,16 +29,17 @@ export type GraphGenerator = Generator<Graph, void, Iterable<GitCommit> | void>;
 
 export function* createGraphNodes(
 	commits: Iterable<GitCommit>,
-	index?: GitIndex,
+	index: GitIndex | undefined,
+	stashes: GitCommit[],
 ): GraphGenerator {
 	const queue = [commits];
-	// const hashes = new Set(commitHashes(commits));
+	const stashHashes = new Set(commitHashes(stashes));
 
 	const nodes = [];
 
-	let rails: Rails = new Rails(undefined);
+	const rails = new Rails(stashHashes);
 	if (index && (index.tracked.length || index.untracked.length)) {
-		nodes.push(rails.add(index));
+		nodes.push(rails.add(index)!);
 	}
 
 	const graph: Graph = {
@@ -54,7 +55,8 @@ export function* createGraphNodes(
 		}
 
 		for (const c of commits) {
-			graph.nodes.push(rails.add(c));
+			const node = rails.add(c);
+			node && graph.nodes.push(node);
 		}
 
 		const newCommits = yield graph;

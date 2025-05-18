@@ -1,6 +1,6 @@
 .commit-inspector {
 	@apply graph-grid;
-	background-color: var(--vscode-input-background);
+	background-color: var(--vscode-sideBar-background);
 	border-bottom: 2px solid var(--vscode-input-border);
 	height: 200px;
 

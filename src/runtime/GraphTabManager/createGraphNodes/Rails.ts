@@ -15,11 +15,16 @@ declare const idBrand: unique symbol;
 export type RailId = number & { [idBrand]: typeof idBrand };
 
 export class Rails {
-	public constructor(
-		public state: RailsState = { rails: [], nextId: 0 }, // private hashes: Set<string>,
-	) {}
+	private usedHashes = new Set<string>();
+	public readonly state: RailsState = { rails: [], nextId: 0 };
 
-	add(commit: GitCommit | GitIndex): GraphNode {
+	public constructor(private stashHashes: Set<string>) {}
+
+	add(commit: GitCommit | GitIndex): GraphNode | undefined {
+		if ("hash" in commit && this.usedHashes.has(commit.hash)) {
+			return undefined;
+		}
+
 		const children = [...this.getChildren(commit)];
 		const rails = this.state.rails.map((r) => r.id);
 		let position: RailId;
@@ -53,17 +58,21 @@ export class Rails {
 			position = first;
 		}
 
-		if (commit.parents.length > 1) {
+		if (
+			commit.parents.length > 1 &&
+			"hash" in commit &&
+			!this.stashHashes.has(commit.hash)
+		) {
 			const [, ...mergedParents] = [...commit.parents];
 			for (const parent of mergedParents) {
-				// unused but idk why
-				// if (this.hashes.has(parent)) {
-				if (true) {
-					const rail = { next: parent, id: this.id() };
-					this.state.rails.push(rail);
-					merges.push(rail.id);
-				}
+				const rail = { next: parent, id: this.id() };
+				this.state.rails.push(rail);
+				merges.push(rail.id);
 			}
+		}
+
+		if ("hash" in commit) {
+			this.usedHashes.add(commit.hash);
 		}
 
 		return {
