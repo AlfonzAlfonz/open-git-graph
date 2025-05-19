@@ -1,12 +1,11 @@
+import { fork } from "asxnc/fork";
+import debounce from "lodash-es/debounce";
 import { useEffect, useState } from "react";
 import { Graph } from "../../runtime/GraphTabManager/createGraphNodes";
-import { isBridgeResponse } from "../../universal/bridge";
 import { GitRef } from "../../universal/git";
-import { isRuntimeMessage } from "../../universal/message";
-import { GraphTabState, WebToRuntimeBridge } from "../../universal/protocol";
-import { bridge } from "../bridge";
+import { GraphTabState } from "../../universal/protocol";
+import { bridge, messageQueue } from "../bridge";
 import { IAppContext } from "./components/AppContext";
-import debounce from "lodash-es/debounce";
 
 interface App {
 	state: IAppContext;
@@ -19,27 +18,32 @@ export const useApp = (): App => {
 	const [refs, setRefs] = useState<GitRef[]>();
 
 	useEffect(() => {
-		window.addEventListener("message", (e) => {
-			if (isBridgeResponse<WebToRuntimeBridge>(e.data)) {
-				return;
-			}
+		const controller = new AbortController();
 
-			if (isRuntimeMessage(e.data)) {
-				switch (e.data.type) {
+		fork(async () => {
+			for await (const message of messageQueue.iterator) {
+				// TODO: breaking after receiving message will cause the message to be dropped
+				if (controller.signal.aborted) break;
+
+				switch (message.type) {
 					case "graph":
-						setGraph(e.data.data.graph);
-						setRefs(e.data.data.refs);
+						setGraph(message.data.graph);
+						setRefs(message.data.refs);
 						break;
 					case "graph-poll":
-						setGraph(e.data.data.graph);
+						setGraph(message.data.graph);
 						break;
 					default:
-						e.data satisfies never;
+						message satisfies never;
 				}
 			}
 		});
 
 		bridge.ready(state?.repoPath).then(setState);
+
+		return () => {
+			controller.abort();
+		};
 	}, []);
 
 	return {

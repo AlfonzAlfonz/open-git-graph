@@ -1,6 +1,7 @@
 import { isBridgeResponse } from "../universal/bridge";
+import { isRuntimeMessage } from "../universal/message";
 import { WebToRuntimeBridge } from "../universal/protocol/index";
-import { handleResponse } from "./bridge";
+import { handleResponse, messageQueue } from "./bridge";
 import { render } from "./render/render";
 
 window.addEventListener("message", (e) => {
@@ -9,12 +10,9 @@ window.addEventListener("message", (e) => {
 		handleResponse(e.data);
 	}
 
-	// handle runtimeToWeb requests
-	// if (isBridgeRequest<RuntimeToWebBridge>(e.data)) {
-	// 	vscodeApi.postMessage(
-	// 		createResponse(requestHandler, e.data, (e) => console.error(e)),
-	// 	);
-	// }
+	if (isRuntimeMessage(e.data)) {
+		messageQueue.dispatch(e.data);
+	}
 });
 
 render();

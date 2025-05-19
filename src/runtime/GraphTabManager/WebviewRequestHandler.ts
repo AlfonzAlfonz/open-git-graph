@@ -14,7 +14,7 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 	) {}
 
 	async ready(repoPath?: string | undefined) {
-		await this.handle.getGraphData();
+		void this.handle.getGraphData();
 
 		return this.state;
 	}

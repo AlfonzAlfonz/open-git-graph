@@ -9,7 +9,7 @@ import { handleError } from "../handleError";
 import { log } from "../logger";
 import { signalDisposable } from "../utils";
 import { renderHtmlShell } from "./HtmlShell";
-import { WebviewRequestHandler } from "./requestHandler";
+import { WebviewRequestHandler } from "./WebviewRequestHandler";
 
 const debug = log("GraphTabManager");
 
@@ -52,13 +52,18 @@ export class GraphTabManager {
 
 		const handle = this.repositoryManager.getStateHandle(repository);
 
-		fork(async () => {
-			for await (const update of handle.state) {
-				if (signal.aborted) break;
+		fork([
+			async () => {
+				await handle.getGraphData();
+			},
+			async () => {
+				for await (const update of handle.state) {
+					if (signal.aborted) break;
 
-				panel.webview.postMessage(runtimeMessage("graph", update));
-			}
-		});
+					panel.webview.postMessage(runtimeMessage("graph", update));
+				}
+			},
+		]);
 
 		const handler = new WebviewRequestHandler(repository, handle, state);
 
