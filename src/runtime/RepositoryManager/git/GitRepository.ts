@@ -13,6 +13,7 @@ import { gitStashList } from "./commands/gitStashList";
 import { gitStatus } from "./commands/gitStatus";
 import { GitCommand } from "./commands/utils";
 import { execGit } from "./execGit";
+import { gitShowCommit } from "./commands/gitShowCommit";
 
 export class GitRepository {
 	constructor(
@@ -32,9 +33,9 @@ export class GitRepository {
 		stashes: GitCommit[];
 		commits: AsyncIterable<GitCommit>;
 	}> {
-		const stashes = await collect(this.execGit(gitStashList()));
+		const stashes = await collect(this.execGit(gitStashList(false)));
 
-		const commits = this.execGit(gitLogCommits());
+		const commits = this.execGit(gitLogCommits(false));
 
 		return {
 			stashes: stashes,
@@ -77,6 +78,10 @@ export class GitRepository {
 
 	public async showFile(ref: string, path: string) {
 		return await this.execGit(gitShowRefFile(ref, path));
+	}
+
+	public async getCommit(hash: string) {
+		return await this.execGit(gitShowCommit(hash));
 	}
 
 	public async checkout(branch: string) {

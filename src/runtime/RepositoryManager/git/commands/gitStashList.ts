@@ -2,7 +2,9 @@ import { GitCommit } from "../../../../universal/git";
 import { gitLogCommits } from "./gitLogCommits";
 import { GitCommand, commitFormat } from "./utils";
 
-export const gitStashList = (): GitCommand<AsyncIterable<GitCommit>> => {
+export const gitStashList = (
+	logFiles: boolean = true,
+): GitCommand<AsyncIterable<GitCommit>> => {
 	return {
 		args: [
 			"-c",
@@ -11,7 +13,7 @@ export const gitStashList = (): GitCommand<AsyncIterable<GitCommit>> => {
 			"list",
 			`--format=${commitFormat}`,
 			"-m",
-			"--raw",
+			...(logFiles ? ["--raw"] : []),
 		],
 		parse: gitLogCommits().parse,
 	};

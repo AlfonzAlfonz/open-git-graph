@@ -1,15 +1,16 @@
 import * as vscode from "vscode";
-import { RuntimeMessage, runtimeMessage } from "../../universal/message";
+import { GitCommit } from "../../universal/git";
 import { GraphTabState, WebToRuntimeBridge } from "../../universal/protocol";
+import { GitRepository } from "../RepositoryManager/git/GitRepository";
 import { RepositoryStateHandle } from "../RepositoryManager/RepositoryStateHandle";
 import { ShowFileTextDocumentContentProvider } from "../ShowFileTextDocumentContentProvider";
 import { batch } from "../utils";
 
 export class WebviewRequestHandler implements WebToRuntimeBridge {
 	constructor(
+		private repository: GitRepository,
 		private handle: RepositoryStateHandle,
 		private state: GraphTabState,
-		private postMessage: (msg: RuntimeMessage) => void,
 	) {}
 
 	async ready(repoPath?: string | undefined) {
@@ -20,6 +21,10 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 
 	async pollGraphData(): Promise<void> {
 		await this.handle.pollGraphData();
+	}
+
+	async getCommit(hash: string): Promise<GitCommit> {
+		return await this.repository.getCommit(hash);
 	}
 
 	async showDiff(path: string, a?: string, b?: string) {

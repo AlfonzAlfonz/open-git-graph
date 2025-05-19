@@ -60,11 +60,7 @@ export class GraphTabManager {
 			}
 		});
 
-		const handler = new WebviewRequestHandler(
-			this.repositoryManager.getStateHandle(repository),
-			state,
-			(x) => panel.webview.postMessage(x),
-		);
+		const handler = new WebviewRequestHandler(repository, handle, state);
 
 		signalDisposable(
 			signal,

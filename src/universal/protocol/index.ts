@@ -5,6 +5,8 @@ export interface WebToRuntimeBridge {
 
 	pollGraphData(): Promise<void>;
 
+	getCommit(hash: string): Promise<GitCommit>;
+
 	showDiff(path: string, a?: string, b?: string): Promise<void>;
 	checkout(branch: string): Promise<void>;
 
