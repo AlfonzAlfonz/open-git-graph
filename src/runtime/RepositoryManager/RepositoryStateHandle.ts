@@ -40,22 +40,28 @@ export class RepositoryStateHandle {
 				return;
 			}
 
-			const [refs, index] = await fork([
-				async () => {
-					return await collect(this.repository.getRefs());
-				},
-				() => this.repository.getIndex(),
+			console.time("fetch git commits");
+
+			const commits = this.repository.getCommits();
+
+			const [refs, index, stashes] = await Promise.all([
+				collect(this.repository.getRefs()),
+				this.repository.getIndex(),
+				collect(this.repository.getStashes()),
 			]);
 
-			const { commits, stashes } = await this.repository.getCommits();
+			const commitsWithStashes = this.repository.addStashes(commits, stashes);
 
-			const iterator = commits[Symbol.asyncIterator]();
+			console.timeEnd("fetch git commits");
 
-			const graphIterator = createGraphNodes(
-				await collect(take(iterator, 100)),
-				index,
-				stashes,
-			);
+			console.time("collect commits");
+
+			const iterator = commitsWithStashes[Symbol.asyncIterator]();
+			const data = await collect(take(iterator, 100));
+
+			console.timeEnd("collect commits");
+
+			const graphIterator = createGraphNodes(data, index, stashes);
 
 			this.pylon.swap({
 				graph: graphIterator.next().value!,

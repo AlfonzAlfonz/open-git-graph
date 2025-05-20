@@ -54,12 +54,14 @@ export class GraphTabManager {
 
 		fork([
 			async () => {
+				console.time("graph-data");
 				await handle.getGraphData();
 			},
 			async () => {
 				for await (const update of handle.state) {
 					if (signal.aborted) break;
 
+					console.timeEnd("graph-data");
 					panel.webview.postMessage(runtimeMessage("graph", update));
 				}
 			},

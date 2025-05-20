@@ -9,7 +9,7 @@ export type GitCommand<T> = {
 	) => T;
 };
 
-export const FORMAT_SEPARATOR = "XX7Nal-YARtTpjCikii9nJxER19D6diSyk-AWkPb";
+export const FORMAT_SEPARATOR = "<Ps3Nqv_iKCwmz>";
 export const commitFormat = ["%H", "%P", "%aN", "%aE", "%at", "%s", "%ct"].join(
 	FORMAT_SEPARATOR,
 );

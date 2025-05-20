@@ -10,9 +10,10 @@ export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 	return (
 		<>
 			{tags.map(
-				(r) =>
+				(r, i) =>
 					r.type !== "head" && (
 						<div
+							key={i}
 							onClick={(e) => {
 								e.stopPropagation();
 							}}
@@ -36,8 +37,10 @@ export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 							}
 						>
 							<div className="content">{r.label}</div>
-							{r.endDecorators?.map((d) => (
-								<div className={"end-decorator"}>{d}</div>
+							{r.endDecorators?.map((d, i) => (
+								<div key={i} className={"end-decorator"}>
+									{d}
+								</div>
 							))}
 						</div>
 					),

@@ -54,10 +54,19 @@ export const format = (...[first, ...args]: unknown[]) => {
 };
 
 export const patchConsole = () => {
+	const timeMap = new Map<string, DOMHighResTimeStamp>();
+
 	global.console = {
 		log: (...args: any) => output.info(format(...args)),
 		info: (...args: any) => output.info(format(...args)),
 		warn: (...args: any) => output.info(format(...args)),
 		error: (...args: any) => output.info(format(...args)),
+		time: (name: string) => {
+			timeMap.set(name, performance.now());
+		},
+		timeEnd: (name: string) => {
+			const end = performance.now();
+			output.debug(`${name} took ${end - timeMap.get(name)!}ms`);
+		},
 	} satisfies Partial<Console> as Console;
 };

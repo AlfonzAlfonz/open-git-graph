@@ -2,7 +2,7 @@ import { collect } from "asxnc";
 import * as vscode from "vscode";
 import { GitCommit, GitIndex } from "../../../universal/git";
 import { handleError } from "../../handleError";
-import { API } from "../vscode.git/types";
+import { GitExtensionAPI } from "../vscode.git/utils";
 import { gitCheckout } from "./commands/gitCheckout";
 import { gitLogCommits } from "./commands/gitLogCommits";
 import { gitLogHeadHash } from "./commands/gitLogHeadHash";
@@ -18,7 +18,7 @@ import { execGit } from "./execGit";
 export class GitRepository {
 	constructor(
 		private repoPath: Pick<vscode.Uri, "fsPath">,
-		private extension: API,
+		private extension: GitExtensionAPI,
 	) {}
 
 	public getPath() {
@@ -29,18 +29,12 @@ export class GitRepository {
 		return this.repoPath.fsPath;
 	}
 
-	public async getCommits(): Promise<{
-		stashes: GitCommit[];
-		commits: AsyncIterable<GitCommit>;
-	}> {
-		const stashes = await collect(this.execGit(gitStashList(false)));
+	public getCommits() {
+		return this.execGit(gitLogCommits(false));
+	}
 
-		const commits = this.execGit(gitLogCommits(false));
-
-		return {
-			stashes: stashes,
-			commits: this.addStashes(commits, stashes),
-		};
+	public getStashes() {
+		return this.execGit(gitStashList(false));
 	}
 
 	public getRefs() {
@@ -48,15 +42,18 @@ export class GitRepository {
 	}
 
 	public async getIndex() {
-		const status = this.execGit(gitStatus());
+		const [status, parent] = await Promise.all([
+			collect(this.execGit(gitStatus())),
+			this.getLastCommitHash(),
+		]);
 
 		const index: GitIndex = {
-			parents: [await this.getLastCommitHash()],
+			parents: [parent],
 			tracked: [],
 			untracked: [],
 		};
 
-		for await (const [tracked, untracked] of status) {
+		for (const [tracked, untracked] of status) {
 			tracked && index.tracked.push(tracked);
 			untracked && index.untracked.push(untracked);
 		}
@@ -97,7 +94,7 @@ export class GitRepository {
 		);
 	};
 
-	private async *addStashes(
+	public async *addStashes(
 		commits: AsyncIterable<GitCommit>,
 		stashes: GitCommit[],
 	) {

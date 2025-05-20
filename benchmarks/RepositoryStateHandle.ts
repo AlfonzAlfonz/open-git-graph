@@ -3,7 +3,7 @@ import { RepositoryStateHandle } from "../src/runtime/RepositoryManager/Reposito
 import { benchmark } from "./utils";
 
 benchmark("RepositoryStateHandle", {
-	maxAvgTime: 35,
+	maxAvgTime: 23,
 	prepare: async () => {
 		const uri = {
 			fsPath: "/Users/denishomolik/projects/s/air-player/",
