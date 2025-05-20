@@ -2,31 +2,31 @@ import { collect } from "asxnc";
 import * as vscode from "vscode";
 import { GitCommit, GitIndex } from "../../../universal/git";
 import { handleError } from "../../handleError";
-import { GitExtension, Repository } from "../vscode.git/types";
+import { API } from "../vscode.git/types";
 import { gitCheckout } from "./commands/gitCheckout";
 import { gitLogCommits } from "./commands/gitLogCommits";
 import { gitLogHeadHash } from "./commands/gitLogHeadHash";
 import { gitResetHead } from "./commands/gitResetHead";
+import { gitShowCommit } from "./commands/gitShowCommit";
 import { gitShowRefFile } from "./commands/gitShowRefFile";
 import { gitShowRefs } from "./commands/gitShowRefs";
 import { gitStashList } from "./commands/gitStashList";
 import { gitStatus } from "./commands/gitStatus";
 import { GitCommand } from "./commands/utils";
 import { execGit } from "./execGit";
-import { gitShowCommit } from "./commands/gitShowCommit";
 
 export class GitRepository {
 	constructor(
-		private repository: Repository,
-		private extension: GitExtension,
+		private repoPath: Pick<vscode.Uri, "fsPath">,
+		private extension: API,
 	) {}
 
 	public getPath() {
-		return this.repository.rootUri.toString();
+		return this.repoPath.toString();
 	}
 
 	public getFsPath() {
-		return this.repository.rootUri.fsPath;
+		return this.repoPath.fsPath;
 	}
 
 	public async getCommits(): Promise<{
@@ -88,15 +88,13 @@ export class GitRepository {
 		return await this.execGit(gitCheckout(branch));
 	}
 
-	public onDidChange(fn: () => void): vscode.Disposable {
-		return this.repository.state.onDidChange(fn);
-	}
-
 	private execGit = <T>(cmd: GitCommand<T>): T => {
-		const api = this.extension.getAPI(1);
-		const repository = this.repository;
-
-		return execGit(cmd, api.git.path, repository.rootUri.fsPath, handleError);
+		return execGit(
+			cmd,
+			this.extension.git.path,
+			this.repoPath.fsPath,
+			handleError,
+		);
 	};
 
 	private async *addStashes(

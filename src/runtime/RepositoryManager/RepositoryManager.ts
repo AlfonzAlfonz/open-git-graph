@@ -1,11 +1,11 @@
 import { fork, Pylon, PylonIterator } from "asxnc";
 import * as vscode from "vscode";
 import { log } from "../logger";
-import { GitRepository } from "./git/GitRepository";
-import { GitExtension } from "./vscode.git/types";
-import { RepositoryStateHandle } from "./RepositoryStateHandle";
-import { aggregateGitEvents, watchGit } from "./gitWatch/watchGit";
 import { signalDisposable } from "../utils";
+import { RepositoryStateHandle } from "./RepositoryStateHandle";
+import { GitRepository } from "./git/GitRepository";
+import { aggregateGitEvents, watchGit } from "./gitWatch/watchGit";
+import { GitExtension } from "./vscode.git/types";
 
 const debug = log("RepositoryManager");
 
@@ -54,7 +54,7 @@ export class RepositoryManager {
 			Object.fromEntries(
 				api.repositories.map((r) => [
 					r.rootUri.toString(),
-					new GitRepository(r, this.extension),
+					new GitRepository(r.rootUri, api),
 				]),
 			),
 		);
@@ -64,7 +64,7 @@ export class RepositoryManager {
 			api.onDidOpenRepository((r) => {
 				swap({
 					...repositories.readSync(),
-					[r.rootUri.toString()]: new GitRepository(r, this.extension),
+					[r.rootUri.toString()]: new GitRepository(r.rootUri, api),
 				});
 			}),
 			api.onDidCloseRepository((e) => {
