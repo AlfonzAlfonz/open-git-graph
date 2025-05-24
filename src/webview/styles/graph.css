@@ -4,6 +4,9 @@
 		table-layout: fixed;
 
 		& .graph-header {
+			border-bottom: 1px solid var(--vscode-sideBarSectionHeader-border);
+			width: 100%;
+
 			& > * {
 				line-height: 26px;
 			}
@@ -13,6 +16,11 @@
 				position: relative;
 				outline: none;
 			}
+		}
+
+		& .graph-list {
+			overflow: scroll;
+			scrollbar-width: none;
 		}
 
 		& .graph-row {

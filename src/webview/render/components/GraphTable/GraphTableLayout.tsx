@@ -5,6 +5,7 @@ import {
 	PanelGroup,
 	PanelResizeHandle,
 } from "react-resizable-panels";
+import { TopBar } from "../TopBar";
 
 interface Props {
 	children: ReactNode;
@@ -13,6 +14,7 @@ interface Props {
 export const GraphTableLayout = ({ children }: Props) => {
 	const headerRef = useRef<HTMLDivElement>(null);
 	const groupRef = useRef<ImperativePanelGroupHandle>(null);
+	const graphRef = useRef<HTMLDivElement>(null!);
 
 	const [layout, setLayout] = useState<number[]>([]);
 
@@ -35,8 +37,9 @@ export const GraphTableLayout = ({ children }: Props) => {
 	}, []);
 
 	return (
-		<div id="graph" className={"h-[100vh] flex flex-col"}>
-			<div className={"graph-header"} ref={headerRef}>
+		<div id="graph" className={"h-[100vh] flex flex-col"} ref={graphRef}>
+			<TopBar />
+			<div className="graph-header px-3" ref={headerRef}>
 				<PanelGroup
 					className="flex"
 					direction="horizontal"
@@ -57,6 +60,7 @@ export const GraphTableLayout = ({ children }: Props) => {
 			<div
 				style={
 					{
+						position: "relative",
 						flex: "1 1 auto",
 						"--table-graph-width": layout[0]?.toFixed(2),
 						"--table-info-width": layout[1]?.toFixed(2),

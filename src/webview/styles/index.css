@@ -1,5 +1,8 @@
+@import "@vscode/codicons/dist/codicon.css";
 @import "./graph.css";
 @import "./commit-inspector.css";
+@import "./topbar.css";
+@import "./ui.css";
 
 @tailwind base;
 @tailwind components;
@@ -16,10 +19,7 @@
 	body {
 		margin: 0;
 		padding: 0;
-	}
-
-	body {
-		/* overflow-y: scroll; */
+		box-sizing: border-box;
 	}
 
 	html {

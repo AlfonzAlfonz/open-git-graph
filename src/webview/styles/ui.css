@@ -1,0 +1,22 @@
+.icon-button {
+	background: transparent;
+	border: none;
+	color: var(--vscode-icon-foreground);
+	display: block;
+	font-size: 16px;
+	padding: 3px;
+	display: flex;
+	cursor: pointer;
+	border-radius: 5px;
+}
+
+.icon-button:hover {
+	background-color: var(--vscode-toolbar-hoverBackground);
+	outline: 1px dashed var(--vscode-toolbar-hoverOutline);
+	outline-offset: -1px;
+}
+
+.slider {
+	background-color: var(--vscode-scrollbarSlider-background);
+	width: 10px;
+}

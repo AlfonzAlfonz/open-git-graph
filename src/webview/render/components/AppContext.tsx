@@ -11,6 +11,7 @@ export interface IAppContext extends Partial<GraphTabState> {
 	actions: {
 		expandCommit: (value: string | undefined) => void;
 		scroll: (value: number) => void;
+		reload: () => Promise<void>;
 	};
 }
 

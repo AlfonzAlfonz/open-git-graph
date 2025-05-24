@@ -19,6 +19,10 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 		return this.state;
 	}
 
+	async reload() {
+		await this.handle.getGraphData(true);
+	}
+
 	async pollGraphData(): Promise<void> {
 		await this.handle.pollGraphData();
 	}

@@ -60,6 +60,11 @@ export const useApp = (): App => {
 					bridge.scroll(value);
 					setState((s) => ({ ...s!, scroll: value }));
 				}, 100),
+				reload: async () => {
+					setGraph(undefined);
+					setRefs(undefined);
+					await bridge.reload();
+				},
 			},
 		},
 	};

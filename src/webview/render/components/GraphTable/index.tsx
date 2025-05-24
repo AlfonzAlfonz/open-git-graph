@@ -1,4 +1,3 @@
-import debounce from "lodash-es/debounce";
 import { useEffect, useMemo, useRef } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { ListChildComponentProps, VariableSizeList } from "react-window";
@@ -13,10 +12,12 @@ import { CommitGraphRow } from "../GraphRow/CommitGraphRow";
 import { IndexGraphRow } from "../GraphRow/IndexGraphRow";
 import { HEIGHT } from "../GraphRow/renderRails";
 import { GraphTableLayout } from "./GraphTableLayout";
+import { Slider } from "./Slider";
 
 export const GraphTable = () => {
 	const initScrollRef = useRef(false);
 	const listRef = useRef<VariableSizeList>(null!);
+	const graphRef = useRef<HTMLDivElement>(null!);
 
 	const { graph, refs, expandedCommit, scroll, actions } = useAppContext();
 
@@ -46,33 +47,38 @@ export const GraphTable = () => {
 						}}
 					>
 						{({ onItemsRendered, ref }) => (
-							<VariableSizeList
-								ref={(value) => {
-									ref(value);
-									listRef.current = value!;
-								}}
-								itemSize={(i) => {
-									const node = graph?.nodes[i]!;
-									if ("hash" in node.commit) {
-										return expandedCommit === node.commit.hash
-											? HEIGHT + 200
-											: HEIGHT;
-									} else {
-										return expandedCommit === "index" ? HEIGHT + 200 : HEIGHT;
-									}
-								}}
-								width={width}
-								height={height}
-								itemData={{ nodes: graph?.nodes ?? [], tags }}
-								itemCount={graph?.nodes.length ?? 0}
-								children={Row}
-								onItemsRendered={onItemsRendered}
-								onScroll={({ scrollOffset }) => {
-									if (initScrollRef.current) {
-										actions.scroll(scrollOffset);
-									}
-								}}
-							/>
+							<>
+								<VariableSizeList
+									className="graph-list"
+									ref={(value) => {
+										ref(value);
+										listRef.current = value!;
+									}}
+									outerRef={graphRef}
+									itemSize={(i) => {
+										const node = graph?.nodes[i]!;
+										if ("hash" in node.commit) {
+											return expandedCommit === node.commit.hash
+												? HEIGHT + 200
+												: HEIGHT;
+										} else {
+											return expandedCommit === "index" ? HEIGHT + 200 : HEIGHT;
+										}
+									}}
+									width={width}
+									height={height}
+									itemData={{ nodes: graph?.nodes ?? [], tags }}
+									itemCount={graph?.nodes.length ?? 0}
+									children={Row}
+									onItemsRendered={onItemsRendered}
+									onScroll={({ scrollOffset }) => {
+										if (initScrollRef.current) {
+											actions.scroll(scrollOffset);
+										}
+									}}
+								/>
+								<Slider parent={graphRef} />
+							</>
 						)}
 					</InfiniteLoader>
 				)}

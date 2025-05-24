@@ -27,7 +27,6 @@ const App = () => {
 				}
 			>
 				<LoadingModal>
-					{/* <WIP /> */}
 					<GraphTable />
 				</LoadingModal>
 			</ErrorBoundary>

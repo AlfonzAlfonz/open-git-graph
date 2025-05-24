@@ -12,7 +12,7 @@ const [wv] = await Promise.all([
 		bundle: true,
 		entryPoints: ["src/webview/webview.ts"],
 		outfile: "dist/webview.js",
-		metafile: true,
+		metafile: false,
 		define: {
 			"process.env.NODE_ENV": JSON.stringify(
 				prod ? "production" : "development",
@@ -36,7 +36,7 @@ const [wv] = await Promise.all([
 	}),
 ]);
 
-await fs.writeFile("meta.json", JSON.stringify(wv.metafile));
+wv.metafile && (await fs.writeFile("meta.json", JSON.stringify(wv.metafile)));
 
 await fs.copy(
 	"./node_modules/@vscode/codicons/dist/codicon.ttf",
