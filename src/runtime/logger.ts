@@ -66,7 +66,7 @@ export const patchConsole = () => {
 		},
 		timeEnd: (name: string) => {
 			const end = performance.now();
-			output.debug(`${name} took ${end - timeMap.get(name)!}ms`);
+			output.info(`${name} took ${end - timeMap.get(name)!}ms`);
 		},
 	} satisfies Partial<Console> as Console;
 };

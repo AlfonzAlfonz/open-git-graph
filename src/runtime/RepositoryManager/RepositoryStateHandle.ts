@@ -1,7 +1,7 @@
-import { collect, fork, Mutex, Pylon } from "asxnc";
+import { collect, Mutex, Pylon } from "asxnc";
 import { GitCommit, GitRef } from "../../universal/git";
 import { createGraphNodes, Graph } from "../GraphTabManager/createGraphNodes";
-import { batch } from "../utils";
+import { pipeThrough, take } from "../utils";
 import { GitRepository } from "./git/GitRepository";
 
 type RepositoryState = {
@@ -63,46 +63,21 @@ export class RepositoryStateHandle {
 
 			const graphIterator = createGraphNodes(data, index, stashes);
 
+			const graph = graphIterator.next().value!;
+
 			this.pylon.swap({
-				graph: graphIterator.next().value!,
+				graph,
 				refs: [
 					...refs,
 					...stashes.map((s) => ({ type: "stash" as const, hash: s.hash })),
 				],
 			});
 
-			value.graphIterator = pipeCommitsToGraph(iterator, graphIterator);
+			value.graphIterator = pipeThrough(iterator, graphIterator);
 		});
 	}
 
 	async checkout(branch: string) {
 		return await this.repository.checkout(branch);
-	}
-}
-
-async function* take<T>(iterator: AsyncIterator<T>, count: number) {
-	let i = 0;
-	while (i < count) {
-		const result = await iterator.next();
-		if (result.done) {
-			return result.value;
-		} else {
-			yield result.value;
-		}
-		i++;
-	}
-}
-
-async function* pipeCommitsToGraph<T, U>(
-	ait: AsyncIterator<T>,
-	it: Iterator<U, void, Iterable<T>>,
-) {
-	for await (const value of batch({ [Symbol.asyncIterator]: () => ait }, 50)) {
-		const result = it.next(value);
-		if (result.done) {
-			return;
-		} else {
-			yield result.value;
-		}
 	}
 }

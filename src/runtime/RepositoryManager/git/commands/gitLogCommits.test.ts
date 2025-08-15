@@ -1,6 +1,8 @@
+import { collect } from "asxnc/collect";
 import { execGit } from "../execGit";
 import { setupRepoFixture } from "./_utils.test";
 import { gitLogCommits } from "./gitLogCommits";
+import { take } from "../../../utils";
 
 describe("gitLogCommits", () => {
 	test("simple", async () => {
@@ -24,5 +26,19 @@ describe("gitLogCommits", () => {
 			"add more info",
 			"init commit",
 		]);
+	});
+
+	test("with take", async () => {
+		const { gitPath, repoPath } = await setupRepoFixture("simple-history");
+
+		const command = gitLogCommits();
+
+		const result = execGit(command, gitPath, repoPath, (e) => {
+			throw e;
+		});
+
+		const subjects = await collect(take(result[Symbol.asyncIterator](), 20));
+
+		expect(subjects).toHaveLength(5);
 	});
 });

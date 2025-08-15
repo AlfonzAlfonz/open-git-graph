@@ -4,7 +4,6 @@ import { GraphTabState, WebToRuntimeBridge } from "../../universal/protocol";
 import { GitRepository } from "../RepositoryManager/git/GitRepository";
 import { RepositoryStateHandle } from "../RepositoryManager/RepositoryStateHandle";
 import { ShowFileTextDocumentContentProvider } from "../ShowFileTextDocumentContentProvider";
-import { batch } from "../utils";
 
 export class WebviewRequestHandler implements WebToRuntimeBridge {
 	constructor(
@@ -52,32 +51,5 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 
 	async scroll(value: number) {
 		this.state.scroll = value;
-	}
-}
-
-async function* take<T>(iterator: AsyncIterator<T>, count: number) {
-	let i = 0;
-	while (i < count) {
-		const result = await iterator.next();
-		if (result.done) {
-			return result.value;
-		} else {
-			yield result.value;
-		}
-		i++;
-	}
-}
-
-async function* pipeCommitsToGraph<T, U>(
-	ait: AsyncIterator<T>,
-	it: Iterator<U, void, Iterable<T>>,
-) {
-	for await (const value of batch({ [Symbol.asyncIterator]: () => ait }, 50)) {
-		const result = it.next(value);
-		if (result.done) {
-			return;
-		} else {
-			yield result.value;
-		}
 	}
 }

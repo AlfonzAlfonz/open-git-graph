@@ -10,7 +10,10 @@ let controller: AbortController;
 export function activate(context: vscode.ExtensionContext) {
 	patchConsole();
 
+	console.info();
 	console.info("Activating extension");
+	console.info("=====================");
+
 	controller = new AbortController();
 
 	const backend = createBackend(context, controller.signal);
