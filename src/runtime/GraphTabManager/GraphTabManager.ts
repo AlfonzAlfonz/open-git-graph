@@ -29,9 +29,14 @@ export class GraphTabManager {
 		const panel = vscode.window.createWebviewPanel(
 			"open-git-graph.graph",
 			"Open Git Graph",
-			vscode.ViewColumn.One,
-			{ enableScripts: true },
+			{ viewColumn: vscode.ViewColumn.One, preserveFocus: true },
+			{
+				enableScripts: true,
+				// TODO: remove this, both backend and frontend are able to start up very quickly, but vscode takes too long to long to load the webview
+				retainContextWhenHidden: true,
+			},
 		);
+
 		const styleUri = panel.webview.asWebviewUri(
 			vscode.Uri.joinPath(this.context.extensionUri, "dist", "output.css"),
 		);

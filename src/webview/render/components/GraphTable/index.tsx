@@ -12,7 +12,6 @@ import { CommitGraphRow } from "../GraphRow/CommitGraphRow";
 import { IndexGraphRow } from "../GraphRow/IndexGraphRow";
 import { HEIGHT } from "../GraphRow/renderRails";
 import { GraphTableLayout } from "./GraphTableLayout";
-import { Slider } from "./Slider";
 
 export const GraphTable = () => {
 	const initScrollRef = useRef(false);
@@ -77,7 +76,8 @@ export const GraphTable = () => {
 										}
 									}}
 								/>
-								<Slider parent={graphRef} />
+								{/* TODO: Fix Slider component */}
+								{/* <Slider parent={graphRef} /> */}
 							</>
 						)}
 					</InfiniteLoader>

@@ -2,7 +2,6 @@ import { MouseEvent } from "react";
 import { GraphNode } from "../../../../runtime/GraphTabManager/createGraphNodes";
 import { GitCommit, GitIndex } from "../../../../universal/git";
 import { GraphTag } from "../../../state/toGraphTags";
-import { getColor } from "../../utils";
 import { useAppContext } from "../AppContext";
 
 export type UseGraphRowOptions<T extends GitCommit | GitIndex> = {
@@ -28,8 +27,6 @@ export const useGraphRow = <T extends GitCommit | GitIndex>({
 	return {
 		onClick,
 		open: expandedCommit === id,
-		className: `graph-row ${isHead ? "head" : ""} ${
-			node.commit.parents.length > 1 ? "merge" : ""
-		} ${expandedCommit === id ? "focused" : ""} ${getColor(node.position)}`,
+		isHead,
 	};
 };

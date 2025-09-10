@@ -78,7 +78,7 @@ export const renderRails = (n: GraphNode) => {
 
 	const s = 3.5;
 	return (
-		<svg width={(width + 1) * WIDTH} height={HEIGHT}>
+		<svg width={(width + 1) * WIDTH} height={HEIGHT} className="!ml-3">
 			{rails}
 			{/* Commit circle */}
 			<rect
@@ -143,7 +143,7 @@ export const renderEmptyRails = (node: GraphNode, height: number) => {
 	}
 
 	return (
-		<svg width={(width + 1) * WIDTH} height={height}>
+		<svg width={(width + 1) * WIDTH} height={height} className="!ml-3">
 			{rails}
 		</svg>
 	);

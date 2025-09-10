@@ -1,30 +1,30 @@
+import { Panel, PanelGroup } from "react-resizable-panels";
 import { GraphNode } from "../../../../runtime/GraphTabManager/createGraphNodes";
 import { GitIndex } from "../../../../universal/git";
+import { GraphRow } from "../GraphRow/GraphRow";
 import { renderEmptyRails } from "../GraphRow/renderRails";
 import { CommitFileList } from "./CommitFileList";
 
 export const IndexInspector = ({ node }: { node: GraphNode<GitIndex> }) => {
 	return (
-		<div className={"commit-inspector"}>
-			<div className="pl-3">{renderEmptyRails(node, 200)}</div>
-			<div>
-				<div className="flex leading-normal h-[200px] overflow-scroll">
-					<div></div>
-					<div className="w-full p-1 overflow-y-auto overflow-x-hidden text-ellipsis">
-						<div>Staged changes</div>
-						<CommitFileList
-							files={node.commit.tracked}
-							diff={{ b: node.commit.parents[0] }}
-						/>
+		<GraphRow
+			className="commit-inspector"
+			graph={renderEmptyRails(node, 200)}
+			tags={
+				<div className="w-full p-1">
+					<div>Staged changes</div>
+					<CommitFileList
+						files={node.commit.tracked}
+						diff={{ b: node.commit.parents[0] }}
+					/>
 
-						<div>Changes</div>
-						<CommitFileList
-							files={node.commit.untracked}
-							diff={{ b: node.commit.parents[0] }}
-						/>
-					</div>
+					<div>Changes</div>
+					<CommitFileList
+						files={node.commit.untracked}
+						diff={{ b: node.commit.parents[0] }}
+					/>
 				</div>
-			</div>
-		</div>
+			}
+		/>
 	);
 };

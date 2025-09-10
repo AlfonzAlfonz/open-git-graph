@@ -39,22 +39,22 @@ export const GraphTableLayout = ({ children }: Props) => {
 	return (
 		<div id="graph" className={"h-[100vh] flex flex-col"} ref={graphRef}>
 			<TopBar />
-			<div className="graph-header px-3" ref={headerRef}>
+			<div className="graph-header" ref={headerRef}>
 				<PanelGroup
 					className="flex"
 					direction="horizontal"
 					ref={groupRef}
 					onLayout={setLayout}
 				>
-					<Panel>Graph</Panel>
+					<Panel className="graph-col">Graph</Panel>
 					<PanelResizeHandle className="resize-handle" />
-					<Panel>Info</Panel>
+					<Panel className="graph-col">Info</Panel>
 					<PanelResizeHandle className="resize-handle" />
-					<Panel>Author</Panel>
+					<Panel className="graph-col">Author</Panel>
 					<PanelResizeHandle className="resize-handle" />
-					<Panel>Date</Panel>
+					<Panel className="graph-col">Date</Panel>
 					<PanelResizeHandle className="resize-handle" />
-					<Panel>Hash</Panel>
+					<Panel className="graph-col">Hash</Panel>
 				</PanelGroup>
 			</div>
 			<div

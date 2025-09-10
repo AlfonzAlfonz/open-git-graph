@@ -21,9 +21,10 @@ export const CommitFileList = ({
 						fileModeColors[f.mode] ?? "white"
 					} cursor-pointer`}
 				>
-					<div className="flex justify-between w-full">
+					<div className="flex relative w-full items-center gap-1">
+						<span className="codicon codicon-file" />
 						<span>{f.path}</span>
-						<span className="px-1">{f.mode}</span>
+						<span className="absolute right-0">{f.mode}</span>
 					</div>
 				</li>
 			))}

@@ -1,7 +1,9 @@
 import { GitCommit } from "../../../../universal/git";
+import { formatDate, getColor } from "../../utils";
 import { useAppContext } from "../AppContext";
 import { CommitInspector } from "../inspectors/CommitInspector";
 import { CommitTags } from "./CommitTags";
+import { GraphRow } from "./GraphRow";
 import { renderRails } from "./renderRails";
 import { UseGraphRowOptions, useGraphRow } from "./useGraphRow";
 
@@ -11,53 +13,30 @@ export const CommitGraphRow = ({
 	style,
 }: UseGraphRowOptions<GitCommit> & { style: any }) => {
 	const { repoPath } = useAppContext();
-	const { open, ...props } = useGraphRow({ node, tags });
+	const { open, onClick, isHead } = useGraphRow({ node, tags });
 
 	return (
 		<div style={style}>
-			<div
-				{...props}
+			<GraphRow
+				// div props
+				className={`graph-row ${isHead ? "head" : ""} ${
+					node.commit.parents.length > 1 ? "merge" : ""
+				} ${open ? "focused" : ""} ${getColor(node.position)}`}
+				onClick={onClick}
 				data-vscode-context={JSON.stringify({
 					webviewSection: "commit",
 					preventDefaultContextMenuItems: true,
 					repo: repoPath,
 					ref: node.commit.hash,
 				})}
-			>
-				<div
-					className="h-[26px] pl-3 overflow-hidden"
-					style={{ flex: "var(--table-graph-width) 1 0px" }}
-				>
-					{renderRails(node)}
-				</div>
-				<div
-					className="flex gap-2 items-center"
-					style={{ flex: "var(--table-info-width) 1 0px" }}
-				>
-					{tags && <CommitTags tags={tags} />}
-					<p className="inline-block whitespace-nowrap text-ellipsis overflow-hidden leading-tight flex-grow-1">
-						{node.commit.subject}
-					</p>
-				</div>
-				<div
-					className="px-1 whitespace-nowrap text-ellipsis overflow-hidden"
-					style={{ flex: "var(--table-author-width) 1 0px" }}
-				>
-					{node.commit.author}
-				</div>
-				<div
-					className="px-1 whitespace-nowrap text-ellipsis overflow-hidden"
-					style={{ flex: "var(--table-date-width) 1 0px" }}
-				>
-					{new Date(node.commit.authorDate * 1000).toLocaleString()}
-				</div>
-				<div
-					className="px-1 whitespace-nowrap text-ellipsis overflow-hidden"
-					style={{ flex: "var(--table-hash-width) 1 0px" }}
-				>
-					{node.commit.hash.slice(0, 10)}
-				</div>
-			</div>
+				// content
+				graph={renderRails(node)}
+				tags={tags && <CommitTags tags={tags} />}
+				info={node.commit.subject}
+				author={node.commit.author}
+				date={formatDate(node.commit.authorDate)}
+				hash={node.commit.hash.slice(0, 10)}
+			/>
 			{open && <CommitInspector node={node} />}
 		</div>
 	);

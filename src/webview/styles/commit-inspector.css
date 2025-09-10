@@ -1,44 +1,43 @@
 .commit-inspector {
-	@apply graph-grid;
 	background-color: var(--vscode-sideBar-background);
 	border-bottom: 2px solid var(--vscode-input-border);
 	height: 200px;
+	display: flex;
 
-	& > div:nth-child(2) {
-		border-left: 1px solid var(--vscode-input-border) !important;
-		& > div {
-			& > div {
-				border-right: 1px solid var(--vscode-input-border);
-				& * {
-					@apply overflow-hidden text-ellipsis;
-				}
-			}
+	& .graph-col.info {
+		display: block !important;
+		overflow: auto !important;
+	}
+
+	& .files {
+		& .added {
+			color: var(--vscode-gitDecoration-addedResourceForeground);
 		}
 
-		& .files {
-			& .added {
-				color: var(--vscode-gitDecoration-addedResourceForeground);
-			}
-			& .modified,
-			& .type-modified {
-				color: var(--vscode-gitDecoration-modifiedResourceForeground);
-			}
-			& .deleted {
-				color: var(--vscode-gitDecoration-deletedResourceForeground);
-			}
-			& .renamed,
-			& .copied {
-				color: var(--vscode-gitDecoration-renamedResourceForeground);
-			}
-			& .updated {
-				color: var(--vscode-gitDecoration-updatedResourceForeground);
-			}
-			& .ignored {
-				color: var(--vscode-gitDecoration-ignoredResourceForeground);
-			}
-			& .untracked {
-				color: var(--vscode-gitDecoration-untrackedResourceForeground);
-			}
+		& .modified,
+		& .type-modified {
+			color: var(--vscode-gitDecoration-modifiedResourceForeground);
+		}
+
+		& .deleted {
+			color: var(--vscode-gitDecoration-deletedResourceForeground);
+		}
+
+		& .renamed,
+		& .copied {
+			color: var(--vscode-gitDecoration-renamedResourceForeground);
+		}
+
+		& .updated {
+			color: var(--vscode-gitDecoration-updatedResourceForeground);
+		}
+
+		& .ignored {
+			color: var(--vscode-gitDecoration-ignoredResourceForeground);
+		}
+
+		& .untracked {
+			color: var(--vscode-gitDecoration-untrackedResourceForeground);
 		}
 	}
 }

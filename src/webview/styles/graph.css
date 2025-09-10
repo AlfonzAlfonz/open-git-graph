@@ -12,9 +12,19 @@
 			}
 
 			& .resize-handle {
-				flex: 0 0 1.5em;
 				position: relative;
-				outline: none;
+				width: 0;
+
+				&::after {
+					content: "";
+					position: absolute;
+					position: relative;
+					outline: none;
+					display: block;
+					width: 1rem;
+					height: 100%;
+					border-left: 1px solid var(--vscode-sideBarSectionHeader-border);
+				}
 			}
 		}
 
@@ -28,6 +38,7 @@
 			cursor: pointer;
 			height: 26px;
 			align-items: center;
+			overflow: hidden;
 
 			&:hover {
 				background-color: var(--vscode-list-hoverBackground);
@@ -53,17 +64,41 @@
 				}
 			}
 
-			& > * {
-				&:nth-child(2) {
-					border-left: 1px solid var(--vscode-sideBarSectionHeader-border);
-					overflow: hidden;
-				}
+			& .graph-col {
+				height: 26px;
+			}
+		}
 
-				&:nth-child(4),
-				&:nth-child(5) {
-					font-family: var(--vscode-editor-font-family);
-					font-size: var(--vscode-editor-font-size);
-				}
+		& .graph-col {
+			@apply px-2 overflow-hidden whitespace-nowrap;
+
+			display: flex;
+			align-items: center;
+
+			&.graph {
+				flex: var(--table-graph-width) 1 0px;
+			}
+
+			&.info {
+				flex: var(--table-info-width) 1 0px;
+				border-left: 1px solid var(--vscode-sideBarSectionHeader-border);
+			}
+			&.author {
+				flex: var(--table-author-width) 1 0px;
+			}
+			&.date {
+				flex: var(--table-date-width) 1 0px;
+				font-family: var(--vscode-editor-font-family);
+				font-size: var(--vscode-editor-font-size);
+			}
+			&.hash {
+				flex: var(--table-hash-width) 1 0px;
+				font-family: var(--vscode-editor-font-family);
+				font-size: var(--vscode-editor-font-size);
+			}
+
+			&.index {
+				flex: var(--table-index-width) 1 0px;
 			}
 		}
 
@@ -134,5 +169,9 @@
 			@apply px-1 h-full flex items-center italic;
 			border-left: 1px solid var(--vscode-input-border);
 		}
+	}
+
+	.col-truncate {
+		text-overflow: "… ";
 	}
 }
