@@ -63,7 +63,15 @@ export const renderRails = (n: GraphNode) => {
 
 	// Render merged rails
 	for (const [i, m] of n.merges.entries()) {
-		const x = n.rails.length + newRailOffset - shift + i;
+		let x: number;
+		if (n.rails.includes(m)) {
+			// connect to an existing rail
+			x = n.rails.indexOf(m);
+		} else {
+			// connect to a rail, which will be created
+			x = n.rails.length + newRailOffset - shift + i;
+		}
+
 		const [x1, y1] = absoluteCoords(activeIndex, CENTER);
 		const [x2, y2] = absoluteCoords(x, 1);
 

@@ -20,7 +20,7 @@ export class Rails {
 
 	public constructor(private stashHashes: Set<string>) {}
 
-	add(commit: GitCommit | GitIndex): GraphNode | undefined {
+	add(commit: GitCommit | GitIndex, next?: GitCommit): GraphNode | undefined {
 		if ("hash" in commit && this.usedHashes.has(commit.hash)) {
 			return undefined;
 		}
@@ -33,7 +33,7 @@ export class Rails {
 
 		if (children.length === 0) {
 			// If commit does not have any children create a new rail
-			const rail = { next: commit.parents[0]!, id: this.id() };
+			const rail = { next: commit.parents[0]!, id: this.newId() };
 
 			this.state.rails.push(rail);
 
@@ -65,7 +65,14 @@ export class Rails {
 		) {
 			const [, ...mergedParents] = [...commit.parents];
 			for (const parent of mergedParents) {
-				const rail = { next: parent, id: this.id() };
+				if (next && parent === next.hash) {
+					const children = [...this.getChildren(next)];
+					if (children.length === 1) {
+						merges.push(children[0]!);
+						continue;
+					}
+				}
+				const rail = { next: parent, id: this.newId() };
 				this.state.rails.push(rail);
 				merges.push(rail.id);
 			}
@@ -84,7 +91,7 @@ export class Rails {
 		};
 	}
 
-	private id() {
+	private newId() {
 		return this.state.nextId++ as RailId;
 	}
 

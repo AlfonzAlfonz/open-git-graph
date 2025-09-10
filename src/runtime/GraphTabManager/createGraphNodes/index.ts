@@ -54,8 +54,8 @@ export function* createGraphNodes(
 			break;
 		}
 
-		for (const c of commits) {
-			const node = rails.add(c);
+		for (const [c, n] of withPrev(commits)) {
+			const node = rails.add(c, n);
 			node && graph.nodes.push(node);
 		}
 
@@ -74,4 +74,23 @@ function* commitHashes(commits: GitCommit[], prev?: GraphNode[]) {
 				yield n.commit.hash;
 			}
 		}
+}
+
+export function* withPrev<T>(
+	it: Iterable<T>,
+): Generator<[T, T | undefined], void> {
+	let prev: T | undefined;
+	let first = false;
+
+	for (const item of it) {
+		if (first) {
+			yield [prev!, item];
+		}
+		prev = item;
+		first = true;
+	}
+
+	if (first) {
+		yield [prev!, undefined];
+	}
 }
