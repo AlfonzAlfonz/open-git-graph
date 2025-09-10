@@ -37,31 +37,31 @@
 	}
 
 	.indigo {
-		--rail-color: #4338ca;
+		--rail-color: oklch(51.1% 0.262 276.966); /* indigo 600 */
 	}
 
 	.pink {
-		--rail-color: #be185d;
+		--rail-color: oklch(59.2% 0.249 0.584); /* pink 600 */
 	}
 
 	.emerald {
-		--rail-color: #065f46;
+		--rail-color: oklch(59.6% 0.145 163.225); /* emerald 600 */
 	}
 
 	.sky {
-		--rail-color: #0369a1;
+		--rail-color: oklch(58.8% 0.158 241.966); /* sky 600 */
 	}
 
 	.amber {
-		--rail-color: #b45309;
+		--rail-color: oklch(66.6% 0.179 58.318); /* amber 600 */
 	}
 
 	.red {
-		--rail-color: #b91c1c;
+		--rail-color: oklch(57.7% 0.245 27.325); /* red 600 */
 	}
 
 	.yellow {
-		--rail-color: #fde68a;
+		--rail-color: oklch(68.1% 0.162 75.834); /* yellow 600 */
 	}
 
 	.codicon {
