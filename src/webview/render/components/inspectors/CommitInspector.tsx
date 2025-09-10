@@ -22,7 +22,7 @@ export const CommitInspector = ({ node }: { node: GraphNode<GitCommit> }) => {
 			graph={renderEmptyRails(node, 200)}
 			tags={
 				<PanelGroup direction="horizontal" className="-mx-2">
-					<Panel className="p-2">
+					<Panel className="p-2" style={{ overflow: "auto" }}>
 						<table>
 							<tr>
 								<td className="font-bold">Commit: </td>
@@ -45,7 +45,7 @@ export const CommitInspector = ({ node }: { node: GraphNode<GitCommit> }) => {
 						<div>{commit.subject}</div>
 					</Panel>
 					<PanelResizeHandle />
-					<Panel className="p-2">
+					<Panel className="p-2" style={{ overflow: "auto" }}>
 						{renderState(expanded, {
 							data: (d) => (
 								<CommitFileList
