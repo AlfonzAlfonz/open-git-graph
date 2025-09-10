@@ -4,6 +4,7 @@ import { GraphTabState, WebToRuntimeBridge } from "../../universal/protocol";
 import { GitRepository } from "../RepositoryManager/git/GitRepository";
 import { RepositoryStateHandle } from "../RepositoryManager/RepositoryStateHandle";
 import { ShowFileTextDocumentContentProvider } from "../ShowFileTextDocumentContentProvider";
+import path from "path";
 
 export class WebviewRequestHandler implements WebToRuntimeBridge {
 	constructor(
@@ -30,14 +31,16 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 		return await this.repository.getCommit(hash);
 	}
 
-	async showDiff(path: string, a?: string, b?: string) {
+	async showDiff(p: string, a?: string, b?: string) {
 		const repoPath = this.state.repoPath;
 
 		await vscode.commands.executeCommand(
 			"vscode.diff",
-			ShowFileTextDocumentContentProvider.createUri(a, path, repoPath),
-			ShowFileTextDocumentContentProvider.createUri(b, path, repoPath),
-			"Swag",
+			ShowFileTextDocumentContentProvider.createUri(a, p, repoPath),
+			ShowFileTextDocumentContentProvider.createUri(b, p, repoPath),
+			`${path.basename(p)} ${
+				a !== undefined ? `(${a.slice(0, 8)})` : ""
+			} ↔ ${path.basename(p)} ${b !== undefined ? `(${b.slice(0, 8)})` : ""}`,
 		);
 	}
 

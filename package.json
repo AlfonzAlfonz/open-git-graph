@@ -1,19 +1,26 @@
 {
 	"name": "open-git-graph",
-	"description": "swag",
+	"description": "open source extension for displaying a graph of git history",
 	"version": "0.0.1",
 	"type": "module",
+	"publisher": "alfonz",
+	"author": {
+		"name": "Denis Homolík",
+		"email": "alfonz@homolik.cz"
+	},
 	"scripts": {
-		"vscode:prepublish": "pnpm run build",
+		"vscode:prepublish": "pnpm build",
 		"build": "node build.mjs",
 		"build:prod": "node build.mjs -p",
-		"clean-build": "rm -rf dist && pnpm run build:prod",
+		"clean-build": "rm -rf dist build && pnpm build:prod && pnpm run pack",
+		"pack": "node ./tools/pack.mjs",
 		"watch": "pnpm build --watch",
 		"lint": "eslint src --ext ts && prettier . -c && tsc --noEmit",
 		"test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
 		"test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch --collectCoverage=false"
 	},
 	"devDependencies": {
+		"@alfonz/async": "^0.1.0",
 		"@jest/globals": "^29.7.0",
 		"@types/debug": "^4.1.12",
 		"@types/jest": "^29.5.4",
@@ -30,7 +37,6 @@
 		"@typescript-eslint/parser": "^6.4.1",
 		"@vscode/codicons": "^0.0.33",
 		"@vscode/test-electron": "^2.3.4",
-		"@alfonz/async": "^0.1.0",
 		"autoprefixer": "^10.4.15",
 		"core-js": "^3.42.0",
 		"debug": "^4.4.1",

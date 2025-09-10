@@ -3,3 +3,4 @@ dist
 .vscode/settings.json
 .vscode/extensions.json
 coverage
+build
