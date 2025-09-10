@@ -14,11 +14,24 @@ import { WebviewRequestHandler } from "./WebviewRequestHandler";
 const debug = log("GraphTabManager");
 
 export class GraphTabManager {
+	private tabs: Map<string, [vscode.WebviewPanel, GraphTabState]> = new Map();
+
 	constructor(
 		private context: vscode.ExtensionContext,
 		private appSignal: AbortSignal,
 		private repositoryManager: RepositoryManager,
 	) {}
+
+	openOrFocus(repository: GitRepository) {
+		if (this.tabs.has(repository.getPath())) {
+			const panel = this.tabs.get(repository.getPath())![0];
+			if (!panel.active) {
+				panel.reveal();
+			}
+		} else {
+			this.open(repository);
+		}
+	}
 
 	open(repository: GitRepository) {
 		debug("open", repository.getFsPath());
@@ -50,15 +63,18 @@ export class GraphTabManager {
 			scroll: 0,
 		};
 
-		(panel.iconPath = vscode.Uri.joinPath(
+		panel.iconPath = vscode.Uri.joinPath(
 			this.context.extensionUri,
 			"assets",
 			"logo-dark.svg",
-		)),
-			(panel.webview.html = renderHtmlShell({
-				styleUri: styleUri.toString(),
-				scriptUri: scriptUri.toString(),
-			}));
+		);
+
+		panel.webview.html = renderHtmlShell({
+			styleUri: styleUri.toString(),
+			scriptUri: scriptUri.toString(),
+		});
+
+		this.tabs.set(repository.getPath(), [panel, state]);
 
 		const handle = this.repositoryManager.getStateHandle(repository);
 
@@ -94,6 +110,7 @@ export class GraphTabManager {
 
 		panel.onDidDispose(() => {
 			controller.abort();
+			this.tabs.delete(repository.getPath());
 		});
 
 		return panel;

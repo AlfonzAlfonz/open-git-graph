@@ -15,7 +15,7 @@ export const graphCommand = command({
 
 		debug("path: ", repo.getPath());
 
-		backend.graphTab.open(repo);
+		backend.graphTab.openOrFocus(repo);
 	},
 });
 
