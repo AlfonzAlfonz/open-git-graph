@@ -1,4 +1,4 @@
-import { collect } from "asxnc/collect";
+import { collect } from "@alfonz/async/collect";
 import { batch, pipeThrough, take } from "./utils";
 
 describe("utils", () => {

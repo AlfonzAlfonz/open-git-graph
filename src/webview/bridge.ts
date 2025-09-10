@@ -1,4 +1,4 @@
-import { Queue } from "asxnc/Queue";
+import { Queue } from "@alfonz/async/Queue";
 import { createClientProxy } from "../universal/bridge";
 import { WebToRuntimeBridge } from "../universal/protocol";
 import { vscodeApi } from "./vscodeApi";

@@ -1,4 +1,4 @@
-import { fork, Pylon, PylonIterator } from "asxnc";
+import { fork, Pylon, PylonIterator } from "@alfonz/async";
 import * as vscode from "vscode";
 import { log } from "../logger";
 import { signalDisposable } from "../utils";

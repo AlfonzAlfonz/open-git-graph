@@ -1,4 +1,4 @@
-import { Queue } from "asxnc/Queue";
+import { Queue } from "@alfonz/async/Queue";
 import path from "path";
 import * as vscode from "vscode";
 import { log } from "../../logger";

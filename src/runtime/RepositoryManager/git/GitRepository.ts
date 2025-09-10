@@ -1,4 +1,4 @@
-import { collect } from "asxnc";
+import { collect } from "@alfonz/async";
 import * as vscode from "vscode";
 import { GitCommit, GitIndex } from "../../../universal/git";
 import { handleError } from "../../handleError";

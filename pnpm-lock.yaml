@@ -11,6 +11,9 @@ importers:
 
   .:
     devDependencies:
+      '@alfonz/async':
+        specifier: ^0.1.0
+        version: 0.1.0
       '@jest/globals':
         specifier: ^29.7.0
         version: 29.7.0
@@ -59,9 +62,6 @@ importers:
       '@vscode/test-electron':
         specifier: ^2.3.4
         version: 2.3.4
-      asxnc:
-        specifier: link:../../Library/pnpm/global/5/node_modules/asxnc
-        version: link:../../Library/pnpm/global/5/node_modules/asxnc
       autoprefixer:
         specifier: ^10.4.15
         version: 10.4.15(postcss@8.4.29)
@@ -152,6 +152,9 @@ packages:
   '@aashutoshrathi/word-wrap@1.2.6':
     resolution: {integrity: sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==}
     engines: {node: '>=0.10.0'}
+
+  '@alfonz/async@0.1.0':
+    resolution: {integrity: sha512-f2B8G2weiDGB25NLGpi6ItTe39YDD6ywjhA9gpDc0YqFz7z80ERH6FQ/hmHbPDaO6KYJyiXh+1FAeo5l/YlZDg==}
 
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -2676,6 +2679,8 @@ packages:
 snapshots:
 
   '@aashutoshrathi/word-wrap@1.2.6': {}
+
+  '@alfonz/async@0.1.0': {}
 
   '@alloc/quick-lru@5.2.0': {}
 

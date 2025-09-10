@@ -1,4 +1,4 @@
-import { fork } from "asxnc/fork";
+import { fork } from "@alfonz/async/fork";
 import debounce from "lodash-es/debounce";
 import { useEffect, useState } from "react";
 import { Graph } from "../../runtime/GraphTabManager/createGraphNodes";

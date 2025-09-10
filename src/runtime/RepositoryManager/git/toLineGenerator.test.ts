@@ -1,6 +1,6 @@
 import { Readable } from "stream";
 import { toLineGenerator } from "./toLineGenerator";
-import { collect } from "asxnc/collect";
+import { collect } from "@alfonz/async/collect";
 
 test("toLineGenerator", async () => {
 	const input = `

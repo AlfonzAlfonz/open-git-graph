@@ -1,4 +1,4 @@
-import { collect } from "asxnc/collect";
+import { collect } from "@alfonz/async/collect";
 import { execGit } from "../execGit";
 import { setupRepoFixture } from "./_utils.test";
 import { gitLogCommits } from "./gitLogCommits";

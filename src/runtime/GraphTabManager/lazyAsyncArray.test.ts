@@ -1,4 +1,4 @@
-import { collect } from "asxnc/collect";
+import { collect } from "@alfonz/async/collect";
 import { lazyAsyncArray } from "./lazyAsyncArray";
 
 test("lazyAsyncArray", async () => {

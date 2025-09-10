@@ -1,4 +1,4 @@
-import { collect, Mutex, Pylon } from "asxnc";
+import { collect, Mutex, Pylon } from "@alfonz/async";
 import { GitCommit, GitRef } from "../../universal/git";
 import { createGraphNodes, Graph } from "../GraphTabManager/createGraphNodes";
 import { pipeThrough, take } from "../utils";

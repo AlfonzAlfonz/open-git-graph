@@ -1,4 +1,4 @@
-import { Queue } from "asxnc/Queue";
+import { Queue } from "@alfonz/async/Queue";
 import { Readable } from "node:stream";
 
 // TODO: maybe rewrite this to use "data" event instead

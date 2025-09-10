@@ -1,4 +1,4 @@
-import { fork } from "asxnc";
+import { fork } from "@alfonz/async/fork";
 import * as vscode from "vscode";
 import { createResponse, isBridgeRequest } from "../../universal/bridge";
 import { runtimeMessage } from "../../universal/message";
