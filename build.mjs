@@ -13,6 +13,7 @@ const [wv] = await Promise.all([
 		entryPoints: ["src/webview/webview.ts"],
 		outfile: "dist/webview.js",
 		metafile: false,
+		minify: prod,
 		define: {
 			"process.env.NODE_ENV": JSON.stringify(
 				prod ? "production" : "development",
@@ -23,6 +24,7 @@ const [wv] = await Promise.all([
 		bundle: true,
 		entryPoints: ["src/runtime/runtime.ts"],
 		outfile: "dist/runtime.cjs",
+		minify: prod,
 		external: ["vscode"],
 		platform: "node",
 		define: {
