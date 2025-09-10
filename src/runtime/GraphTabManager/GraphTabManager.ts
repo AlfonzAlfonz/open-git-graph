@@ -50,10 +50,15 @@ export class GraphTabManager {
 			scroll: 0,
 		};
 
-		panel.webview.html = renderHtmlShell({
-			styleUri: styleUri.toString(),
-			scriptUri: scriptUri.toString(),
-		});
+		(panel.iconPath = vscode.Uri.joinPath(
+			this.context.extensionUri,
+			"assets",
+			"logo-dark.svg",
+		)),
+			(panel.webview.html = renderHtmlShell({
+				styleUri: styleUri.toString(),
+				scriptUri: scriptUri.toString(),
+			}));
 
 		const handle = this.repositoryManager.getStateHandle(repository);
 

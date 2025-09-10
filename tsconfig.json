@@ -13,7 +13,8 @@
 		"noUnusedLocals": false,
 		"noUnusedParameters": false,
 		"allowJs": true,
-		"checkJs": true
+		"checkJs": true,
+		"noEmit": true
 	},
 	"include": ["src/**/*", "test/**/*", "tools/**/*"]
 }

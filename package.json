@@ -144,6 +144,13 @@
 					"command": "open-git-graph.reset-hard",
 					"group": "2_commit@6"
 				}
+			],
+			"scm/title": [
+				{
+					"when": "scmProvider == git",
+					"command": "open-git-graph.graph",
+					"group": "navigation"
+				}
 			]
 		},
 		"submenus": [
@@ -155,7 +162,11 @@
 		"commands": [
 			{
 				"command": "open-git-graph.graph",
-				"title": "Open Git Graph"
+				"title": "Open Git Graph",
+				"icon": {
+					"dark": "./assets/logo-dark.svg",
+					"light": "./assets/logo-light.svg"
+				}
 			},
 			{
 				"command": "open-git-graph.merge-head",
