@@ -213,6 +213,7 @@ test("index", () => {
 		parents: ["2"],
 		tracked: [{} as never],
 		untracked: [],
+		branch: undefined,
 	};
 
 	const { nodes } = createGraphNodes(commits, index, []).toArray().at(-1)!;

@@ -2,8 +2,8 @@ import { GitRef } from "../../../../universal/git";
 import { toLineGenerator } from "../toLineGenerator";
 import { GitCommand } from "./utils";
 
-export const gitShowRefs = (): GitCommand<AsyncIterable<GitRef>> => {
-	return {
+export const gitShowRefs = () =>
+	({
 		args: ["show-ref", "--head", "--dereference"],
 		parse: async function* (stdout) {
 			const lines = toLineGenerator(stdout);
@@ -48,8 +48,7 @@ export const gitShowRefs = (): GitCommand<AsyncIterable<GitRef>> => {
 				}
 			}
 		},
-	};
-};
+	}) satisfies GitCommand<AsyncIterable<GitRef>>;
 
 const TAG_PREFIX = "refs/tags/";
 const BRANCH_PREFIX = "refs/heads/";

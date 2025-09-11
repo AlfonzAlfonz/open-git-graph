@@ -1,11 +1,14 @@
 import { useAppContext } from "../AppContext";
 
 export const TopBar = () => {
-	const { actions } = useAppContext();
+	const { actions, currentBranch } = useAppContext();
 
 	return (
 		<div className="top-bar flex justify-between items-center px-3">
-			<div>Branch: master</div>
+			<div>
+				Branch:{" "}
+				{currentBranch === undefined ? <em>DETACHED</em> : currentBranch}
+			</div>
 
 			<div className="flex items-center">
 				<button className="icon-button mr-[4px]">

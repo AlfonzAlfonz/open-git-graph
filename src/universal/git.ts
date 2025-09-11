@@ -23,7 +23,14 @@ export type GitCommitFile = {
 export type GitFileMode = "M" | "T" | "A" | "D" | "R" | "C" | "U" | "?" | "!";
 
 export type GitIndex = {
+	branch: string | undefined;
 	parents: string[];
+	tracked: GitCommitFile[];
+	untracked: GitCommitFile[];
+};
+
+export type GitStatus = {
+	branch: string | undefined;
 	tracked: GitCommitFile[];
 	untracked: GitCommitFile[];
 };

@@ -6,6 +6,7 @@ import { GitRepository } from "./git/GitRepository";
 
 type RepositoryState = {
 	refs: GitRef[];
+	currentBranch: string | undefined;
 
 	graph: Graph;
 };
@@ -67,6 +68,7 @@ export class RepositoryStateHandle {
 
 			this.pylon.swap({
 				graph,
+				currentBranch: index.branch,
 				refs: [
 					...refs,
 					...stashes.map((s) => ({ type: "stash" as const, hash: s.hash })),

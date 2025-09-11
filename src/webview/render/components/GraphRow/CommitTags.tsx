@@ -4,7 +4,7 @@ import { useBridgeMutation } from "../../useBridge/useBridgeMutation";
 import { useAppContext } from "../AppContext";
 
 export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
-	const { repoPath } = useAppContext();
+	const { repoPath, currentBranch } = useAppContext();
 	const [checkout] = useBridgeMutation(bridge.checkout);
 
 	return (
@@ -24,7 +24,9 @@ export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 									  }
 									: undefined
 							}
-							className={`graph-tag ${r.type}`}
+							className={`graph-tag ${r.type} ${
+								r.label === currentBranch ? "font-[600]" : "font-[400]"
+							}`}
 							data-vscode-context={
 								r.type === "branch"
 									? JSON.stringify({

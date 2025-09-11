@@ -7,6 +7,7 @@ export interface IAppContext extends Partial<GraphTabState> {
 	repoPath?: string;
 	graph?: Graph;
 	refs?: GitRef[];
+	currentBranch: string | undefined;
 
 	actions: {
 		expandCommit: (value: string | undefined) => void;

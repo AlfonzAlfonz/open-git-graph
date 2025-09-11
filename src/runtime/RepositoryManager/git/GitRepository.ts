@@ -43,20 +43,14 @@ export class GitRepository {
 
 	public async getIndex() {
 		const [status, parent] = await Promise.all([
-			collect(this.execGit(gitStatus())),
+			this.execGit(gitStatus()),
 			this.getLastCommitHash(),
 		]);
 
 		const index: GitIndex = {
+			...status,
 			parents: [parent],
-			tracked: [],
-			untracked: [],
 		};
-
-		for (const [tracked, untracked] of status) {
-			tracked && index.tracked.push(tracked);
-			untracked && index.untracked.push(untracked);
-		}
 
 		return index;
 	}
