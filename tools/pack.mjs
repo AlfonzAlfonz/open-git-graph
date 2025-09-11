@@ -8,6 +8,7 @@ await fs.mkdir("./build");
 
 await fs.cp("./dist", "./build/dist", { recursive: true });
 await fs.cp("./assets", "./build/assets", { recursive: true });
+await fs.cp("./LICENSE", "./build/LICENSE");
 await fs.rename("./build/dist/runtime.cjs", "./build/dist/runtime.js");
 const { scripts, devDependencies, type, ...pkg } = await fs
 	.readFile("./package.json")
