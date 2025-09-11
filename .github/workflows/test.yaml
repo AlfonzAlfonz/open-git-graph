@@ -35,7 +35,8 @@ jobs:
         node-version: '22.x'
         cache: 'pnpm'
     - run: pnpm install
-    - run: pnpm build
+    - run: node tools/update-package-json.mjs
+    - run: pnpm clean-build
     - uses: actions/upload-artifact@v4
       with:
         path: |
