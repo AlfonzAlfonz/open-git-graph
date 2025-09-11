@@ -4,50 +4,54 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
+env:
+  NODE_ENV: production
+
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+      - run: git submodule update --init --recursive
+      - run: pnpm i
+      - run: pnpm test
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: pnpm/action-setup@0609f0983b7a228f052f81ef4c3d6510cae254ad
+    - uses: pnpm/action-setup@4
       with:
-        version: 8.14.1
+        version: 10
     - uses: actions/setup-node@v3
       with:
-        node-version: '20'
+        node-version: '22.x'
         cache: 'pnpm'
     - run: pnpm install
     - run: pnpm build
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
+    - uses: actions/upload-artifact@v4
       with:
-        fetch-depth: 0
-        submodules: true
-    - uses: pnpm/action-setup@0609f0983b7a228f052f81ef4c3d6510cae254ad
-      with:
-        version: 8.14.1
-    - uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-        cache: 'pnpm'
-    - run: git submodule update --init --recursive
-    - run: pnpm install
-    - run: pnpm test
+        path: |
+          dist
+          build/*.vsix
+          package.json
   check-types:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: pnpm/action-setup@0609f0983b7a228f052f81ef4c3d6510cae254ad
+    - uses: pnpm/action-setup@4
       with:
-        version: 8.14.1
+        version: 10
     - uses: actions/setup-node@v3
       with:
-        node-version: '20'
+        node-version: '22.x'
         cache: 'pnpm'
     - run: pnpm install
     - run: pnpm tsc --noEmit
