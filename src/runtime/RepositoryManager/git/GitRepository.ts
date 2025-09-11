@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import { GitCommit, GitIndex } from "../../../universal/git";
 import { handleError } from "../../handleError";
 import { GitExtensionAPI } from "../vscode.git/utils";
-import { gitCheckout } from "./commands/gitCheckout";
+import { gitCheckout, gitCheckoutCreate } from "./commands/gitCheckout";
 import { gitLogCommits } from "./commands/gitLogCommits";
 import { gitLogHeadHash } from "./commands/gitLogHeadHash";
 import { gitResetHead } from "./commands/gitResetHead";
@@ -14,6 +14,8 @@ import { gitStashList } from "./commands/gitStashList";
 import { gitStatus } from "./commands/gitStatus";
 import { GitCommand } from "./commands/utils";
 import { execGit } from "./execGit";
+import { gitPull } from "./commands/gitPull";
+import { gitReset, GitResetMode } from "./commands/gitReset";
 
 export class GitRepository {
 	constructor(
@@ -59,10 +61,6 @@ export class GitRepository {
 		return await this.execGit(gitLogHeadHash());
 	}
 
-	public async reset(ref: string, mode: "soft" | "mixed" | "hard") {
-		return await this.execGit(gitResetHead(ref, mode));
-	}
-
 	public trueMerge() {}
 
 	public ffMerge() {}
@@ -77,6 +75,18 @@ export class GitRepository {
 
 	public async checkout(branch: string) {
 		return await this.execGit(gitCheckout(branch));
+	}
+
+	public async checkoutCreate(branchName: string, startingPoint: string) {
+		return await this.execGit(gitCheckoutCreate(branchName, startingPoint));
+	}
+
+	public async pull(ffOnly: boolean = true) {
+		return await this.execGit(gitPull(ffOnly));
+	}
+
+	public async reset(mode: GitResetMode, treeish: string) {
+		return await this.execGit(gitReset(mode, treeish));
 	}
 
 	private execGit = <T>(cmd: GitCommand<T>): T => {

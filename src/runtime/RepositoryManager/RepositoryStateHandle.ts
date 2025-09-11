@@ -3,6 +3,7 @@ import { GitCommit, GitRef } from "../../universal/git";
 import { createGraphNodes, Graph } from "../GraphTabManager/createGraphNodes";
 import { pipeThrough, take } from "../utils";
 import { GitRepository } from "./git/GitRepository";
+import vscode from "vscode";
 
 type RepositoryState = {
 	refs: GitRef[];
@@ -80,6 +81,24 @@ export class RepositoryStateHandle {
 	}
 
 	async checkout(branch: string) {
-		return await this.repository.checkout(branch);
+		const existing = await this.repository.listLocalBranches();
+
+		if (existing.includes("refs/heads/" + branch)) {
+			return await this.repository.checkout(branch);
+		} else {
+			const [, ...rest] = branch.split("/");
+			const name = await vscode.window.showInputBox({
+				title:
+					"Branch is not checkout locally, what should be the name of local branch?",
+				value: rest.join("/"),
+				valueSelection: [rest.length, rest.length],
+			});
+
+			if (name === undefined) {
+				return;
+			}
+
+			return await this.repository.checkoutCreate(name, branch);
+		}
 	}
 }
