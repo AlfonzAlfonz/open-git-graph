@@ -8,6 +8,10 @@
 		"name": "Denis Homolík",
 		"email": "alfonz@homolik.cz"
 	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/AlfonzAlfonz/open-git-graph.git"
+	},
 	"scripts": {
 		"vscode:prepublish": "pnpm build",
 		"build": "node build.mjs",
