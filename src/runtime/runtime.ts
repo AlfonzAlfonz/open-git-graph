@@ -5,6 +5,9 @@ import { catchErrors } from "./handleError";
 import { output, patchConsole } from "./logger";
 import { ShowFileTextDocumentContentProvider } from "./ShowFileTextDocumentContentProvider";
 import { checkoutCommand } from "./commands/checkout";
+import { resetHardCommand } from "./commands/resetHard";
+import { resetSoftCommand } from "./commands/resetSoft";
+import { resetMixedCommand } from "./commands/resetMixed";
 
 let controller: AbortController;
 
@@ -26,7 +29,13 @@ export function activate(context: vscode.ExtensionContext) {
 		),
 	);
 
-	const commands = [graphCommand, checkoutCommand];
+	const commands = [
+		graphCommand,
+		checkoutCommand,
+		resetHardCommand,
+		resetSoftCommand,
+		resetMixedCommand,
+	];
 
 	for (const c of commands) {
 		context.subscriptions.push(

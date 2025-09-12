@@ -4,6 +4,7 @@ import { createGraphNodes, Graph } from "../GraphTabManager/createGraphNodes";
 import { pipeThrough, take } from "../utils";
 import { GitRepository } from "./git/GitRepository";
 import vscode from "vscode";
+import { GitResetMode } from "./git/commands/gitReset";
 
 type RepositoryState = {
 	refs: GitRef[];
@@ -78,6 +79,10 @@ export class RepositoryStateHandle {
 
 			value.graphIterator = pipeThrough(iterator, graphIterator);
 		});
+	}
+
+	async reset(mode: GitResetMode, treeish: string) {
+		await this.repository.reset(mode, treeish);
 	}
 
 	async checkout(branch: string) {
