@@ -16,6 +16,7 @@ export const useApp = (): App => {
 
 	const [graph, setGraph] = useState<Graph>();
 	const [refs, setRefs] = useState<GitRef[]>();
+	const [currentBranch, setCurrentBranch] = useState<string | undefined>();
 
 	useEffect(() => {
 		const controller = new AbortController();
@@ -29,6 +30,7 @@ export const useApp = (): App => {
 					case "graph":
 						setGraph(message.data.graph);
 						setRefs(message.data.refs);
+						setCurrentBranch(message.data.currentBranch);
 						break;
 					case "graph-poll":
 						setGraph(message.data.graph);
@@ -51,6 +53,7 @@ export const useApp = (): App => {
 			...state,
 			graph,
 			refs,
+			currentBranch,
 			actions: {
 				expandCommit: (value) => {
 					bridge.expandCommit(value);

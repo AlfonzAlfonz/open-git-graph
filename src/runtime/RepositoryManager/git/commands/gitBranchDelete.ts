@@ -1,13 +1,11 @@
 import { errors } from "../../../handleError";
 import { GitCommand } from "./utils";
 
-export type GitResetMode = "soft" | "mixed" | "hard";
-
-export const gitResetHead = (
-	ref: string,
-	mode: GitResetMode,
+export const gitBranchDelete = (
+	branch: string,
+	force?: boolean,
 ): GitCommand<Promise<void>> => ({
-	args: ["reset", `--${mode}`, ref],
+	args: ["branch", "--delete", ...(force ? "--force" : ""), branch],
 	async parse(_, p) {
 		const [code] = await p;
 		if (code && code !== 0) {

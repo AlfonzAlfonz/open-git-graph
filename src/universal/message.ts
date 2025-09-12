@@ -6,6 +6,7 @@ type GraphMessage = AnyRuntimeMessage<
 	{
 		graph: Graph;
 		refs: GitRef[];
+		currentBranch: string | undefined;
 	}
 >;
 

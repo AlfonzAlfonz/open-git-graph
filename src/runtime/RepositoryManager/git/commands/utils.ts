@@ -5,7 +5,9 @@ export type GitCommand<T> = {
 	args: string[];
 	parse: (
 		stdout: Readable,
-		process: Promise<[exitCode: number | null, signal: NodeJS.Signals | null]>,
+		process: Promise<
+			[exitCode: number | null, stderr: string, signal: NodeJS.Signals | null]
+		>,
 	) => T;
 };
 

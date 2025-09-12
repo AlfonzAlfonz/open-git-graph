@@ -54,14 +54,6 @@
 
 			&.head {
 				font-weight: 700;
-
-				& .graph-tag {
-					&,
-					& .end-decorator {
-						border-color: var(--rail-color, white);
-						border-width: 1.5px;
-					}
-				}
 			}
 
 			& .graph-col {
@@ -129,9 +121,12 @@
 		@apply rounded-sm flex items-center flex-shrink-0 overflow-hidden;
 		color: var(--text-primary);
 		background: var(--vscode-input-background);
-		border: 1px solid var(--vscode-input-border);
+		border: 1px solid
+			var(--vscode-input-border, var(--vscode-sideBarSectionHeader-border));
 		height: 18px;
-		font-size: 0.9rem;
+		font-size: 0.85rem;
+		font-weight: 400;
+		user-select: none;
 
 		&::before {
 			@apply flex items-center justify-center codicon;
@@ -139,6 +134,7 @@
 			height: 18px;
 			background: var(--rail-color, white);
 			color: var(--vscode-editor-background);
+			font-size: 0.9rem;
 			line-height: 1.5;
 			font-weight: 700;
 			flex-shrink: 0;
@@ -167,7 +163,17 @@
 
 		& .end-decorator {
 			@apply px-1 h-full flex items-center italic;
-			border-left: 1px solid var(--vscode-input-border);
+			border-left: 1px solid
+				var(--vscode-input-border, var(--vscode-sideBarSectionHeader-border));
+		}
+
+		&.active {
+			font-weight: 600;
+			&,
+			& .end-decorator {
+				border-color: var(--rail-color, white);
+				border-width: 1px;
+			}
 		}
 	}
 

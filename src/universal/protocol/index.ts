@@ -17,6 +17,7 @@ export interface WebToRuntimeBridge {
 
 export type GraphData = {
 	repoPath: string;
+	currentBranch: string;
 	index?: GitIndex;
 	refs: GitRef[];
 	commits: GitCommit[];

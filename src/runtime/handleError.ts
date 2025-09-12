@@ -34,8 +34,10 @@ export const catchErrors =
 
 export const errors = {
 	noRepo: () => new Error("Cannot execute git outside of a repository"),
-	gitFailed: (exitCode: number) =>
-		new Error(`Git failed (exit code ${exitCode}) to execute a command.`),
+	gitFailed: (exitCode: number, stdErr: string = "") =>
+		new Error(
+			`Git failed (exit code ${exitCode}) to execute a command. ${stdErr}`,
+		),
 };
 
 const isThenable = (x: unknown): x is Thenable<unknown> =>
