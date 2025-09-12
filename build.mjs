@@ -3,16 +3,17 @@ import * as esbuild from "esbuild";
 import { fs, path } from "zx";
 import { createProcessor } from "tailwindcss/lib/cli/build/plugin.js";
 
-const prod = process.argv[2] === "-p";
+const prod = process.argv.slice(2).includes("-p");
+const metafile = process.argv.slice(2).includes("--meta");
 
 prod && console.info("production build");
 
-const [wv] = await Promise.all([
+const [wv, rt] = await Promise.all([
 	await esbuild.build({
 		bundle: true,
 		entryPoints: ["src/webview/webview.ts"],
 		outfile: "dist/webview.js",
-		metafile: false,
+		metafile,
 		minify: prod,
 		define: {
 			"process.env.NODE_ENV": JSON.stringify(
@@ -24,6 +25,7 @@ const [wv] = await Promise.all([
 		bundle: true,
 		entryPoints: ["src/runtime/runtime.ts"],
 		outfile: "dist/runtime.cjs",
+		metafile,
 		minify: prod,
 		external: ["vscode"],
 		platform: "node",
@@ -35,10 +37,17 @@ const [wv] = await Promise.all([
 				prod ? "production" : "development",
 			),
 		},
+		alias: {
+			debug: "debug/src/node.js",
+			"supports-color": "src/runtime/shims/supports-color.ts",
+		},
 	}),
 ]);
 
-wv.metafile && (await fs.writeFile("meta.json", JSON.stringify(wv.metafile)));
+wv.metafile &&
+	(await fs.writeFile("dist/meta_wv.json", JSON.stringify(wv.metafile)));
+rt.metafile &&
+	(await fs.writeFile("dist/meta_rt.json", JSON.stringify(rt.metafile)));
 
 await fs.copy(
 	"./node_modules/@vscode/codicons/dist/codicon.ttf",
