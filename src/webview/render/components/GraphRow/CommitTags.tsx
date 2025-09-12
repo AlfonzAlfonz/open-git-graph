@@ -25,7 +25,7 @@ export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 									: undefined
 							}
 							className={`graph-tag ${r.type} ${
-								r.label === currentBranch ? "font-[600]" : "font-[400]"
+								r.label === currentBranch ? "active" : ""
 							}`}
 							data-vscode-context={
 								r.type === "branch"
