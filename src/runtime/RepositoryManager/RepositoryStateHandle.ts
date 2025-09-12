@@ -48,7 +48,7 @@ export class RepositoryStateHandle {
 			const commits = this.repository.getCommits();
 
 			const [refs, index, stashes] = await Promise.all([
-				collect(this.repository.getRefs()),
+				this.repository.getRefs(),
 				this.repository.getIndex(),
 				collect(this.repository.getStashes()),
 			]);

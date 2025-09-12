@@ -23,9 +23,9 @@ describe("gitShowRefs", () => {
 			"0c1936d4556354a4349aee9bf16a274e40c71a6f refs/stash",
 		].join("\n");
 
-		const refs = await collect(gitShowRefs().parse(Readable.from(input)));
+		const refs = await gitShowRefs().parse(Readable.from(input));
 
-		expect(refs).toEqual([
+		expect([...refs]).toEqual([
 			{
 				hash: "bb56f269ff11efca520d5d1cf571804e9b7e7302",
 				type: "head",
@@ -105,6 +105,31 @@ describe("gitShowRefs", () => {
 				remote: "origin",
 				type: "branch",
 			},
+		]);
+	});
+
+	test("mixed tags", async () => {
+		const input = [
+			"6ba5e293d2e81e7f703d081bf2957ab6bae41c63 refs/tags/v15.6.1",
+			"ea49c1d4976359c6754d47f94534289e8fe5f3ef refs/tags/v15.6.1^{}",
+			"af7ecd35e76e5204a11fa496ad2d6b604dd858f3 refs/tags/v15.6.2",
+			"3d4db18ca9bcb45bdad640e697e3f3e06270dbe2 refs/tags/v15.6.2^{}",
+			"6668c97331cb9e02f29a8610e85305d3ee4b19fa refs/tags/v15.6.3",
+			"4711075d2f2abb266400ed33a6ccab5313224b34 refs/tags/v15.6.3^{}",
+			"9b6ce38dc16df81b7e361d995c73e46f5334d7dc refs/tags/v15.7.0",
+			"18356f26cd7f9a129b33e5f441bbc988df33fdd5 refs/tags/v15.8.0",
+			"30d840c10e8f783226c0b2a5eaeb651f9bd39bf4 refs/tags/v15.9.0",
+		].join("\n");
+
+		const refs = await gitShowRefs().parse(Readable.from(input));
+
+		expect([...refs].map((r) => r.type === "tag" && [r.hash, r.name])).toEqual([
+			["ea49c1d4976359c6754d47f94534289e8fe5f3ef", "v15.6.1"],
+			["3d4db18ca9bcb45bdad640e697e3f3e06270dbe2", "v15.6.2"],
+			["4711075d2f2abb266400ed33a6ccab5313224b34", "v15.6.3"],
+			["9b6ce38dc16df81b7e361d995c73e46f5334d7dc", "v15.7.0"],
+			["18356f26cd7f9a129b33e5f441bbc988df33fdd5", "v15.8.0"],
+			["30d840c10e8f783226c0b2a5eaeb651f9bd39bf4", "v15.9.0"],
 		]);
 	});
 });
