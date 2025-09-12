@@ -6,7 +6,6 @@ import { GitExtensionAPI } from "../vscode.git/utils";
 import { gitCheckout, gitCheckoutCreate } from "./commands/gitCheckout";
 import { gitLogCommits } from "./commands/gitLogCommits";
 import { gitLogHeadHash } from "./commands/gitLogHeadHash";
-import { gitResetHead } from "./commands/gitResetHead";
 import { gitShowCommit } from "./commands/gitShowCommit";
 import { gitShowRefFile } from "./commands/gitShowRefFile";
 import { gitShowRefs } from "./commands/gitShowRefs";

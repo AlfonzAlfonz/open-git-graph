@@ -3,15 +3,15 @@ import { GitCommand } from "./utils";
 
 export type GitResetMode = "soft" | "mixed" | "hard";
 
-export const gitResetHead = (
-	ref: string,
-	mode: GitResetMode,
+export const gitReset = (
+	mode: "mixed" | "hard" | "soft",
+	treeish: string,
 ): GitCommand<Promise<void>> => ({
-	args: ["reset", `--${mode}`, ref],
+	args: ["reset", `--${mode}`, treeish],
 	async parse(_, p) {
-		const [code] = await p;
+		const [code, stdErr] = await p;
 		if (code && code !== 0) {
-			throw errors.gitFailed(code);
+			throw errors.gitFailed(code, stdErr);
 		}
 	},
 });

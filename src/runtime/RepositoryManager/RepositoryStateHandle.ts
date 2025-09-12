@@ -1,5 +1,5 @@
 import { collect, Mutex, Pylon } from "@alfonz/async";
-import { GitCommit, GitRef } from "../../universal/git";
+import { GitCommit, GitRef, GitRefBranch } from "../../universal/git";
 import { createGraphNodes, Graph } from "../GraphTabManager/createGraphNodes";
 import { pipeThrough, take } from "../utils";
 import { GitRepository } from "./git/GitRepository";
@@ -81,16 +81,57 @@ export class RepositoryStateHandle {
 	}
 
 	async checkout(branch: string) {
-		const existing = await this.repository.listLocalBranches();
+		const localBranches = (await this.pylon.iterator.read()).refs
+			.filter(
+				(r): r is GitRefBranch => r.type === "branch" && r.remote === undefined,
+			)
+			.map((r) => r.name);
 
-		if (existing.includes("refs/heads/" + branch)) {
-			return await this.repository.checkout(branch);
+		if (localBranches.includes(branch)) {
+			// branch exists locally
+			await this.repository.checkout(branch);
 		} else {
 			const [, ...rest] = branch.split("/");
+			const localName = rest.join("/");
+
+			if (localBranches.includes(localName)) {
+				// branch exists locally, but doesn't match remote branch from parameter
+				const result = await vscode.window.showWarningMessage(
+					"This branch already exists, do you want to checkout and:",
+					{ modal: true },
+					"Only checkout",
+					"Try to pull",
+					"Reset to remote",
+				);
+
+				switch (result) {
+					case "Only checkout": {
+						await this.repository.checkout(localName);
+						await this.repository.pull();
+						return;
+					}
+					case "Try to pull": {
+						await this.repository.checkout(localName);
+						await this.repository.pull();
+						return;
+					}
+					case "Reset to remote": {
+						await this.repository.checkout(localName);
+						await this.repository.reset("hard", branch);
+						return;
+					}
+					default: {
+						return;
+					}
+				}
+			}
+
+			// branch does not exist locally and has to be created
+
 			const name = await vscode.window.showInputBox({
 				title:
 					"Branch is not checkout locally, what should be the name of local branch?",
-				value: rest.join("/"),
+				value: localName,
 				valueSelection: [rest.length, rest.length],
 			});
 
@@ -98,7 +139,7 @@ export class RepositoryStateHandle {
 				return;
 			}
 
-			return await this.repository.checkoutCreate(name, branch);
+			await this.repository.checkoutCreate(name, branch);
 		}
 	}
 }

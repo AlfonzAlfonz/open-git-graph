@@ -19,6 +19,12 @@ export class RepositoryManager {
 		public readonly extension: GitExtension = RepositoryManager.getExtension(),
 	) {}
 
+	public async getRepository(path: string) {
+		const repositories = await this.repositories.read();
+
+		return repositories[path];
+	}
+
 	public getStateHandle(repository: GitRepository) {
 		const path = repository.getPath();
 

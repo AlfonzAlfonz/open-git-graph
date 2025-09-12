@@ -1,17 +1,19 @@
 import { Backend } from "./createBackend";
 import * as vscode from "vscode";
 
-export type Command<TId extends string> = {
+export type Command<TId extends string, TArgs extends any[]> = {
 	id: TId;
-	command: (backend: Backend) => () => Promise<void>;
+	command: (backend: Backend) => (...args: TArgs) => Promise<void>;
 };
 
-export const command = <TId extends string>(command: Command<TId>) => {
+export const command = <TId extends string, TArgs extends any[]>(
+	command: Command<TId, TArgs>,
+) => {
 	return {
 		...command,
 		command:
 			(backend: Backend) =>
-			(...args: Parameters<ReturnType<Command<TId>["command"]>>) => {
+			(...args: Parameters<ReturnType<Command<TId, TArgs>["command"]>>) => {
 				console.info("");
 				console.info(`Executing command "${command.id}"`);
 

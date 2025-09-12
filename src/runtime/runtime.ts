@@ -4,6 +4,7 @@ import { createBackend } from "./createBackend";
 import { catchErrors } from "./handleError";
 import { output, patchConsole } from "./logger";
 import { ShowFileTextDocumentContentProvider } from "./ShowFileTextDocumentContentProvider";
+import { checkoutCommand } from "./commands/checkout";
 
 let controller: AbortController;
 
@@ -25,7 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
 		),
 	);
 
-	const commands = [graphCommand];
+	const commands = [graphCommand, checkoutCommand];
 
 	for (const c of commands) {
 		context.subscriptions.push(
