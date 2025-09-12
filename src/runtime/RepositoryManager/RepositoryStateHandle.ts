@@ -140,11 +140,55 @@ export class RepositoryStateHandle {
 				valueSelection: [rest.length, rest.length],
 			});
 
-			if (name === undefined) {
-				return;
-			}
+			if (name === undefined) return;
 
 			await this.repository.checkoutCreate(name, branch);
+		}
+	}
+
+	public async deleteBranch(branch: string) {
+		const state = await this.pylon.iterator.read();
+
+		const ref = state.refs.find(
+			(r): r is GitRefBranch => r.type === "branch" && r.name === branch,
+		);
+
+		if (!ref) {
+			throw new Error("Branch does not exist");
+		}
+
+		if (ref.remote) {
+			throw new Error("Trying to remove remote branch");
+		}
+
+		const result = await vscode.window.showWarningMessage(
+			"Force delete?",
+			{
+				modal: true,
+				detail:
+					"Branch won't be removed if its commits are not referenced by other ref.",
+			},
+			"Yes",
+			"No",
+		);
+
+		if (result === undefined) return;
+
+		await this.repository.branchDelete(branch, result === "Yes" ? true : false);
+	}
+
+	public async deleteRemoteBranch(branch: string) {
+		const [origin, ...rest] = branch.split("/");
+		const branchName = rest.join("/");
+
+		const result = await vscode.window.showWarningMessage(
+			`Delete branch ${branchName} at ${origin}?`,
+			{ modal: true },
+			"Yes",
+		);
+
+		if (result === "Yes") {
+			await this.repository.pushDelete(origin!, branchName);
 		}
 	}
 }

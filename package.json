@@ -86,54 +86,50 @@
 	],
 	"contributes": {
 		"menus": {
-			"commandPalette": [
-				{
-					"command": "open-git-graph.reset-soft",
-					"when": "false"
-				},
-				{
-					"command": "open-git-graph.reset-mixed",
-					"when": "false"
-				},
-				{
-					"command": "open-git-graph.reset-hard",
-					"when": "false"
-				}
-			],
 			"webview/context": [
 				{
 					"command": "open-git-graph.checkout",
-					"when": "webviewId == 'open-git-graph.graph' && webviewSection == 'branch'",
+					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'branch' || webviewSection == 'branch-remote')",
 					"group": "1_branch@1"
 				},
 				{
+					"command": "open-git-graph.delete-branch",
+					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'branch')",
+					"group": "1_branch@2"
+				},
+				{
+					"command": "open-git-graph.delete-remote-branch",
+					"when": "webviewId == 'open-git-graph.graph' && webviewSection == 'branch-remote'",
+					"group": "1_branch@2"
+				},
+				{
 					"command": "open-git-graph.add-tag",
-					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch')",
+					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch' || webviewSection == 'branch-remote')",
 					"group": "2_tag@1"
 				},
 				{
 					"command": "open-git-graph.cherry-pick",
-					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch')",
+					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch' || webviewSection == 'branch-remote')",
 					"group": "3_commit@1"
 				},
 				{
 					"command": "open-git-graph.revert",
-					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch')",
+					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch' || webviewSection == 'branch-remote')",
 					"group": "3_commit@2"
 				},
 				{
 					"command": "open-git-graph.merge-head",
-					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch')",
+					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch' || webviewSection == 'branch-remote')",
 					"group": "4_commit_branch@1"
 				},
 				{
 					"command": "open-git-graph.rebase-head",
-					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch')",
+					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch' || webviewSection == 'branch-remote')",
 					"group": "4_commit_branch@2"
 				},
 				{
 					"submenu": "open-git-graph.reset",
-					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch')",
+					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch' || webviewSection == 'branch-remote')",
 					"group": "4_commit_branch@3"
 				}
 			],
@@ -219,6 +215,14 @@
 				"command": "open-git-graph.revert",
 				"title": "Revert",
 				"enablement": "false"
+			},
+			{
+				"command": "open-git-graph.delete-branch",
+				"title": "Delete branch"
+			},
+			{
+				"command": "open-git-graph.delete-remote-branch",
+				"title": "Delete remote branch"
 			}
 		]
 	},

@@ -15,6 +15,8 @@ import { GitCommand } from "./commands/utils";
 import { execGit } from "./execGit";
 import { gitPull } from "./commands/gitPull";
 import { gitReset, GitResetMode } from "./commands/gitReset";
+import { gitBranchDelete } from "./commands/gitBranchDelete";
+import { gitPushDelete } from "./commands/gitPushDelete";
 
 export class GitRepository {
 	constructor(
@@ -86,6 +88,14 @@ export class GitRepository {
 
 	public async reset(mode: GitResetMode, treeish: string) {
 		return await this.execGit(gitReset(mode, treeish));
+	}
+
+	public async branchDelete(branch: string, force: boolean) {
+		return await this.execGit(gitBranchDelete(branch, force));
+	}
+
+	public async pushDelete(origin: string, branch: string) {
+		return await this.execGit(gitPushDelete(origin, branch));
 	}
 
 	private execGit = <T>(cmd: GitCommand<T>): T => {

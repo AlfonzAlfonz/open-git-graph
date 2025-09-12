@@ -8,6 +8,8 @@ import { checkoutCommand } from "./commands/checkout";
 import { resetHardCommand } from "./commands/resetHard";
 import { resetSoftCommand } from "./commands/resetSoft";
 import { resetMixedCommand } from "./commands/resetMixed";
+import { deleteBranchCommand } from "./commands/deleteBranch";
+import { deleteRemoteBranchCommand } from "./commands/deleteRemoteBranch";
 
 let controller: AbortController;
 
@@ -35,6 +37,8 @@ export function activate(context: vscode.ExtensionContext) {
 		resetHardCommand,
 		resetSoftCommand,
 		resetMixedCommand,
+		deleteBranchCommand,
+		deleteRemoteBranchCommand,
 	];
 
 	for (const c of commands) {
