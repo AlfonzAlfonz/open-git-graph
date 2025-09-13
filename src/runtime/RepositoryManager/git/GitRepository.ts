@@ -2,9 +2,17 @@ import * as vscode from "vscode";
 import { GitCommit, GitIndex } from "../../../universal/git";
 import { handleError } from "../../handleError";
 import { GitExtensionAPI } from "../vscode.git/utils";
+import {
+	DeleteBranchOptions,
+	gitBranchDelete,
+} from "./commands/gitBranchDelete";
 import { gitCheckout, gitCheckoutCreate } from "./commands/gitCheckout";
+import { CherryPickOptions, gitCherryPick } from "./commands/gitCherryPick";
 import { gitLogCommits } from "./commands/gitLogCommits";
 import { gitLogHeadHash } from "./commands/gitLogHeadHash";
+import { gitPull } from "./commands/gitPull";
+import { gitPushDelete } from "./commands/gitPushDelete";
+import { gitReset, GitResetOptions } from "./commands/gitReset";
 import { gitShowCommit } from "./commands/gitShowCommit";
 import { gitShowRefFile } from "./commands/gitShowRefFile";
 import { gitShowRefs } from "./commands/gitShowRefs";
@@ -12,14 +20,6 @@ import { gitStashList } from "./commands/gitStashList";
 import { gitStatus } from "./commands/gitStatus";
 import { GitCommand } from "./commands/utils";
 import { execGit } from "./execGit";
-import { gitPull } from "./commands/gitPull";
-import { gitReset, GitResetMode } from "./commands/gitReset";
-import {
-	DeleteBranchOptions,
-	gitBranchDelete,
-} from "./commands/gitBranchDelete";
-import { gitPushDelete } from "./commands/gitPushDelete";
-import { CherryPickOptions, gitCherryPick } from "./commands/gitCherryPick";
 
 export class GitRepository {
 	constructor(
@@ -89,8 +89,8 @@ export class GitRepository {
 		return await this.execGit(gitPull(ffOnly));
 	}
 
-	public async reset(mode: GitResetMode, treeish: string) {
-		return await this.execGit(gitReset(mode, treeish));
+	public async reset(treeish: string, options: GitResetOptions) {
+		return await this.execGit(gitReset(treeish, options));
 	}
 
 	public async branchDelete(branch: string, options: DeleteBranchOptions) {

@@ -1,15 +1,16 @@
 import { collect, Mutex, Pylon } from "@alfonz/async";
+import vscode from "vscode";
 import { GitCommit, GitRef, GitRefBranch } from "../../universal/git";
+import { groupBy } from "../../universal/groupBy";
 import { createGraphNodes, Graph } from "../GraphTabManager/createGraphNodes";
 import { pipeThrough, take } from "../utils";
-import { GitRepository } from "./git/GitRepository";
-import vscode from "vscode";
-import { GitResetMode } from "./git/commands/gitReset";
-import { CherryPickOptions } from "./git/commands/gitCherryPick";
-import { getCherryPickOptions } from "./options/getCherryPickOptions";
 import { DeleteBranchOptions } from "./git/commands/gitBranchDelete";
+import { CherryPickOptions } from "./git/commands/gitCherryPick";
+import { GitResetOptions } from "./git/commands/gitReset";
+import { GitRepository } from "./git/GitRepository";
+import { getCherryPickOptions } from "./options/getCherryPickOptions";
 import { getDeleteBranchOptions } from "./options/getDeleteBranchOptions";
-import { groupBy } from "../../universal/groupBy";
+import { getResetOptions } from "./options/getResetOptions";
 
 type RepositoryState = {
 	refs: GitRef[];
@@ -86,12 +87,18 @@ export class RepositoryStateHandle {
 		});
 	}
 
-	async reset(mode: GitResetMode, treeish: string) {
-		await this.repository.reset(mode, treeish);
+	async reset(treeish: string, options?: GitResetOptions) {
+		if (!options) {
+			const selected = await getResetOptions(treeish);
+			if (!selected) return;
+			options = selected;
+		}
+
+		await this.repository.reset(treeish, options);
 	}
 
 	async checkout(branch: string) {
-		const localBranches = (await this.pylon.iterator.read()).refs
+		const localBranches = (await this.state.read()).refs
 			.filter(
 				(r): r is GitRefBranch => r.type === "branch" && r.remote === undefined,
 			)
@@ -127,7 +134,7 @@ export class RepositoryStateHandle {
 					}
 					case "Reset to remote": {
 						await this.repository.checkout(localName);
-						await this.repository.reset("hard", branch);
+						await this.repository.reset(branch, { mode: "hard" });
 						return;
 					}
 					default: {
@@ -156,7 +163,7 @@ export class RepositoryStateHandle {
 		remotes: string[],
 		options?: DeleteBranchOptions & { remotes?: boolean },
 	) {
-		const state = await this.pylon.iterator.read();
+		const state = await this.state.read();
 
 		const ref = state.refs.find(
 			(r): r is GitRefBranch => r.type === "branch" && r.name === branch,
