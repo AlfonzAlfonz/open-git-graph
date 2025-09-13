@@ -13,9 +13,13 @@ export const execGit = <T>(
 ): T => {
 	debug(`${gitPath} ${cmd.args.join(" ")}`);
 
-	const child = spawn(gitPath, cmd.args, {
-		cwd: repoPath,
-	});
+	const child = spawn(
+		gitPath,
+		cmd.args.filter((a) => a !== null),
+		{
+			cwd: repoPath,
+		},
+	);
 
 	child.on("error", (e) => onError(e));
 

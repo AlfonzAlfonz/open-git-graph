@@ -1,15 +1,15 @@
 import * as vscode from "vscode";
 import { graphCommand } from "./commands/graph";
 import { createBackend } from "./createBackend";
-import { catchErrors } from "./handleError";
+import { catchErrors, handleError } from "./handleError";
 import { output, patchConsole } from "./logger";
 import { ShowFileTextDocumentContentProvider } from "./ShowFileTextDocumentContentProvider";
 import { checkoutCommand } from "./commands/checkout";
-import { resetHardCommand } from "./commands/resetHard";
-import { resetSoftCommand } from "./commands/resetSoft";
-import { resetMixedCommand } from "./commands/resetMixed";
+import { resetCommand } from "./commands/reset";
+
 import { deleteBranchCommand } from "./commands/deleteBranch";
 import { deleteRemoteBranchCommand } from "./commands/deleteRemoteBranch";
+import { cherryPickCommand } from "./commands/cherryPick";
 
 let controller: AbortController;
 
@@ -34,16 +34,18 @@ export function activate(context: vscode.ExtensionContext) {
 	const commands = [
 		graphCommand,
 		checkoutCommand,
-		resetHardCommand,
-		resetSoftCommand,
-		resetMixedCommand,
+		resetCommand,
 		deleteBranchCommand,
 		deleteRemoteBranchCommand,
+		cherryPickCommand,
 	];
 
 	for (const c of commands) {
 		context.subscriptions.push(
-			vscode.commands.registerCommand(c.id, catchErrors(c.command(backend))),
+			vscode.commands.registerCommand(
+				c.id,
+				catchErrors(c.command(backend), handleError(true)),
+			),
 		);
 	}
 }

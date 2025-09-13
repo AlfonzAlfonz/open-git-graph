@@ -1,21 +1,17 @@
 import { command } from "../utils";
 
-export const resetHardCommand = command({
-	id: "open-git-graph.reset-hard",
-	command: (backend) => async (ctx: unknown) => {
-		if (!isValidCtx(ctx)) {
-			throw new Error("Invalid argument");
-		}
+export const cherryPickCommand = command({
+	id: "open-git-graph.cherry-pick",
+	command: (backend) => async (ctx) => {
+		if (!isValidCtx(ctx)) throw new Error("Invalid argument");
 
 		const repo = await backend.repositoryManager.getRepository(ctx.repo);
 
-		if (!repo) {
-			throw new Error("Repo not found");
-		}
+		if (!repo) throw new Error("Repo not found");
 
 		const handle = backend.repositoryManager.getStateHandle(repo);
 
-		await handle.reset("hard", ctx.ref);
+		await handle.cherryPick(ctx.ref);
 	},
 });
 
