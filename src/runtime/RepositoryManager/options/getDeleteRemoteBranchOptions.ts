@@ -1,26 +1,26 @@
-import { showOptionPicker } from "../../showOptionPicker";
 import { DeleteBranchOptions } from "../git/commands/gitBranchDelete";
+import {
+	gitPushDelete,
+	PushDeleteOptions,
+} from "../git/commands/gitPushDelete";
+import { formatArgs, showCommandBuilder } from "./utils";
 
-export const getDeleteBranchOptions = async (): Promise<
-	DeleteBranchOptions | undefined
-> => {
-	const selected = await showOptionPicker({
-		items: [
-			{
+export const getDeleteRemoteBranchOptions = async (
+	origin: string,
+	branches: string[],
+	initialValue?: PushDeleteOptions,
+): Promise<DeleteBranchOptions | undefined> => {
+	const selected = await showCommandBuilder({
+		getPlaceholder: (o) => formatArgs(gitPushDelete(origin, branches, o)),
+		initialValue,
+		items: {
+			force: {
 				label: "--force",
+				type: "flag",
 				description: "Delete branch even if it can lead to lost commits",
 			},
-		] as const,
-		getTitle: () => "Execute command",
-		getPlaceholder: (items) =>
-			`git cherry-pick ${items.map((i) => i.label).join(" ")}`,
+		},
 	});
 
-	if (selected === undefined) return;
-
-	const selectedKeys = selected.map((s) => s.label);
-
-	return {
-		force: selectedKeys.includes("--force"),
-	};
+	return selected;
 };

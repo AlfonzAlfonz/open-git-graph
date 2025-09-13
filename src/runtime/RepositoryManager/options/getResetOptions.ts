@@ -1,12 +1,22 @@
-import { GitResetMode, GitResetOptions } from "../git/commands/gitReset";
-import { showCommandBuilder } from "./utils";
+import {
+	gitReset,
+	GitResetMode,
+	GitResetOptions,
+} from "../git/commands/gitReset";
+import { formatArgs, showCommandBuilder } from "./utils";
 
 export const getResetOptions = async (
 	treeish: string,
 	initial?: Partial<GitResetOptions>,
 ) => {
 	const result = await showCommandBuilder({
-		getPlaceholder: (flags) => `git reset ${flags.join(" ")} ${treeish}`,
+		getPlaceholder: (o) => {
+			let mode: GitResetMode | undefined;
+			if (o.hard) mode = "hard";
+			if (o.mixed) mode = "mixed";
+			if (o.soft) mode = "soft";
+			return formatArgs(gitReset(treeish, { mode }));
+		},
 		initialValue: {
 			soft: initial?.mode === "soft",
 			mixed: initial?.mode === "soft",

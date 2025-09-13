@@ -1,12 +1,15 @@
-import { DeleteBranchOptions } from "../git/commands/gitBranchDelete";
-import { showCommandBuilder } from "./utils";
+import {
+	DeleteBranchOptions,
+	gitBranchDelete,
+} from "../git/commands/gitBranchDelete";
+import { formatArgs, showCommandBuilder } from "./utils";
 
 export const getDeleteBranchOptions = async (
 	branch: string,
 	initialValue?: DeleteBranchOptions & { remotes?: boolean },
 ): Promise<(DeleteBranchOptions & { remotes: boolean }) | undefined> => {
 	const selected = await showCommandBuilder({
-		getPlaceholder: (flags) => `git branch -d ${flags.join(" ")} ${branch}`,
+		getPlaceholder: (o) => formatArgs(gitBranchDelete(branch, o)),
 		initialValue,
 		items: {
 			force: {

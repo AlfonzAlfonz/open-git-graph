@@ -1,12 +1,12 @@
-import { RebaseOptions } from "../git/commands/gitRebase";
-import { showCommandBuilder } from "./utils";
+import { gitRebase, RebaseOptions } from "../git/commands/gitRebase";
+import { formatArgs, showCommandBuilder } from "./utils";
 
 export const getRebaseOptions = async (
 	upstream: string,
 	initialValue?: Partial<RebaseOptions>,
 ) => {
 	const result = await showCommandBuilder({
-		getPlaceholder: (flags) => `git rebase ${flags.join(" ")} ${upstream}`,
+		getPlaceholder: (o) => formatArgs(gitRebase(upstream, o)),
 		initialValue,
 		items: {
 			interactive: {

@@ -11,7 +11,7 @@ import { CherryPickOptions, gitCherryPick } from "./commands/gitCherryPick";
 import { gitLogCommits } from "./commands/gitLogCommits";
 import { gitLogHeadHash } from "./commands/gitLogHeadHash";
 import { gitPull } from "./commands/gitPull";
-import { gitPushDelete } from "./commands/gitPushDelete";
+import { gitPushDelete, PushDeleteOptions } from "./commands/gitPushDelete";
 import { gitReset, GitResetOptions } from "./commands/gitReset";
 import { gitShowCommit } from "./commands/gitShowCommit";
 import { gitShowRefFile } from "./commands/gitShowRefFile";
@@ -99,8 +99,12 @@ export class GitRepository {
 		return await this.execGit(gitBranchDelete(branch, options));
 	}
 
-	public async pushDelete(origin: string, branches: string | string[]) {
-		return await this.execGit(gitPushDelete(origin, branches));
+	public async pushDelete(
+		origin: string,
+		branches: string | string[],
+		options: PushDeleteOptions,
+	) {
+		return await this.execGit(gitPushDelete(origin, branches, options));
 	}
 
 	public async cherryPick(commit: string, options: CherryPickOptions) {
