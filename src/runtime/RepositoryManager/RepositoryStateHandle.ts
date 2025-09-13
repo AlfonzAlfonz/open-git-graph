@@ -169,6 +169,10 @@ export class RepositoryStateHandle {
 		}
 	}
 
+	public async fetch() {
+		return await this.repository.fetch();
+	}
+
 	public async deleteBranch(
 		branch: string,
 		remotes: string[],

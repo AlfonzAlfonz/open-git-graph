@@ -22,6 +22,7 @@ import { GitCommand } from "./commands/utils";
 import { execGit } from "./execGit";
 import { gitRebase, RebaseOptions } from "./commands/gitRebase";
 import { gitMerge, MergeOptions } from "./commands/gitMerge";
+import { gitFetch } from "./commands/gitFetch";
 
 export class GitRepository {
 	constructor(
@@ -85,6 +86,10 @@ export class GitRepository {
 
 	public async checkoutCreate(branchName: string, startingPoint: string) {
 		return await this.execGit(gitCheckoutCreate(branchName, startingPoint));
+	}
+
+	public async fetch() {
+		return await this.execGit(gitFetch());
 	}
 
 	public async pull(ffOnly: boolean = true) {
