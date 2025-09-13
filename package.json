@@ -208,8 +208,7 @@
 			},
 			{
 				"command": "open-git-graph.cherry-pick",
-				"title": "Cherry pick",
-				"enablement": "false"
+				"title": "Cherry pick"
 			},
 			{
 				"command": "open-git-graph.revert",
