@@ -15,7 +15,7 @@ export const deleteRemoteBranchCommand = command({
 
 		const handle = backend.repositoryManager.getStateHandle(repo);
 
-		await handle.deleteRemoteBranch(ctx.branch);
+		await handle.deleteRemoteBranches([ctx.branch]);
 	},
 });
 

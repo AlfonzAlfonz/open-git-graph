@@ -1,7 +1,7 @@
 import { command } from "../utils";
 
-export const resetMixedCommand = command({
-	id: "open-git-graph.reset-mixed",
+export const rebaseCommand = command({
+	id: "open-git-graph.rebase",
 	command: (backend) => async (ctx: unknown) => {
 		if (!isValidCtx(ctx)) {
 			throw new Error("Invalid argument");
@@ -15,7 +15,7 @@ export const resetMixedCommand = command({
 
 		const handle = backend.repositoryManager.getStateHandle(repo);
 
-		await handle.reset("mixed", ctx.ref);
+		await handle.rebase(ctx.ref);
 	},
 });
 

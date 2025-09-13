@@ -1,7 +1,7 @@
 import { command } from "../utils";
 
-export const resetHardCommand = command({
-	id: "open-git-graph.reset-hard",
+export const resetCommand = command({
+	id: "open-git-graph.reset",
 	command: (backend) => async (ctx: unknown) => {
 		if (!isValidCtx(ctx)) {
 			throw new Error("Invalid argument");
@@ -15,7 +15,7 @@ export const resetHardCommand = command({
 
 		const handle = backend.repositoryManager.getStateHandle(repo);
 
-		await handle.reset("hard", ctx.ref);
+		await handle.reset(ctx.ref);
 	},
 });
 

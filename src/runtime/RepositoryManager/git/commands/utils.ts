@@ -2,14 +2,15 @@ import { Readable } from "node:stream";
 import { GitCommit } from "../../../../universal/git";
 
 export type GitCommand<T> = {
-	args: string[];
-	parse: (
-		stdout: Readable,
-		process: Promise<
-			[exitCode: number | null, stderr: string, signal: NodeJS.Signals | null]
-		>,
-	) => T;
+	args: (string | null)[];
+	parse: (stdout: Readable, process: Promise<GitProcessOutput>) => T;
 };
+
+export type GitProcessOutput = [
+	exitCode: number | null,
+	stderr: string,
+	signal: NodeJS.Signals | null,
+];
 
 export const FORMAT_SEPARATOR = "<Ps3Nqv_iKCwmz>";
 export const commitFormat = ["%H", "%P", "%aN", "%aE", "%at", "%s", "%ct"].join(

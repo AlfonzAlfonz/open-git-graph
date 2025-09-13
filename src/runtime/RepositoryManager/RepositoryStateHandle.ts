@@ -1,10 +1,22 @@
 import { collect, Mutex, Pylon } from "@alfonz/async";
+import vscode from "vscode";
 import { GitCommit, GitRef, GitRefBranch } from "../../universal/git";
+import { groupBy } from "../../universal/groupBy";
 import { createGraphNodes, Graph } from "../GraphTabManager/createGraphNodes";
 import { pipeThrough, take } from "../utils";
+import { DeleteBranchOptions } from "./git/commands/gitBranchDelete";
+import { CherryPickOptions } from "./git/commands/gitCherryPick";
+import { MergeOptions } from "./git/commands/gitMerge";
+import { RebaseOptions } from "./git/commands/gitRebase";
+import { GitResetOptions } from "./git/commands/gitReset";
 import { GitRepository } from "./git/GitRepository";
-import vscode from "vscode";
-import { GitResetMode } from "./git/commands/gitReset";
+import { getCherryPickOptions } from "./options/getCherryPickOptions";
+import { getDeleteBranchOptions } from "./options/getDeleteBranchOptions";
+import { getDeleteRemoteBranchOptions } from "./options/getDeleteRemoteBranchOptions";
+import { getMergeOptions } from "./options/getMergeOptions";
+import { getRebaseOptions } from "./options/getRebaseOptions";
+import { getResetOptions } from "./options/getResetOptions";
+import { showCommandBuilder } from "./options/utils";
 
 type RepositoryState = {
 	refs: GitRef[];
@@ -81,12 +93,15 @@ export class RepositoryStateHandle {
 		});
 	}
 
-	async reset(mode: GitResetMode, treeish: string) {
-		await this.repository.reset(mode, treeish);
+	async reset(treeish: string, options?: GitResetOptions) {
+		const selected = await getResetOptions(treeish, options);
+		if (!selected) return;
+
+		await this.repository.reset(treeish, selected);
 	}
 
 	async checkout(branch: string) {
-		const localBranches = (await this.pylon.iterator.read()).refs
+		const localBranches = (await this.state.read()).refs
 			.filter(
 				(r): r is GitRefBranch => r.type === "branch" && r.remote === undefined,
 			)
@@ -101,34 +116,42 @@ export class RepositoryStateHandle {
 
 			if (localBranches.includes(localName)) {
 				// branch exists locally, but doesn't match remote branch from parameter
-				const result = await vscode.window.showWarningMessage(
-					"This branch already exists, do you want to checkout and:",
-					{ modal: true },
-					"Only checkout",
-					"Try to pull",
-					"Reset to remote",
-				);
+				const result = await showCommandBuilder({
+					title: "This branch already exists, do you want to:",
+					getPlaceholder: () => "This branch already exists, do you want to:",
+					canSelectMany: false,
+					items: {
+						checkout: {
+							label: "Checkout",
+							type: "other",
+						},
+						checkoutPull: {
+							label: "Checkout & pull",
+							type: "other",
+						},
+						checkoutReset: {
+							label: "Checkout & reset",
+							type: "other",
+						},
+					},
+				});
 
-				switch (result) {
-					case "Only checkout": {
-						await this.repository.checkout(localName);
-						await this.repository.pull();
-						return;
-					}
-					case "Try to pull": {
-						await this.repository.checkout(localName);
-						await this.repository.pull();
-						return;
-					}
-					case "Reset to remote": {
-						await this.repository.checkout(localName);
-						await this.repository.reset("hard", branch);
-						return;
-					}
-					default: {
-						return;
-					}
+				if (!result) return;
+
+				if (result.checkout) {
+					await this.repository.checkout(localName);
 				}
+
+				if (result.checkoutPull) {
+					await this.repository.checkout(localName);
+					await this.repository.pull();
+				}
+
+				if (result.checkoutReset) {
+					await this.repository.checkout(localName);
+					await this.reset(branch, { mode: "hard" });
+				}
+				return;
 			}
 
 			// branch does not exist locally and has to be created
@@ -146,49 +169,68 @@ export class RepositoryStateHandle {
 		}
 	}
 
-	public async deleteBranch(branch: string) {
-		const state = await this.pylon.iterator.read();
+	public async deleteBranch(
+		branch: string,
+		remotes: string[],
+		options?: DeleteBranchOptions & { remotes?: boolean },
+	) {
+		const state = await this.state.read();
 
 		const ref = state.refs.find(
 			(r): r is GitRefBranch => r.type === "branch" && r.name === branch,
 		);
 
-		if (!ref) {
-			throw new Error("Branch does not exist");
+		if (!ref) throw new Error("Branch does not exist");
+		if (ref.remote) throw new Error("Trying to remove remote branch");
+
+		const selected = await getDeleteBranchOptions(branch, options);
+		if (!selected) return;
+
+		await this.repository.branchDelete(branch, selected);
+
+		if (selected.remotes) {
+			await this.deleteRemoteBranches(remotes.map((r) => `${r}/${branch}`));
 		}
-
-		if (ref.remote) {
-			throw new Error("Trying to remove remote branch");
-		}
-
-		const result = await vscode.window.showWarningMessage(
-			"Force delete?",
-			{
-				modal: true,
-				detail:
-					"Branch won't be removed if its commits are not referenced by other ref.",
-			},
-			"Yes",
-			"No",
-		);
-
-		if (result === undefined) return;
-
-		await this.repository.branchDelete(branch, result === "Yes" ? true : false);
 	}
 
-	public async deleteRemoteBranch(branch: string) {
-		const [origin, ...rest] = branch.split("/");
-		const branchName = rest.join("/");
-
-		const result = await vscode.window.showWarningMessage(
-			`Delete branch ${branchName} at ${origin}?`,
-			{ modal: true },
-			"Yes",
+	public async deleteRemoteBranches(branches: string[]) {
+		const origins = groupBy(
+			branches.map((b) => {
+				const [origin, ...rest] = b.split("/");
+				const branchName = rest.join("/");
+				return [origin!, branchName] as const;
+			}),
+			(b) => b[0],
+			(b) => b[1],
 		);
 
-		if (result === "Yes") {
-			await this.repository.pushDelete(origin!, branchName);
+		for (const [origin, branches] of origins) {
+			const selected = await getDeleteRemoteBranchOptions(origin, branches);
+
+			if (!selected) continue;
+
+			await this.repository.pushDelete(origin!, branches, selected);
 		}
+	}
+
+	public async cherryPick(commit: string, options?: CherryPickOptions) {
+		const selected = await getCherryPickOptions(commit, options);
+		if (!selected) return;
+
+		return await this.repository.cherryPick(commit, selected);
+	}
+
+	public async rebase(upstream: string, options?: RebaseOptions) {
+		const selected = await getRebaseOptions(upstream, options);
+		if (!selected) return;
+
+		return await this.repository.rebase(upstream, selected);
+	}
+
+	public async merge(upstream: string, options?: MergeOptions) {
+		const selected = await getMergeOptions(upstream, options);
+		if (!selected) return;
+
+		return await this.repository.merge(upstream, selected);
 	}
 }

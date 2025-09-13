@@ -1,15 +1,23 @@
-import { errors } from "../../../handleError";
+import { GitError } from "../../errors/GitError";
 import { GitCommand } from "./utils";
+
+export type PushDeleteOptions = {
+	force?: boolean;
+};
 
 export const gitPushDelete = (
 	origin: string,
-	branch: string,
+	branches: string | string[],
+	{ force }: PushDeleteOptions,
 ): GitCommand<Promise<void>> => ({
-	args: ["push", "--delete", origin, branch],
+	args: [
+		"push",
+		"--delete",
+		force ? "--force" : null,
+		origin,
+		...(typeof branches === "string" ? [branches] : branches),
+	],
 	async parse(_, p) {
-		const [code] = await p;
-		if (code && code !== 0) {
-			throw errors.gitFailed(code);
-		}
+		GitError.throwOnFail(await p);
 	},
 });
