@@ -1,12 +1,12 @@
-import { MergeOptions } from "../git/commands/gitMerge";
-import { showCommandBuilder } from "./utils";
+import { gitMerge, MergeOptions } from "../git/commands/gitMerge";
+import { formatArgs, showCommandBuilder } from "./utils";
 
 export const getMergeOptions = async (
 	target: string,
 	initialValue?: Partial<MergeOptions>,
 ) => {
 	const result = await showCommandBuilder({
-		getPlaceholder: (flags) => `git merge ${flags.join(" ")} ${target}`,
+		getPlaceholder: (o) => formatArgs(gitMerge(target, o)),
 		initialValue,
 		items: {
 			ff: {
