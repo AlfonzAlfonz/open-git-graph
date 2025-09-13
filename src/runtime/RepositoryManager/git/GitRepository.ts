@@ -1,4 +1,3 @@
-import { collect } from "@alfonz/async";
 import * as vscode from "vscode";
 import { GitCommit, GitIndex } from "../../../universal/git";
 import { handleError } from "../../handleError";
@@ -17,6 +16,7 @@ import { gitPull } from "./commands/gitPull";
 import { gitReset, GitResetMode } from "./commands/gitReset";
 import { gitBranchDelete } from "./commands/gitBranchDelete";
 import { gitPushDelete } from "./commands/gitPushDelete";
+import { CherryPickOptions, gitCherryPick } from "./commands/gitCherryPick";
 
 export class GitRepository {
 	constructor(
@@ -96,6 +96,10 @@ export class GitRepository {
 
 	public async pushDelete(origin: string, branch: string) {
 		return await this.execGit(gitPushDelete(origin, branch));
+	}
+
+	public async cherryPick(commit: string, options: CherryPickOptions) {
+		return await this.execGit(gitCherryPick(commit, options));
 	}
 
 	private execGit = <T>(cmd: GitCommand<T>): T => {

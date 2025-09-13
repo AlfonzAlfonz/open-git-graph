@@ -2,7 +2,7 @@ import { Readable } from "node:stream";
 import { GitCommit } from "../../../../universal/git";
 
 export type GitCommand<T> = {
-	args: string[];
+	args: (string | null)[];
 	parse: (
 		stdout: Readable,
 		process: Promise<

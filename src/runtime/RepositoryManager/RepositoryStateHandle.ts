@@ -5,6 +5,7 @@ import { pipeThrough, take } from "../utils";
 import { GitRepository } from "./git/GitRepository";
 import vscode from "vscode";
 import { GitResetMode } from "./git/commands/gitReset";
+import { CherryPickOptions } from "./git/commands/gitCherryPick";
 
 type RepositoryState = {
 	refs: GitRef[];
@@ -190,5 +191,9 @@ export class RepositoryStateHandle {
 		if (result === "Yes") {
 			await this.repository.pushDelete(origin!, branchName);
 		}
+	}
+
+	public async cherryPick(commit: string, options: CherryPickOptions) {
+		return await this.repository.cherryPick(commit, options);
 	}
 }

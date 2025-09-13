@@ -10,6 +10,7 @@ import { resetSoftCommand } from "./commands/resetSoft";
 import { resetMixedCommand } from "./commands/resetMixed";
 import { deleteBranchCommand } from "./commands/deleteBranch";
 import { deleteRemoteBranchCommand } from "./commands/deleteRemoteBranch";
+import { cherryPickCommand } from "./commands/cherryPick";
 
 let controller: AbortController;
 
@@ -39,6 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
 		resetMixedCommand,
 		deleteBranchCommand,
 		deleteRemoteBranchCommand,
+		cherryPickCommand,
 	];
 
 	for (const c of commands) {
