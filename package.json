@@ -118,12 +118,12 @@
 					"group": "3_commit@2"
 				},
 				{
-					"command": "open-git-graph.merge-head",
+					"command": "open-git-graph.merge",
 					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch' || webviewSection == 'branch-remote')",
 					"group": "4_commit_branch@1"
 				},
 				{
-					"command": "open-git-graph.rebase-head",
+					"command": "open-git-graph.rebase",
 					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch' || webviewSection == 'branch-remote')",
 					"group": "4_commit_branch@2"
 				},
@@ -157,11 +157,11 @@
 				}
 			},
 			{
-				"command": "open-git-graph.merge-head",
+				"command": "open-git-graph.merge",
 				"title": "Merge into current branch"
 			},
 			{
-				"command": "open-git-graph.rebase-head",
+				"command": "open-git-graph.rebase",
 				"title": "Rebase current branch on this commit"
 			},
 			{

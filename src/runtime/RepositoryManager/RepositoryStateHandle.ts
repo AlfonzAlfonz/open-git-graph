@@ -13,6 +13,10 @@ import { getCherryPickOptions } from "./options/getCherryPickOptions";
 import { getDeleteBranchOptions } from "./options/getDeleteBranchOptions";
 import { getResetOptions } from "./options/getResetOptions";
 import { showCommandBuilder } from "./options/utils";
+import { RebaseOptions } from "./git/commands/gitRebase";
+import { getRebaseOptions } from "./options/getRebaseOptions";
+import { MergeOptions } from "./git/commands/gitMerge";
+import { getMergeOptions } from "./options/getMergeOptions";
 
 type RepositoryState = {
 	refs: GitRef[];
@@ -215,12 +219,23 @@ export class RepositoryStateHandle {
 	}
 
 	public async cherryPick(commit: string, options?: CherryPickOptions) {
-		if (!options) {
-			const selected = await getCherryPickOptions();
-			if (!selected) return;
-			options = selected;
-		}
+		const selected = await getCherryPickOptions();
+		if (!selected) return;
 
-		return await this.repository.cherryPick(commit, options);
+		return await this.repository.cherryPick(commit, selected);
+	}
+
+	public async rebase(upstream: string, options?: RebaseOptions) {
+		const selected = await getRebaseOptions(upstream, options);
+		if (!selected) return;
+
+		return await this.repository.rebase(upstream, selected);
+	}
+
+	public async merge(upstream: string, options?: MergeOptions) {
+		const selected = await getMergeOptions(upstream, options);
+		if (!selected) return;
+
+		return await this.repository.merge(upstream, selected);
 	}
 }
