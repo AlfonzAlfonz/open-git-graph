@@ -81,12 +81,12 @@
 			&.date {
 				flex: var(--table-date-width) 1 0px;
 				font-family: var(--vscode-editor-font-family);
-				font-size: var(--vscode-editor-font-size);
+				font-size: 90%;
 			}
 			&.hash {
 				flex: var(--table-hash-width) 1 0px;
 				font-family: var(--vscode-editor-font-family);
-				font-size: var(--vscode-editor-font-size);
+				font-size: 90%;
 			}
 
 			&.index {
@@ -118,7 +118,7 @@
 	}
 
 	.graph-tag {
-		@apply rounded-sm flex items-center flex-shrink-0 overflow-hidden;
+		@apply rounded-sm flex items-center flex-shrink-0;
 		color: var(--text-primary);
 		background: var(--vscode-input-background);
 		border: 1px solid
@@ -129,13 +129,15 @@
 		user-select: none;
 
 		&::before {
-			@apply flex items-center justify-center codicon;
+			@apply flex items-center justify-center codicon rounded-l-sm;
 			width: 18px;
 			height: 18px;
+			margin-left: -1px;
+			padding-left: 1px;
 			background: var(--rail-color, white);
 			color: var(--vscode-editor-background);
 			font-size: 0.9rem;
-			line-height: 1.5;
+			line-height: 1.6;
 			font-weight: 700;
 			flex-shrink: 0;
 		}
