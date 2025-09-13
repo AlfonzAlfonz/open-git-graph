@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { graphCommand } from "./commands/graph";
 import { createBackend } from "./createBackend";
-import { catchErrors } from "./handleError";
+import { catchErrors, handleError } from "./handleError";
 import { output, patchConsole } from "./logger";
 import { ShowFileTextDocumentContentProvider } from "./ShowFileTextDocumentContentProvider";
 import { checkoutCommand } from "./commands/checkout";
@@ -45,7 +45,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 	for (const c of commands) {
 		context.subscriptions.push(
-			vscode.commands.registerCommand(c.id, catchErrors(c.command(backend))),
+			vscode.commands.registerCommand(
+				c.id,
+				catchErrors(c.command(backend), handleError(true)),
+			),
 		);
 	}
 }

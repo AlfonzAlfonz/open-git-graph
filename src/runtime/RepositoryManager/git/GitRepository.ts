@@ -110,7 +110,7 @@ export class GitRepository {
 			cmd,
 			this.extension.git.path,
 			this.repoPath.fsPath,
-			handleError,
+			handleError(false),
 		);
 	};
 

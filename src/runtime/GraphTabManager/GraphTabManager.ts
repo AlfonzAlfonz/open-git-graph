@@ -102,7 +102,7 @@ export class GraphTabManager {
 				if (isBridgeRequest<WebToRuntimeBridge>(data)) {
 					debug("onRequest", data.id, data.args);
 					panel.webview.postMessage(
-						await createResponse(handler, data, handleError),
+						await createResponse(handler, data, handleError(false)),
 					);
 				}
 			}),

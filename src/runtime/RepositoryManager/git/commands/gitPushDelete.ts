@@ -1,4 +1,4 @@
-import { errors } from "../../../handleError";
+import { GitError } from "../../errors/GitError";
 import { GitCommand } from "./utils";
 
 export const gitPushDelete = (
@@ -7,9 +7,6 @@ export const gitPushDelete = (
 ): GitCommand<Promise<void>> => ({
 	args: ["push", "--delete", origin, branch],
 	async parse(_, p) {
-		const [code] = await p;
-		if (code && code !== 0) {
-			throw errors.gitFailed(code);
-		}
+		GitError.throwOnFail(await p);
 	},
 });
