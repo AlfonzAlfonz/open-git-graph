@@ -1,32 +1,45 @@
-import { GitResetMode } from "../git/commands/gitReset";
+import { GitResetMode, GitResetOptions } from "../git/commands/gitReset";
 import { showCommandBuilder } from "./utils";
 
-export const getResetOptions = async (treeish: string) => {
+export const getResetOptions = async (
+	treeish: string,
+	initial?: Partial<GitResetOptions>,
+) => {
 	const result = await showCommandBuilder({
 		getPlaceholder: (flags) => `git reset ${flags.join(" ")} ${treeish}`,
-		flags: [
-			{
+		initialValue: {
+			soft: initial?.mode === "soft",
+			mixed: initial?.mode === "soft",
+			hard: initial?.mode === "hard",
+		},
+		items: {
+			soft: {
 				label: "--soft",
+				type: "flag",
 				radioGroup: "mode",
 				description: "Reset to a commit without changing any file.",
 			},
-			{
+			mixed: {
 				label: "--mixed",
+				type: "flag",
 				radioGroup: "mode",
 				description: "Reset to a commit, but only reset index.",
 			},
-			{
+			hard: {
 				label: "--hard",
+				type: "flag",
 				radioGroup: "mode",
 				description: "Reset to a commit and discard any changes.",
 			},
-		],
-		other: [],
+		},
 	});
 
 	if (!result) return;
 
-	return {
-		mode: result[0]!.label.slice(2) as GitResetMode,
-	};
+	let mode: GitResetMode;
+	if (result.hard) mode = "hard";
+	if (result.mixed) mode = "mixed";
+	if (result.soft) mode = "soft";
+
+	return { mode: mode! };
 };

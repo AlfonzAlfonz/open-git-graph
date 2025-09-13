@@ -5,7 +5,7 @@ interface OptionPickerOptions<T extends OptionPickerItem> {
 	getPlaceholder?: (selected: readonly T[]) => string;
 	canSelectMany?: boolean;
 
-	items: readonly T[];
+	items: readonly (T & { selected?: boolean })[];
 }
 
 export interface OptionPickerItem extends vscode.QuickPickItem {
@@ -22,7 +22,11 @@ export const showOptionPicker = <T extends OptionPickerItem>({
 
 	pick.title = getTitle?.(pick.selectedItems);
 	pick.placeholder = getPlaceholder?.(pick.selectedItems);
-	pick.items = items.map((item, i) => ({ ...item, id: i }));
+
+	const withIds = items.map((item, i) => ({ ...item, id: i }));
+	pick.items = withIds;
+	pick.selectedItems = withIds.filter((itm) => itm.selected);
+
 	pick.canSelectMany =
 		canSelectMany !== undefined ? canSelectMany : !!items.length;
 

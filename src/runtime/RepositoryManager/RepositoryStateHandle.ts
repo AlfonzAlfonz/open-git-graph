@@ -88,13 +88,10 @@ export class RepositoryStateHandle {
 	}
 
 	async reset(treeish: string, options?: GitResetOptions) {
-		if (!options) {
-			const selected = await getResetOptions(treeish);
-			if (!selected) return;
-			options = selected;
-		}
+		const selected = await getResetOptions(treeish, options);
+		if (!selected) return;
 
-		await this.repository.reset(treeish, options);
+		await this.repository.reset(treeish, selected);
 	}
 
 	async checkout(branch: string) {
@@ -114,27 +111,27 @@ export class RepositoryStateHandle {
 			if (localBranches.includes(localName)) {
 				// branch exists locally, but doesn't match remote branch from parameter
 				const result = await vscode.window.showWarningMessage(
-					"This branch already exists, do you want to checkout and:",
+					"This branch already exists, do you want to:",
 					{ modal: true },
-					"Only checkout",
-					"Try to pull",
-					"Reset to remote",
+					"Checkout",
+					"Checkout & pull",
+					"Checkout & reset",
 				);
 
 				switch (result) {
-					case "Only checkout": {
+					case "Checkout": {
 						await this.repository.checkout(localName);
 						await this.repository.pull();
 						return;
 					}
-					case "Try to pull": {
+					case "Checkout & pull": {
 						await this.repository.checkout(localName);
 						await this.repository.pull();
 						return;
 					}
-					case "Reset to remote": {
+					case "Checkout & reset": {
 						await this.repository.checkout(localName);
-						await this.repository.reset(branch, { mode: "hard" });
+						await this.reset(branch, { mode: "hard" });
 						return;
 					}
 					default: {

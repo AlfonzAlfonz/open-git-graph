@@ -1,46 +1,67 @@
 import * as vscode from "vscode";
 import { OptionPickerItem, showOptionPicker } from "../../showOptionPicker";
 
-interface CommandBuilderOptions<TFlag extends string, TOther extends string> {
+interface CommandBuilderOptions<TOptions extends Record<string, boolean>> {
 	title?: string;
 	getPlaceholder: (flags: string[], other: string[]) => string;
 	canSelectMany?: boolean;
 
-	flags: Omit<CommandBuilderItem<TFlag>, "type">[];
-	other: Omit<CommandBuilderItem<TOther>, "type">[];
+	initialValue: Partial<TOptions>;
+
+	items: {
+		[K in keyof TOptions]: CommandBuilderItem;
+	};
 }
 
-interface CommandBuilderItem<T extends string> extends OptionPickerItem {
-	label: T;
+interface CommandBuilderItem extends OptionPickerItem {
 	type: "flag" | "other";
 }
 
 export const showCommandBuilder = async <
-	TFlag extends string,
-	TOther extends string,
+	TOptions extends Record<string, boolean>,
 >({
 	title,
 	getPlaceholder,
 	canSelectMany,
-	flags,
-	other,
-}: CommandBuilderOptions<TFlag, TOther>) =>
-	await showOptionPicker<CommandBuilderItem<TFlag | TOther>>({
+	initialValue,
+	items,
+}: CommandBuilderOptions<TOptions>) => {
+	const withSelected = Object.entries(items).map(([k, itm]) => ({
+		...itm,
+		selected: initialValue[k] || false,
+	}));
+
+	const flags = withSelected.filter((itm) => itm.type === "flag");
+	const other = withSelected.filter((itm) => itm.type === "other");
+
+	const result = await showOptionPicker<CommandBuilderItem>({
 		getTitle: () => title ?? "Execute command",
 		getPlaceholder: (items) => {
-			const flags = items.filter((i) => i.type !== "other").map((i) => i.label);
+			const flags = items.filter((i) => i.type === "flag").map((i) => i.label);
 			const other = items.filter((i) => i.type === "other").map((i) => i.label);
 
 			return getPlaceholder(flags, other);
 		},
 		canSelectMany,
 		items: [
-			...flags.map((f) => ({ ...f, type: "flag" as const })),
+			...flags,
 			{
 				label: "Other options" as never,
 				kind: vscode.QuickPickItemKind.Separator,
 				type: "other",
 			},
-			...other.map((f) => ({ ...f, type: "other" as const })),
+			...other,
 		],
 	});
+
+	if (!result) return;
+
+	const resultLabels = result.map((itm) => itm.label);
+
+	return Object.fromEntries(
+		Object.entries(items).map(([k, item]) => [
+			k,
+			resultLabels.includes(item.label),
+		]),
+	);
+};
