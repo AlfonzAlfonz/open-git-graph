@@ -4,7 +4,7 @@ interface OptionPickerOptions<T extends vscode.QuickPickItem> {
 	getTitle?: (selected: readonly T[]) => string;
 	getPlaceholder?: (selected: readonly T[]) => string;
 
-	items: T[];
+	items: readonly T[];
 }
 
 export const showOptionPicker = <T extends vscode.QuickPickItem>({
