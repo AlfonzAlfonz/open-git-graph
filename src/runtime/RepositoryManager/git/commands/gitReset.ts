@@ -4,14 +4,14 @@ import { GitCommand } from "./utils";
 export type GitResetMode = "soft" | "mixed" | "hard";
 
 export type GitResetOptions = {
-	mode: GitResetMode;
+	mode?: GitResetMode;
 };
 
 export const gitReset = (
 	treeish: string,
 	{ mode }: GitResetOptions,
 ): GitCommand<Promise<void>> => ({
-	args: ["reset", `--${mode}`, treeish],
+	args: ["reset", mode ? `--${mode}` : null, treeish],
 	async parse(_, p) {
 		GitError.throwOnFail(await p);
 	},

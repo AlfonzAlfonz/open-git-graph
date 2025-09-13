@@ -3,6 +3,7 @@ import vscode from "vscode";
 import { GitCommit, GitRef, GitRefBranch } from "../../universal/git";
 import { groupBy } from "../../universal/groupBy";
 import { createGraphNodes, Graph } from "../GraphTabManager/createGraphNodes";
+import { showOptionPicker } from "../showOptionPicker";
 import { pipeThrough, take } from "../utils";
 import { DeleteBranchOptions } from "./git/commands/gitBranchDelete";
 import { CherryPickOptions } from "./git/commands/gitCherryPick";
@@ -11,6 +12,7 @@ import { GitRepository } from "./git/GitRepository";
 import { getCherryPickOptions } from "./options/getCherryPickOptions";
 import { getDeleteBranchOptions } from "./options/getDeleteBranchOptions";
 import { getResetOptions } from "./options/getResetOptions";
+import { showCommandBuilder } from "./options/utils";
 
 type RepositoryState = {
 	refs: GitRef[];
@@ -110,34 +112,42 @@ export class RepositoryStateHandle {
 
 			if (localBranches.includes(localName)) {
 				// branch exists locally, but doesn't match remote branch from parameter
-				const result = await vscode.window.showWarningMessage(
-					"This branch already exists, do you want to:",
-					{ modal: true },
-					"Checkout",
-					"Checkout & pull",
-					"Checkout & reset",
-				);
+				const result = await showCommandBuilder({
+					title: "This branch already exists, do you want to:",
+					getPlaceholder: () => "This branch already exists, do you want to:",
+					canSelectMany: false,
+					items: {
+						checkout: {
+							label: "Checkout",
+							type: "other",
+						},
+						checkoutPull: {
+							label: "Checkout & pull",
+							type: "other",
+						},
+						checkoutReset: {
+							label: "Checkout & reset",
+							type: "other",
+						},
+					},
+				});
 
-				switch (result) {
-					case "Checkout": {
-						await this.repository.checkout(localName);
-						await this.repository.pull();
-						return;
-					}
-					case "Checkout & pull": {
-						await this.repository.checkout(localName);
-						await this.repository.pull();
-						return;
-					}
-					case "Checkout & reset": {
-						await this.repository.checkout(localName);
-						await this.reset(branch, { mode: "hard" });
-						return;
-					}
-					default: {
-						return;
-					}
+				if (!result) return;
+
+				if (result.checkout) {
+					await this.repository.checkout(localName);
 				}
+
+				if (result.checkoutPull) {
+					await this.repository.checkout(localName);
+					await this.repository.pull();
+				}
+
+				if (result.checkoutReset) {
+					await this.repository.checkout(localName);
+					await this.reset(branch, { mode: "hard" });
+				}
+				return;
 			}
 
 			// branch does not exist locally and has to be created
@@ -166,43 +176,20 @@ export class RepositoryStateHandle {
 			(r): r is GitRefBranch => r.type === "branch" && r.name === branch,
 		);
 
-		if (!ref) {
-			throw new Error("Branch does not exist");
-		}
+		if (!ref) throw new Error("Branch does not exist");
+		if (ref.remote) throw new Error("Trying to remove remote branch");
 
-		if (ref.remote) {
-			throw new Error("Trying to remove remote branch");
-		}
+		const selected = await getDeleteBranchOptions(branch, options);
+		if (!selected) return;
 
-		if (!options) {
-			const selected = await getDeleteBranchOptions(branch);
-			if (!selected) return;
-			options = selected;
-		}
+		await this.repository.branchDelete(branch, selected);
 
-		await this.repository.branchDelete(branch, options);
-
-		if (options.remotes) {
+		if (selected.remotes) {
 			await this.deleteRemoteBranches(remotes.map((r) => `${r}/${branch}`));
-			for (const r of remotes) {
-			}
 		}
 	}
 
-	public async deleteRemoteBranches(
-		branches: string[],
-		skipConfirm: boolean = false,
-	) {
-		if (skipConfirm) {
-			const result = await vscode.window.showWarningMessage(
-				`Delete branch ${branches.join(", ")}?`,
-				{ modal: true },
-				"Yes",
-			);
-
-			if (result !== "Yes") return;
-		}
-
+	public async deleteRemoteBranches(branches: string[]) {
 		const origins = groupBy(
 			branches.map((b) => {
 				const [origin, ...rest] = b.split("/");
@@ -214,6 +201,15 @@ export class RepositoryStateHandle {
 		);
 
 		for (const [origin, branches] of origins) {
+			const result = await showOptionPicker({
+				getTitle: () => "Execute command",
+				getPlaceholder: () => `git push -d ${origin} ${branches.join(" ")}`,
+				items: [],
+				canSelectMany: false,
+			});
+
+			if (!result) continue;
+
 			await this.repository.pushDelete(origin!, branches);
 		}
 	}
