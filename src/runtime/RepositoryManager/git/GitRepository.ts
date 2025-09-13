@@ -20,6 +20,8 @@ import { gitStashList } from "./commands/gitStashList";
 import { gitStatus } from "./commands/gitStatus";
 import { GitCommand } from "./commands/utils";
 import { execGit } from "./execGit";
+import { gitRebase, RebaseOptions } from "./commands/gitRebase";
+import { gitMerge, MergeOptions } from "./commands/gitMerge";
 
 export class GitRepository {
 	constructor(
@@ -103,6 +105,14 @@ export class GitRepository {
 
 	public async cherryPick(commit: string, options: CherryPickOptions) {
 		return await this.execGit(gitCherryPick(commit, options));
+	}
+
+	public async rebase(upstream: string, options: RebaseOptions) {
+		return await this.execGit(gitRebase(upstream, options));
+	}
+
+	public async merge(upstream: string, options: MergeOptions) {
+		return await this.execGit(gitMerge(upstream, options));
 	}
 
 	private execGit = <T>(cmd: GitCommand<T>): T => {
