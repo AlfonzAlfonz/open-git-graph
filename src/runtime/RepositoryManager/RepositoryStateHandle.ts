@@ -6,6 +6,9 @@ import { GitRepository } from "./git/GitRepository";
 import vscode from "vscode";
 import { GitResetMode } from "./git/commands/gitReset";
 import { CherryPickOptions } from "./git/commands/gitCherryPick";
+import { getCherryPickOptions } from "./options/getCherryPickOptions";
+import { DeleteBranchOptions } from "./git/commands/gitBranchDelete";
+import { getDeleteBranchOptions } from "./options/getDeleteBranchOptions";
 
 type RepositoryState = {
 	refs: GitRef[];
@@ -147,7 +150,7 @@ export class RepositoryStateHandle {
 		}
 	}
 
-	public async deleteBranch(branch: string) {
+	public async deleteBranch(branch: string, options?: DeleteBranchOptions) {
 		const state = await this.pylon.iterator.read();
 
 		const ref = state.refs.find(
@@ -162,20 +165,13 @@ export class RepositoryStateHandle {
 			throw new Error("Trying to remove remote branch");
 		}
 
-		const result = await vscode.window.showWarningMessage(
-			"Force delete?",
-			{
-				modal: true,
-				detail:
-					"Branch won't be removed if its commits are not referenced by other ref.",
-			},
-			"Yes",
-			"No",
-		);
+		if (!options) {
+			const selected = await getDeleteBranchOptions();
+			if (!selected) return;
+			options = selected;
+		}
 
-		if (result === undefined) return;
-
-		await this.repository.branchDelete(branch, result === "Yes" ? true : false);
+		await this.repository.branchDelete(branch, options);
 	}
 
 	public async deleteRemoteBranch(branch: string) {
@@ -193,7 +189,13 @@ export class RepositoryStateHandle {
 		}
 	}
 
-	public async cherryPick(commit: string, options: CherryPickOptions) {
+	public async cherryPick(commit: string, options?: CherryPickOptions) {
+		if (!options) {
+			const selected = await getCherryPickOptions();
+			if (!selected) return;
+			options = selected;
+		}
+
 		return await this.repository.cherryPick(commit, options);
 	}
 }

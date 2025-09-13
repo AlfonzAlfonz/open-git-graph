@@ -14,7 +14,10 @@ import { GitCommand } from "./commands/utils";
 import { execGit } from "./execGit";
 import { gitPull } from "./commands/gitPull";
 import { gitReset, GitResetMode } from "./commands/gitReset";
-import { gitBranchDelete } from "./commands/gitBranchDelete";
+import {
+	DeleteBranchOptions,
+	gitBranchDelete,
+} from "./commands/gitBranchDelete";
 import { gitPushDelete } from "./commands/gitPushDelete";
 import { CherryPickOptions, gitCherryPick } from "./commands/gitCherryPick";
 
@@ -90,8 +93,8 @@ export class GitRepository {
 		return await this.execGit(gitReset(mode, treeish));
 	}
 
-	public async branchDelete(branch: string, force: boolean) {
-		return await this.execGit(gitBranchDelete(branch, force));
+	public async branchDelete(branch: string, options: DeleteBranchOptions) {
+		return await this.execGit(gitBranchDelete(branch, options));
 	}
 
 	public async pushDelete(origin: string, branch: string) {
