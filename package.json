@@ -128,23 +128,9 @@
 					"group": "4_commit_branch@2"
 				},
 				{
-					"submenu": "open-git-graph.reset",
+					"command": "open-git-graph.reset",
 					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch' || webviewSection == 'branch-remote')",
 					"group": "4_commit_branch@3"
-				}
-			],
-			"open-git-graph.reset": [
-				{
-					"command": "open-git-graph.reset-soft",
-					"group": "2_commit@4"
-				},
-				{
-					"command": "open-git-graph.reset-mixed",
-					"group": "2_commit@5"
-				},
-				{
-					"command": "open-git-graph.reset-hard",
-					"group": "2_commit@6"
 				}
 			],
 			"scm/title": [
@@ -183,19 +169,8 @@
 				"title": "Reset current branch to this commit"
 			},
 			{
-				"command": "open-git-graph.reset-soft",
-				"title": "Soft",
-				"shortTitle": "Soft"
-			},
-			{
-				"command": "open-git-graph.reset-mixed",
-				"title": "Mixed",
-				"shortTitle": "Mixed"
-			},
-			{
-				"command": "open-git-graph.reset-hard",
-				"title": "Hard",
-				"shortTitle": "Hard"
+				"command": "open-git-graph.reset",
+				"title": "Reset to this commit"
 			},
 			{
 				"command": "open-git-graph.checkout",

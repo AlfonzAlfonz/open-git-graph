@@ -5,9 +5,8 @@ import { catchErrors, handleError } from "./handleError";
 import { output, patchConsole } from "./logger";
 import { ShowFileTextDocumentContentProvider } from "./ShowFileTextDocumentContentProvider";
 import { checkoutCommand } from "./commands/checkout";
-import { resetHardCommand } from "./commands/resetHard";
-import { resetSoftCommand } from "./commands/resetSoft";
-import { resetMixedCommand } from "./commands/resetMixed";
+import { resetCommand } from "./commands/reset";
+
 import { deleteBranchCommand } from "./commands/deleteBranch";
 import { deleteRemoteBranchCommand } from "./commands/deleteRemoteBranch";
 import { cherryPickCommand } from "./commands/cherryPick";
@@ -35,9 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const commands = [
 		graphCommand,
 		checkoutCommand,
-		resetHardCommand,
-		resetSoftCommand,
-		resetMixedCommand,
+		resetCommand,
 		deleteBranchCommand,
 		deleteRemoteBranchCommand,
 		cherryPickCommand,

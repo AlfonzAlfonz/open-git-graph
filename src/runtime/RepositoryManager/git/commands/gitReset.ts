@@ -3,9 +3,13 @@ import { GitCommand } from "./utils";
 
 export type GitResetMode = "soft" | "mixed" | "hard";
 
+export type GitResetOptions = {
+	mode: GitResetMode;
+};
+
 export const gitReset = (
-	mode: "mixed" | "hard" | "soft",
 	treeish: string,
+	{ mode }: GitResetOptions,
 ): GitCommand<Promise<void>> => ({
 	args: ["reset", `--${mode}`, treeish],
 	async parse(_, p) {
