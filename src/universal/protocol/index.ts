@@ -3,6 +3,7 @@ import { GitCommit, GitIndex, GitRef } from "../git";
 export interface WebToRuntimeBridge {
 	ready: (repoPath?: string) => Promise<GraphTabState>;
 	reload: () => Promise<void>;
+	fetch: () => Promise<void>;
 
 	pollGraphData(): Promise<void>;
 

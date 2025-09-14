@@ -11,7 +11,7 @@ import { CherryPickOptions, gitCherryPick } from "./commands/gitCherryPick";
 import { gitLogCommits } from "./commands/gitLogCommits";
 import { gitLogHeadHash } from "./commands/gitLogHeadHash";
 import { gitPull } from "./commands/gitPull";
-import { gitPushDelete } from "./commands/gitPushDelete";
+import { gitPushDelete, PushDeleteOptions } from "./commands/gitPushDelete";
 import { gitReset, GitResetOptions } from "./commands/gitReset";
 import { gitShowCommit } from "./commands/gitShowCommit";
 import { gitShowRefFile } from "./commands/gitShowRefFile";
@@ -20,6 +20,9 @@ import { gitStashList } from "./commands/gitStashList";
 import { gitStatus } from "./commands/gitStatus";
 import { GitCommand } from "./commands/utils";
 import { execGit } from "./execGit";
+import { gitRebase, RebaseOptions } from "./commands/gitRebase";
+import { gitMerge, MergeOptions } from "./commands/gitMerge";
+import { gitFetch } from "./commands/gitFetch";
 
 export class GitRepository {
 	constructor(
@@ -85,6 +88,10 @@ export class GitRepository {
 		return await this.execGit(gitCheckoutCreate(branchName, startingPoint));
 	}
 
+	public async fetch() {
+		return await this.execGit(gitFetch());
+	}
+
 	public async pull(ffOnly: boolean = true) {
 		return await this.execGit(gitPull(ffOnly));
 	}
@@ -97,12 +104,24 @@ export class GitRepository {
 		return await this.execGit(gitBranchDelete(branch, options));
 	}
 
-	public async pushDelete(origin: string, branches: string | string[]) {
-		return await this.execGit(gitPushDelete(origin, branches));
+	public async pushDelete(
+		origin: string,
+		branches: string | string[],
+		options: PushDeleteOptions,
+	) {
+		return await this.execGit(gitPushDelete(origin, branches, options));
 	}
 
 	public async cherryPick(commit: string, options: CherryPickOptions) {
 		return await this.execGit(gitCherryPick(commit, options));
+	}
+
+	public async rebase(upstream: string, options: RebaseOptions) {
+		return await this.execGit(gitRebase(upstream, options));
+	}
+
+	public async merge(upstream: string, options: MergeOptions) {
+		return await this.execGit(gitMerge(upstream, options));
 	}
 
 	private execGit = <T>(cmd: GitCommand<T>): T => {

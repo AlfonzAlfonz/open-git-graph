@@ -68,6 +68,9 @@ export const useApp = (): App => {
 					setRefs(undefined);
 					await bridge.reload();
 				},
+				fetch: async () => {
+					await bridge.fetch();
+				},
 			},
 		},
 	};

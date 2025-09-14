@@ -3,14 +3,18 @@ import vscode from "vscode";
 import { GitCommit, GitRef, GitRefBranch } from "../../universal/git";
 import { groupBy } from "../../universal/groupBy";
 import { createGraphNodes, Graph } from "../GraphTabManager/createGraphNodes";
-import { showOptionPicker } from "../showOptionPicker";
 import { pipeThrough, take } from "../utils";
 import { DeleteBranchOptions } from "./git/commands/gitBranchDelete";
 import { CherryPickOptions } from "./git/commands/gitCherryPick";
+import { MergeOptions } from "./git/commands/gitMerge";
+import { RebaseOptions } from "./git/commands/gitRebase";
 import { GitResetOptions } from "./git/commands/gitReset";
 import { GitRepository } from "./git/GitRepository";
 import { getCherryPickOptions } from "./options/getCherryPickOptions";
 import { getDeleteBranchOptions } from "./options/getDeleteBranchOptions";
+import { getDeleteRemoteBranchOptions } from "./options/getDeleteRemoteBranchOptions";
+import { getMergeOptions } from "./options/getMergeOptions";
+import { getRebaseOptions } from "./options/getRebaseOptions";
 import { getResetOptions } from "./options/getResetOptions";
 import { showCommandBuilder } from "./options/utils";
 
@@ -165,6 +169,10 @@ export class RepositoryStateHandle {
 		}
 	}
 
+	public async fetch() {
+		return await this.repository.fetch();
+	}
+
 	public async deleteBranch(
 		branch: string,
 		remotes: string[],
@@ -201,26 +209,32 @@ export class RepositoryStateHandle {
 		);
 
 		for (const [origin, branches] of origins) {
-			const result = await showOptionPicker({
-				getTitle: () => "Execute command",
-				getPlaceholder: () => `git push -d ${origin} ${branches.join(" ")}`,
-				items: [],
-				canSelectMany: false,
-			});
+			const selected = await getDeleteRemoteBranchOptions(origin, branches);
 
-			if (!result) continue;
+			if (!selected) continue;
 
-			await this.repository.pushDelete(origin!, branches);
+			await this.repository.pushDelete(origin!, branches, selected);
 		}
 	}
 
 	public async cherryPick(commit: string, options?: CherryPickOptions) {
-		if (!options) {
-			const selected = await getCherryPickOptions();
-			if (!selected) return;
-			options = selected;
-		}
+		const selected = await getCherryPickOptions(commit, options);
+		if (!selected) return;
 
-		return await this.repository.cherryPick(commit, options);
+		return await this.repository.cherryPick(commit, selected);
+	}
+
+	public async rebase(upstream: string, options?: RebaseOptions) {
+		const selected = await getRebaseOptions(upstream, options);
+		if (!selected) return;
+
+		return await this.repository.rebase(upstream, selected);
+	}
+
+	public async merge(upstream: string, options?: MergeOptions) {
+		const selected = await getMergeOptions(upstream, options);
+		if (!selected) return;
+
+		return await this.repository.merge(upstream, selected);
 	}
 }

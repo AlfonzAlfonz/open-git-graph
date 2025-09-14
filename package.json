@@ -40,7 +40,7 @@
 		"@types/vscode": "^1.81.0",
 		"@typescript-eslint/eslint-plugin": "^6.4.1",
 		"@typescript-eslint/parser": "^6.4.1",
-		"@vscode/codicons": "^0.0.33",
+		"@vscode/codicons": "^0.0.40",
 		"@vscode/test-electron": "^2.3.4",
 		"autoprefixer": "^10.4.15",
 		"core-js": "^3.42.0",
@@ -118,12 +118,12 @@
 					"group": "3_commit@2"
 				},
 				{
-					"command": "open-git-graph.merge-head",
+					"command": "open-git-graph.merge",
 					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch' || webviewSection == 'branch-remote')",
 					"group": "4_commit_branch@1"
 				},
 				{
-					"command": "open-git-graph.rebase-head",
+					"command": "open-git-graph.rebase",
 					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch' || webviewSection == 'branch-remote')",
 					"group": "4_commit_branch@2"
 				},
@@ -157,11 +157,11 @@
 				}
 			},
 			{
-				"command": "open-git-graph.merge-head",
+				"command": "open-git-graph.merge",
 				"title": "Merge into current branch"
 			},
 			{
-				"command": "open-git-graph.rebase-head",
+				"command": "open-git-graph.rebase",
 				"title": "Rebase current branch on this commit"
 			},
 			{

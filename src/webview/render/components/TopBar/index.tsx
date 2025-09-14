@@ -11,10 +11,16 @@ export const TopBar = () => {
 			</div>
 
 			<div className="flex items-center">
-				<button className="icon-button mr-[4px]">
+				<button className="icon-button mr-[4px]" title="Search">
 					<span className="codicon codicon-search" />
 				</button>
-				<button className="icon-button mr-[4px]">
+				<button className="icon-button mr-[4px]" title="Fetch">
+					<span
+						className="codicon codicon-git-fetch"
+						onClick={() => actions.reload()}
+					/>
+				</button>
+				<button className="icon-button mr-[4px]" title="Reload">
 					<span
 						className="codicon codicon-refresh"
 						onClick={() => actions.reload()}
