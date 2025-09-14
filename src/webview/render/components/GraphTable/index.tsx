@@ -5,7 +5,7 @@ import InfiniteLoader from "react-window-infinite-loader";
 import { GraphNode } from "../../../../runtime/GraphTabManager/createGraphNodes";
 import { GitCommit, GitIndex } from "../../../../universal/git";
 import { bridge } from "../../../bridge";
-import { groupBy } from "../../../state/groupBy";
+import { groupBy } from "../../../../universal/groupBy";
 import { GraphTag, toGraphTags } from "../../../state/toGraphTags";
 import { useAppContext } from "../AppContext";
 import { CommitGraphRow } from "../GraphRow/CommitGraphRow";

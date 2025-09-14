@@ -41,6 +41,7 @@ export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 												preventDefaultContextMenuItems: true,
 												repo: repoPath,
 												branch: r.label,
+												remotes: r.endDecorators,
 										  })
 									: undefined
 							}

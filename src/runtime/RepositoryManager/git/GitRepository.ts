@@ -1,11 +1,18 @@
-import { collect } from "@alfonz/async";
 import * as vscode from "vscode";
 import { GitCommit, GitIndex } from "../../../universal/git";
 import { handleError } from "../../handleError";
 import { GitExtensionAPI } from "../vscode.git/utils";
+import {
+	DeleteBranchOptions,
+	gitBranchDelete,
+} from "./commands/gitBranchDelete";
 import { gitCheckout, gitCheckoutCreate } from "./commands/gitCheckout";
+import { CherryPickOptions, gitCherryPick } from "./commands/gitCherryPick";
 import { gitLogCommits } from "./commands/gitLogCommits";
 import { gitLogHeadHash } from "./commands/gitLogHeadHash";
+import { gitPull } from "./commands/gitPull";
+import { gitPushDelete } from "./commands/gitPushDelete";
+import { gitReset, GitResetOptions } from "./commands/gitReset";
 import { gitShowCommit } from "./commands/gitShowCommit";
 import { gitShowRefFile } from "./commands/gitShowRefFile";
 import { gitShowRefs } from "./commands/gitShowRefs";
@@ -13,10 +20,6 @@ import { gitStashList } from "./commands/gitStashList";
 import { gitStatus } from "./commands/gitStatus";
 import { GitCommand } from "./commands/utils";
 import { execGit } from "./execGit";
-import { gitPull } from "./commands/gitPull";
-import { gitReset, GitResetMode } from "./commands/gitReset";
-import { gitBranchDelete } from "./commands/gitBranchDelete";
-import { gitPushDelete } from "./commands/gitPushDelete";
 
 export class GitRepository {
 	constructor(
@@ -86,16 +89,20 @@ export class GitRepository {
 		return await this.execGit(gitPull(ffOnly));
 	}
 
-	public async reset(mode: GitResetMode, treeish: string) {
-		return await this.execGit(gitReset(mode, treeish));
+	public async reset(treeish: string, options: GitResetOptions) {
+		return await this.execGit(gitReset(treeish, options));
 	}
 
-	public async branchDelete(branch: string, force: boolean) {
-		return await this.execGit(gitBranchDelete(branch, force));
+	public async branchDelete(branch: string, options: DeleteBranchOptions) {
+		return await this.execGit(gitBranchDelete(branch, options));
 	}
 
-	public async pushDelete(origin: string, branch: string) {
-		return await this.execGit(gitPushDelete(origin, branch));
+	public async pushDelete(origin: string, branches: string | string[]) {
+		return await this.execGit(gitPushDelete(origin, branches));
+	}
+
+	public async cherryPick(commit: string, options: CherryPickOptions) {
+		return await this.execGit(gitCherryPick(commit, options));
 	}
 
 	private execGit = <T>(cmd: GitCommand<T>): T => {
@@ -103,7 +110,7 @@ export class GitRepository {
 			cmd,
 			this.extension.git.path,
 			this.repoPath.fsPath,
-			handleError,
+			handleError(false),
 		);
 	};
 

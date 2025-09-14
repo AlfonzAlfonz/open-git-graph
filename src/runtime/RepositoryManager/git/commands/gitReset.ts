@@ -1,17 +1,18 @@
-import { errors } from "../../../handleError";
+import { GitError } from "../../errors/GitError";
 import { GitCommand } from "./utils";
 
 export type GitResetMode = "soft" | "mixed" | "hard";
 
+export type GitResetOptions = {
+	mode?: GitResetMode;
+};
+
 export const gitReset = (
-	mode: "mixed" | "hard" | "soft",
 	treeish: string,
+	{ mode }: GitResetOptions,
 ): GitCommand<Promise<void>> => ({
-	args: ["reset", `--${mode}`, treeish],
+	args: ["reset", mode ? `--${mode}` : null, treeish],
 	async parse(_, p) {
-		const [code, stdErr] = await p;
-		if (code && code !== 0) {
-			throw errors.gitFailed(code, stdErr);
-		}
+		GitError.throwOnFail(await p);
 	},
 });

@@ -1,13 +1,10 @@
-import { errors } from "../../../handleError";
+import { GitError } from "../../errors/GitError";
 import { GitCommand } from "./utils";
 
 export const gitCheckout = (branch: string): GitCommand<Promise<void>> => ({
 	args: ["checkout", branch],
 	async parse(_, p) {
-		const [code] = await p;
-		if (code && code !== 0) {
-			throw errors.gitFailed(code);
-		}
+		GitError.throwOnFail(await p);
 	},
 });
 
@@ -15,9 +12,6 @@ export const gitCheckoutCreate = (branchName: string, startingPoint: string) =>
 	({
 		args: ["checkout", "-b", branchName, startingPoint],
 		async parse(_, p) {
-			const [code, stdErr] = await p;
-			if (code && code !== 0) {
-				throw errors.gitFailed(code, stdErr);
-			}
+			GitError.throwOnFail(await p);
 		},
 	}) satisfies GitCommand<Promise<void>>;

@@ -59,8 +59,8 @@ export const patchConsole = () => {
 	global.console = {
 		log: (...args: any) => output.info(format(...args)),
 		info: (...args: any) => output.info(format(...args)),
-		warn: (...args: any) => output.info(format(...args)),
-		error: (...args: any) => output.info(format(...args)),
+		warn: (...args: any) => output.warn(format(...args)),
+		error: (...args: any) => output.error(format(...args)),
 		time: (name: string) => {
 			timeMap.set(name, performance.now());
 		},

@@ -15,14 +15,17 @@ export const deleteBranchCommand = command({
 
 		const handle = backend.repositoryManager.getStateHandle(repo);
 
-		await handle.deleteBranch(ctx.branch);
+		await handle.deleteBranch(ctx.branch, ctx.remotes ?? []);
 	},
 });
 
-const isValidCtx = (x: unknown): x is { branch: string; repo: string } =>
+const isValidCtx = (
+	x: unknown,
+): x is { branch: string; repo: string; remotes?: string[] } =>
 	!!x &&
 	typeof x === "object" &&
 	"branch" in x &&
 	typeof x.branch === "string" &&
 	"repo" in x &&
-	typeof x.repo === "string";
+	typeof x.repo === "string" &&
+	("remotes" in x ? Array.isArray(x.remotes) : true);
