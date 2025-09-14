@@ -1,4 +1,4 @@
-import { errors } from "../../../handleError";
+import { GitError } from "../../errors/GitError";
 import { GitCommand } from "./utils";
 
 export type DeleteBranchOptions = {
@@ -11,9 +11,6 @@ export const gitBranchDelete = (
 ): GitCommand<Promise<void>> => ({
 	args: ["branch", "--delete", force ? "--force" : null, branch],
 	async parse(_, p) {
-		const [code] = await p;
-		if (code && code !== 0) {
-			throw errors.gitFailed(code);
-		}
+		GitError.throwOnFail(await p);
 	},
 });

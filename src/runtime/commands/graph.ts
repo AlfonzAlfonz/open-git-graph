@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { GitRepository } from "../RepositoryManager/git/GitRepository";
-import { errors } from "../handleError";
 import { log } from "../logger";
 import { command } from "../utils";
 
@@ -23,7 +22,7 @@ export const selectRepo = async (repos: Record<string, GitRepository>) => {
 	const keys = Object.keys(repos);
 
 	if (keys.length === 0) {
-		throw errors.noRepo();
+		throw new Error("Cannot execute git outside of a repository.");
 	}
 
 	if (keys.length === 1) {

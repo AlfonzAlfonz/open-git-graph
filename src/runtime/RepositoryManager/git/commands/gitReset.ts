@@ -1,4 +1,4 @@
-import { errors } from "../../../handleError";
+import { GitError } from "../../errors/GitError";
 import { GitCommand } from "./utils";
 
 export type GitResetMode = "soft" | "mixed" | "hard";
@@ -9,9 +9,6 @@ export const gitReset = (
 ): GitCommand<Promise<void>> => ({
 	args: ["reset", `--${mode}`, treeish],
 	async parse(_, p) {
-		const [code, stdErr] = await p;
-		if (code && code !== 0) {
-			throw errors.gitFailed(code, stdErr);
-		}
+		GitError.throwOnFail(await p);
 	},
 });
