@@ -3,9 +3,14 @@ import { GitCommand } from "./utils";
 
 export const gitPushDelete = (
 	origin: string,
-	branch: string,
+	branches: string | string[],
 ): GitCommand<Promise<void>> => ({
-	args: ["push", "--delete", origin, branch],
+	args: [
+		"push",
+		"--delete",
+		origin,
+		...(typeof branches === "string" ? [branches] : branches),
+	],
 	async parse(_, p) {
 		GitError.throwOnFail(await p);
 	},

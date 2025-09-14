@@ -97,8 +97,8 @@ export class GitRepository {
 		return await this.execGit(gitBranchDelete(branch, options));
 	}
 
-	public async pushDelete(origin: string, branch: string) {
-		return await this.execGit(gitPushDelete(origin, branch));
+	public async pushDelete(origin: string, branches: string | string[]) {
+		return await this.execGit(gitPushDelete(origin, branches));
 	}
 
 	public async cherryPick(commit: string, options: CherryPickOptions) {

@@ -9,6 +9,7 @@ import { CherryPickOptions } from "./git/commands/gitCherryPick";
 import { getCherryPickOptions } from "./options/getCherryPickOptions";
 import { DeleteBranchOptions } from "./git/commands/gitBranchDelete";
 import { getDeleteBranchOptions } from "./options/getDeleteBranchOptions";
+import { groupBy } from "../../universal/groupBy";
 
 type RepositoryState = {
 	refs: GitRef[];
@@ -150,7 +151,11 @@ export class RepositoryStateHandle {
 		}
 	}
 
-	public async deleteBranch(branch: string, options?: DeleteBranchOptions) {
+	public async deleteBranch(
+		branch: string,
+		remotes: string[],
+		options?: DeleteBranchOptions & { remotes?: boolean },
+	) {
 		const state = await this.pylon.iterator.read();
 
 		const ref = state.refs.find(
@@ -166,26 +171,46 @@ export class RepositoryStateHandle {
 		}
 
 		if (!options) {
-			const selected = await getDeleteBranchOptions();
+			const selected = await getDeleteBranchOptions(branch);
 			if (!selected) return;
 			options = selected;
 		}
 
 		await this.repository.branchDelete(branch, options);
+
+		if (options.remotes) {
+			await this.deleteRemoteBranches(remotes.map((r) => `${r}/${branch}`));
+			for (const r of remotes) {
+			}
+		}
 	}
 
-	public async deleteRemoteBranch(branch: string) {
-		const [origin, ...rest] = branch.split("/");
-		const branchName = rest.join("/");
+	public async deleteRemoteBranches(
+		branches: string[],
+		skipConfirm: boolean = false,
+	) {
+		if (skipConfirm) {
+			const result = await vscode.window.showWarningMessage(
+				`Delete branch ${branches.join(", ")}?`,
+				{ modal: true },
+				"Yes",
+			);
 
-		const result = await vscode.window.showWarningMessage(
-			`Delete branch ${branchName} at ${origin}?`,
-			{ modal: true },
-			"Yes",
+			if (result !== "Yes") return;
+		}
+
+		const origins = groupBy(
+			branches.map((b) => {
+				const [origin, ...rest] = b.split("/");
+				const branchName = rest.join("/");
+				return [origin!, branchName] as const;
+			}),
+			(b) => b[0],
+			(b) => b[1],
 		);
 
-		if (result === "Yes") {
-			await this.repository.pushDelete(origin!, branchName);
+		for (const [origin, branches] of origins) {
+			await this.repository.pushDelete(origin!, branches);
 		}
 	}
 
