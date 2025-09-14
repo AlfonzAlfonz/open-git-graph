@@ -1,35 +1,33 @@
 import * as vscode from "vscode";
 import { OptionPickerItem, showOptionPicker } from "../../showOptionPicker";
 
-interface CommandBuilderOptions<TOptions extends Record<string, boolean>> {
+interface CommandBuilderOptions<T extends string> {
 	title?: string;
 	getPlaceholder: (flags: string[], other: string[]) => string;
 	canSelectMany?: boolean;
 
-	initialValue: Partial<TOptions>;
+	initialValue?: Partial<Record<T, boolean>>;
 
-	items: {
-		[K in keyof TOptions]: CommandBuilderItem;
-	};
+	items: Record<T, CommandBuilderItem>;
 }
 
 interface CommandBuilderItem extends OptionPickerItem {
 	type: "flag" | "other";
 }
 
-export const showCommandBuilder = async <
-	TOptions extends Record<string, boolean>,
->({
+export const showCommandBuilder = async <T extends string>({
 	title,
 	getPlaceholder,
 	canSelectMany,
 	initialValue,
 	items,
-}: CommandBuilderOptions<TOptions>) => {
-	const withSelected = Object.entries(items).map(([k, itm]) => ({
-		...itm,
-		selected: initialValue[k] || false,
-	}));
+}: CommandBuilderOptions<T>) => {
+	const withSelected = Object.entries<CommandBuilderItem>(items).map(
+		([k, itm]) => ({
+			...itm,
+			selected: initialValue?.[k as T] || false,
+		}),
+	);
 
 	const flags = withSelected.filter((itm) => itm.type === "flag");
 	const other = withSelected.filter((itm) => itm.type === "other");
@@ -59,9 +57,9 @@ export const showCommandBuilder = async <
 	const resultLabels = result.map((itm) => itm.label);
 
 	return Object.fromEntries(
-		Object.entries(items).map(([k, item]) => [
+		Object.entries<CommandBuilderItem>(items).map(([k, item]) => [
 			k,
 			resultLabels.includes(item.label),
 		]),
-	);
+	) as Record<T, boolean>;
 };

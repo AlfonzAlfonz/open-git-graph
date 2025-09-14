@@ -36,10 +36,10 @@ export const getResetOptions = async (
 
 	if (!result) return;
 
-	let mode: GitResetMode;
+	let mode: GitResetMode | undefined;
 	if (result.hard) mode = "hard";
 	if (result.mixed) mode = "mixed";
 	if (result.soft) mode = "soft";
 
-	return { mode: mode! };
+	return { mode };
 };

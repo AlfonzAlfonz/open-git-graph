@@ -1,37 +1,26 @@
-import * as vscode from "vscode";
-import { showOptionPicker } from "../../showOptionPicker";
 import { DeleteBranchOptions } from "../git/commands/gitBranchDelete";
+import { showCommandBuilder } from "./utils";
 
 export const getDeleteBranchOptions = async (
 	branch: string,
+	initialValue?: DeleteBranchOptions & { remotes?: boolean },
 ): Promise<(DeleteBranchOptions & { remotes: boolean }) | undefined> => {
-	const selected = await showOptionPicker({
-		items: [
-			{
+	const selected = await showCommandBuilder({
+		getPlaceholder: (flags) => `git branch -d ${flags.join(" ")} ${branch}`,
+		initialValue,
+		items: {
+			force: {
 				label: "--force",
+				type: "flag",
 				description: "Delete branch even if it can lead to lost commits",
 			},
-			{ label: "Other options", kind: vscode.QuickPickItemKind.Separator },
-			{
+			remotes: {
 				label: "Remove tracking branches",
 				type: "other",
 				detail: "Run `git push -d` to remove tracking branches",
 			},
-		] as const,
-		getTitle: () => "Execute command",
-		getPlaceholder: (items) =>
-			`git branch -d ${items
-				.filter((i) => i.type !== "other")
-				.map((i) => i.label)
-				.join(" ")} ${branch}`,
+		},
 	});
 
-	if (selected === undefined) return;
-
-	const selectedKeys = selected.map((s) => s.label);
-
-	return {
-		force: selectedKeys.includes("--force"),
-		remotes: selectedKeys.includes("Remove tracking branches"),
-	};
+	return selected;
 };
