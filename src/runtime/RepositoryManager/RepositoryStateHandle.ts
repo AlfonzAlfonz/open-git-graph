@@ -10,13 +10,13 @@ import { MergeOptions } from "./git/commands/gitMerge";
 import { RebaseOptions } from "./git/commands/gitRebase";
 import { GitResetOptions } from "./git/commands/gitReset";
 import { GitRepository } from "./git/GitRepository";
+import { getCheckoutOptions } from "./options/getCheckoutOptions";
 import { getCherryPickOptions } from "./options/getCherryPickOptions";
 import { getDeleteBranchOptions } from "./options/getDeleteBranchOptions";
 import { getDeleteRemoteBranchOptions } from "./options/getDeleteRemoteBranchOptions";
 import { getMergeOptions } from "./options/getMergeOptions";
 import { getRebaseOptions } from "./options/getRebaseOptions";
 import { getResetOptions } from "./options/getResetOptions";
-import { showCommandBuilder } from "./options/utils";
 
 type RepositoryState = {
 	refs: GitRef[];
@@ -116,39 +116,17 @@ export class RepositoryStateHandle {
 
 			if (localBranches.includes(localName)) {
 				// branch exists locally, but doesn't match remote branch from parameter
-				const result = await showCommandBuilder({
-					title: "This branch already exists, do you want to:",
-					getPlaceholder: () => "This branch already exists, do you want to:",
-					canSelectMany: false,
-					items: {
-						checkout: {
-							label: "Checkout",
-							type: "other",
-						},
-						checkoutPull: {
-							label: "Checkout & pull",
-							type: "other",
-						},
-						checkoutReset: {
-							label: "Checkout & reset",
-							type: "other",
-						},
-					},
-				});
+				const result = await getCheckoutOptions(localName);
 
 				if (!result) return;
 
-				if (result.checkout) {
-					await this.repository.checkout(localName);
-				}
+				await this.repository.checkout(localName);
 
-				if (result.checkoutPull) {
-					await this.repository.checkout(localName);
+				if (result.pull) {
 					await this.repository.pull();
 				}
 
-				if (result.checkoutReset) {
-					await this.repository.checkout(localName);
+				if (result.reset) {
 					await this.reset(branch, { mode: "hard" });
 				}
 				return;
