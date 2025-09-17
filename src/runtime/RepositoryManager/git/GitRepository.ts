@@ -23,6 +23,8 @@ import { execGit } from "./execGit";
 import { gitRebase, RebaseOptions } from "./commands/gitRebase";
 import { gitMerge, MergeOptions } from "./commands/gitMerge";
 import { gitFetch } from "./commands/gitFetch";
+import { collect } from "@alfonz/async/collect";
+import { gitRemote } from "./commands/gitRemote";
 
 export class GitRepository {
 	constructor(
@@ -48,6 +50,10 @@ export class GitRepository {
 
 	public getRefs() {
 		return this.execGit(gitShowRefs());
+	}
+
+	public getRemotes() {
+		return this.execGit(gitRemote());
 	}
 
 	public async getIndex() {

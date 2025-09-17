@@ -19,6 +19,7 @@ import { getRebaseOptions } from "./options/getRebaseOptions";
 import { getResetOptions } from "./options/getResetOptions";
 
 type RepositoryState = {
+	remotes: string[];
 	refs: GitRef[];
 	currentBranch: string | undefined;
 
@@ -59,10 +60,11 @@ export class RepositoryStateHandle {
 
 			const commits = this.repository.getCommits();
 
-			const [refs, index, stashes] = await Promise.all([
+			const [refs, index, stashes, remotes] = await Promise.all([
 				this.repository.getRefs(),
 				this.repository.getIndex(),
 				collect(this.repository.getStashes()),
+				collect(this.repository.getRemotes()),
 			]);
 
 			const commitsWithStashes = this.repository.addStashes(commits, stashes);
@@ -83,6 +85,7 @@ export class RepositoryStateHandle {
 			this.pylon.swap({
 				graph,
 				currentBranch: index.branch,
+				remotes,
 				refs: [
 					...refs,
 					...stashes.map((s) => ({ type: "stash" as const, hash: s.hash })),
