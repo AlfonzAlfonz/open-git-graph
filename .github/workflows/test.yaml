@@ -2,7 +2,7 @@ name: Test
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -23,36 +23,48 @@ jobs:
       - run: git submodule update --init --recursive
       - run: pnpm i
       - run: pnpm test
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+      - run: pnpm i
+      - run: pnpm lint
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
-    - uses: pnpm/action-setup@v4
-      with:
-        version: 10
-    - uses: actions/setup-node@v3
-      with:
-        node-version: '22.x'
-        cache: 'pnpm'
-    - run: pnpm install
-    - run: node tools/update-package-json.mjs
-    - run: pnpm clean-build
-    - uses: actions/upload-artifact@v4
-      with:
-        path: |
-          dist
-          build/*.vsix
-          package.json
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "22.x"
+          cache: "pnpm"
+      - run: pnpm install
+      - run: node tools/update-package-json.mjs
+      - run: pnpm clean-build
+      - uses: actions/upload-artifact@v4
+        with:
+          path: |
+            dist
+            build/*.vsix
+            package.json
   check-types:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
-    - uses: pnpm/action-setup@v4
-      with:
-        version: 10
-    - uses: actions/setup-node@v3
-      with:
-        node-version: '22.x'
-        cache: 'pnpm'
-    - run: pnpm install
-    - run: pnpm tsc --noEmit
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "22.x"
+          cache: "pnpm"
+      - run: pnpm install
+      - run: pnpm tsc --noEmit
