@@ -9,14 +9,17 @@ import { CherryPickOptions } from "./git/commands/gitCherryPick";
 import { MergeOptions } from "./git/commands/gitMerge";
 import { RebaseOptions } from "./git/commands/gitRebase";
 import { GitResetOptions } from "./git/commands/gitReset";
+import { TagOptions } from "./git/commands/gitTag";
 import { GitRepository } from "./git/GitRepository";
 import { getCheckoutOptions } from "./options/getCheckoutOptions";
 import { getCherryPickOptions } from "./options/getCherryPickOptions";
 import { getDeleteBranchOptions } from "./options/getDeleteBranchOptions";
 import { getDeleteRemoteBranchOptions } from "./options/getDeleteRemoteBranchOptions";
 import { getMergeOptions } from "./options/getMergeOptions";
+import { getPushOptions } from "./options/getPushOptions";
 import { getRebaseOptions } from "./options/getRebaseOptions";
 import { getResetOptions } from "./options/getResetOptions";
+import { getTagOptions } from "./options/getTagOptions";
 
 type RepositoryState = {
 	remotes: string[];
@@ -217,5 +220,27 @@ export class RepositoryStateHandle {
 		if (!selected) return;
 
 		return await this.repository.merge(upstream, selected);
+	}
+
+	public async tag(commit: string, options?: TagOptions) {
+		const state = await this.state.read();
+
+		const tagName = await vscode.window.showInputBox({
+			title: "Enter tag name",
+			placeHolder: "tag name",
+		});
+
+		const selected = await getTagOptions(commit, { name: tagName, ...options });
+		if (!selected) return;
+
+		await this.repository.tag(commit, selected);
+
+		for (const remote of state.remotes) {
+			const s = await getPushOptions(remote, selected.name);
+
+			if (!s) continue;
+
+			await this.repository.push(remote!, selected.name, s);
+		}
 	}
 }

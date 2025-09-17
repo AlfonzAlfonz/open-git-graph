@@ -103,7 +103,7 @@
 					"group": "1_branch@2"
 				},
 				{
-					"command": "open-git-graph.add-tag",
+					"command": "open-git-graph.tag",
 					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch' || webviewSection == 'branch-remote')",
 					"group": "2_tag@1"
 				},
@@ -197,6 +197,10 @@
 			{
 				"command": "open-git-graph.delete-remote-branch",
 				"title": "Delete remote branch"
+			},
+			{
+				"command": "open-git-graph.tag",
+				"title": "Add tag"
 			}
 		]
 	},
