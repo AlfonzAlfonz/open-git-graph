@@ -1,6 +1,7 @@
 .commit-inspector {
 	background-color: var(--vscode-sideBar-background);
-	border-bottom: 2px solid var(--vscode-input-border, var(--vscode-sideBarSectionHeader-border));
+	border-bottom: 2px solid
+		var(--vscode-input-border, var(--vscode-sideBarSectionHeader-border));
 	height: 200px;
 	display: flex;
 

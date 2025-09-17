@@ -137,7 +137,9 @@ declare global {
 		 * @param value An iterator or iterable object to convert a native iterator.
 		 */
 		from<T>(
-			value: AsyncIterator<T, unknown, undefined> | AsyncIterable<T, unknown, undefined>,
+			value:
+				| AsyncIterator<T, unknown, undefined>
+				| AsyncIterable<T, unknown, undefined>,
 		): AsyncIteratorObject<T, undefined, unknown>;
 	}
 
