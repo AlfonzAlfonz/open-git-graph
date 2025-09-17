@@ -23,6 +23,18 @@ jobs:
       - run: git submodule update --init --recursive
       - run: pnpm i
       - run: pnpm test
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 10
+    - uses: actions/setup-node@v4
+      with:
+        node-version: "22.x"
+    - run: pnpm i
+    - run: pnpm lint
   build:
     runs-on: ubuntu-latest
     steps:
