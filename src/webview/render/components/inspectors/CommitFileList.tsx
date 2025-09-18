@@ -13,7 +13,7 @@ export const CommitFileList = ({
 
 	return (
 		<ul className="files list-none">
-			{files.map((f, i) => (
+			{files.map((f) => (
 				<li
 					key={f.path}
 					onClick={() => showDiff(f.path, diff.a, diff.b)}

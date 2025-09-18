@@ -47,9 +47,9 @@ export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 							}
 						>
 							<div className="content">{r.label}</div>
-							{r.endDecorators?.map((d, i) => (
+							{r.endDecorators?.map((d, ii) => (
 								<div
-									key={i}
+									key={ii}
 									className={"end-decorator"}
 									data-vscode-context={
 										r.type === "branch"

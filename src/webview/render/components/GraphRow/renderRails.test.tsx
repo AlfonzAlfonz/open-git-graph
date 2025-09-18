@@ -62,7 +62,7 @@ test("renderEmptyRails - merge commit 2", () => {
 	expect(colors).toEqual(["indigo", "yellow", "red", "indigo"]);
 });
 
-test.only("renderEmptyRails - index", () => {
+test("renderEmptyRails - index", () => {
 	const data = {
 		commit: {
 			hash: "63952603e189de424c9d012103736bb2587cb4c0",

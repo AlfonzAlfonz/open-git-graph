@@ -19,7 +19,7 @@
 		"clean-build": "rm -rf dist build && pnpm build:prod && pnpm run pack",
 		"pack": "node ./tools/pack.mjs",
 		"watch": "pnpm build --watch",
-		"lint": "eslint src --ext ts && prettier . -c && tsc --noEmit",
+		"lint": "eslint src --ext .ts,.tsx,.js,jsx && prettier . -c && tsc --noEmit",
 		"test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
 		"test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch --collectCoverage=false"
 	},
