@@ -7,17 +7,17 @@ export type Command<TId extends string, TArgs extends any[]> = {
 };
 
 export const command = <TId extends string, TArgs extends any[]>(
-	command: Command<TId, TArgs>,
+	commandDef: Command<TId, TArgs>,
 ) => {
 	return {
-		...command,
+		...commandDef,
 		command:
 			(backend: Backend) =>
 			(...args: Parameters<ReturnType<Command<TId, TArgs>["command"]>>) => {
 				console.info("");
-				console.info(`Executing command "${command.id}"`);
+				console.info(`Executing command "${commandDef.id}"`);
 
-				return command.command(backend)(...args);
+				return commandDef.command(backend)(...args);
 			},
 	};
 };

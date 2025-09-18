@@ -99,9 +99,7 @@ export const showCommandBuilder = async <
 
 	const result = await showOptionPicker<WithPropertyName<CommandBuilderItem>>({
 		getTitle: () => title ?? "Execute command",
-		getPlaceholder: (items) => {
-			return getPlaceholder(getOptions(items));
-		},
+		getPlaceholder: (x) => getPlaceholder(getOptions(x)),
 		canSelectMany,
 		items: pickerItems,
 	});

@@ -29,12 +29,12 @@ test("should send requests and responses", async () => {
 
 	expect(await bridge.add(1, 4)).toBe(5);
 
-	expect(requests.length).toBe(1);
+	expect(requests).toHaveLength(1);
 	expect(requests[0]!.type).toBe("request");
 	expect(requests[0]!.method).toBe("add");
 	expect(requests[0]!.args).toMatchObject([1, 4]);
 
-	expect(responses.length).toBe(1);
+	expect(responses).toHaveLength(1);
 	expect(responses[0]!.type).toBe("response");
 	expect((responses[0] as any).result).toBe(5);
 

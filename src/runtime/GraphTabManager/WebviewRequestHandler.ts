@@ -13,7 +13,7 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 		private state: GraphTabState,
 	) {}
 
-	async ready(repoPath?: string | undefined) {
+	async ready(_repoPath?: string | undefined) {
 		void this.handle.getGraphData();
 
 		return this.state;

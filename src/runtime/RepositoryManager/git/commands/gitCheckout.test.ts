@@ -8,7 +8,7 @@ describe("gitLogCommits", () => {
 
 		const command = gitCheckout("feat/more-text");
 
-		expect(
+		await expect(
 			execGit(command, gitPath, repoPath, (e) => {
 				throw e;
 			}),

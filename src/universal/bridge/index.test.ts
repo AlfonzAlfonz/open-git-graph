@@ -10,9 +10,9 @@ class TestBridge {
 	}
 }
 
-test("should setup client server bridge", () => {
+test("should setup client server bridge", async () => {
 	const [bridge] = createTestClientServerBridge(new TestBridge());
 
-	expect(bridge.resolvesTo5()).resolves.toBe(5);
-	expect(bridge.rejects()).rejects.toBeInstanceOf(Error);
+	await expect(bridge.resolvesTo5()).resolves.toBe(5);
+	await expect(bridge.rejects()).rejects.toBeInstanceOf(Error);
 });

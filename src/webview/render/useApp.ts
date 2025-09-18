@@ -21,7 +21,7 @@ export const useApp = (): App => {
 	useEffect(() => {
 		const controller = new AbortController();
 
-		fork(async () => {
+		void fork(async () => {
 			for await (const message of messageQueue.iterator) {
 				// TODO: breaking after receiving message will cause the message to be dropped
 				if (controller.signal.aborted) break;
@@ -41,7 +41,7 @@ export const useApp = (): App => {
 			}
 		});
 
-		bridge.ready(state?.repoPath).then(setState);
+		void bridge.ready(state?.repoPath).then(setState);
 
 		return () => {
 			controller.abort();
@@ -56,11 +56,11 @@ export const useApp = (): App => {
 			currentBranch,
 			actions: {
 				expandCommit: (value) => {
-					bridge.expandCommit(value);
+					void bridge.expandCommit(value);
 					setState((s) => ({ ...s!, expandedCommit: value }));
 				},
 				scroll: debounce((value: number) => {
-					bridge.scroll(value);
+					void bridge.scroll(value);
 					setState((s) => ({ ...s!, scroll: value }));
 				}, 100),
 				reload: async () => {

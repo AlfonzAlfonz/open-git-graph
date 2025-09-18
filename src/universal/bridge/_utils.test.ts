@@ -8,7 +8,7 @@ export const createTestClientServerBridge = <T extends object>(bridge: T) => {
 		postMessage: (msg: unknown) => unknown,
 		responseTarget: BridgeEventTarget,
 	) => {
-		const [bridge, responseHandler] = createClientProxy<T>(postMessage);
+		const [b, responseHandler] = createClientProxy<T>(postMessage);
 
 		responseTarget.addEventListener("serverToClient", (e) => {
 			const detail: unknown = (e as CustomEvent).detail;
@@ -17,7 +17,7 @@ export const createTestClientServerBridge = <T extends object>(bridge: T) => {
 			}
 		});
 
-		return bridge;
+		return b;
 	};
 
 	// Server side which receives requests and posts responses to them
@@ -28,7 +28,7 @@ export const createTestClientServerBridge = <T extends object>(bridge: T) => {
 		requestTarget.addEventListener("clientToServer", async (e) => {
 			const detail: unknown = (e as CustomEvent).detail;
 			if (isBridgeRequest(detail)) {
-				postMessage(await createResponse(bridge, detail, () => {}));
+				postMessage(await createResponse(bridge, detail, () => undefined));
 			}
 		});
 	};

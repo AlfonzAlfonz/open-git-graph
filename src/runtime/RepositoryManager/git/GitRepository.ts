@@ -75,10 +75,6 @@ export class GitRepository {
 		return await this.execGit(gitLogHeadHash());
 	}
 
-	public trueMerge() {}
-
-	public ffMerge() {}
-
 	public async showFile(ref: string, path: string) {
 		return await this.execGit(gitShowRefFile(ref, path));
 	}

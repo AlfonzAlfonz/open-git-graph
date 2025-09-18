@@ -192,12 +192,12 @@ export class RepositoryStateHandle {
 			(b) => b[1],
 		);
 
-		for (const [origin, branches] of origins) {
-			const selected = await getDeleteRemoteBranchOptions(origin, branches);
+		for (const [origin, b] of origins) {
+			const selected = await getDeleteRemoteBranchOptions(origin, b);
 
 			if (!selected) continue;
 
-			await this.repository.pushDelete(origin!, branches, selected);
+			await this.repository.pushDelete(origin!, b, selected);
 		}
 	}
 

@@ -78,7 +78,7 @@ export class GraphTabManager {
 
 		const handle = this.repositoryManager.getStateHandle(repository);
 
-		fork([
+		void fork([
 			async () => {
 				console.time("graph-data");
 				await handle.getGraphData();

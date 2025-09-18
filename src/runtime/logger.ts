@@ -19,7 +19,7 @@ export interface Logger {
 }
 
 export const log = (name: string) => {
-	if (!vscode.window) return () => {};
+	if (!vscode.window) return () => undefined;
 
 	if (!output) {
 		output = vscode.window.createOutputChannel("Open git graph", { log: true });
