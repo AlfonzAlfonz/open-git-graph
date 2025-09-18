@@ -1,9 +1,10 @@
+import { isCommitMenuContext } from "../../universal/menuContext/commit";
 import { command } from "../utils";
 
 export const cherryPickCommand = command({
 	id: "open-git-graph.cherry-pick",
 	command: (backend) => async (ctx) => {
-		if (!isValidCtx(ctx)) throw new Error("Invalid argument");
+		if (!isCommitMenuContext(ctx)) throw new Error("Invalid argument");
 
 		const repo = await backend.repositoryManager.getRepository(ctx.repo);
 
@@ -11,14 +12,6 @@ export const cherryPickCommand = command({
 
 		const handle = backend.repositoryManager.getStateHandle(repo);
 
-		await handle.cherryPick(ctx.ref);
+		await handle.cherryPick(ctx.hash);
 	},
 });
-
-const isValidCtx = (x: unknown): x is { ref: string; repo: string } =>
-	!!x &&
-	typeof x === "object" &&
-	"ref" in x &&
-	typeof x.ref === "string" &&
-	"repo" in x &&
-	typeof x.repo === "string";

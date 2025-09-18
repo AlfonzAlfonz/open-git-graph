@@ -1,9 +1,10 @@
+import { isStashMenuContext } from "../../universal/menuContext/stash";
 import { command } from "../utils";
 
 export const stashPopCommand = command({
 	id: "open-git-graph.stash-pop",
 	command: (backend) => async (ctx: unknown) => {
-		if (!isValidCtx(ctx)) {
+		if (!isStashMenuContext(ctx)) {
 			throw new Error("Invalid argument");
 		}
 
@@ -18,13 +19,3 @@ export const stashPopCommand = command({
 		await handle.stashPop(ctx.reflogSelector);
 	},
 });
-
-const isValidCtx = (
-	x: unknown,
-): x is { reflogSelector: string; repo: string } =>
-	!!x &&
-	typeof x === "object" &&
-	"reflogSelector" in x &&
-	typeof x.reflogSelector === "string" &&
-	"repo" in x &&
-	typeof x.repo === "string";
