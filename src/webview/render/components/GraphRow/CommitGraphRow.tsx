@@ -24,10 +24,10 @@ export const CommitGraphRow = ({
 				} ${open ? "focused" : ""} ${getColor(node.position)}`}
 				onClick={onClick}
 				data-vscode-context={JSON.stringify({
-					webviewSection: "commit",
+					webviewSection: node.commit.type,
 					preventDefaultContextMenuItems: true,
 					repo: repoPath,
-					ref: node.commit.hash,
+					reflogSelector: node.commit.reflogSelector,
 				})}
 				// content
 				graph={renderRails(node)}

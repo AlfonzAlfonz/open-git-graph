@@ -13,11 +13,20 @@ export type GitProcessOutput = [
 ];
 
 export const FORMAT_SEPARATOR = "<Ps3Nqv_iKCwmz>";
-export const commitFormat = ["%H", "%P", "%aN", "%aE", "%at", "%s", "%ct"].join(
-	FORMAT_SEPARATOR,
-);
+export const commitFormat = [
+	"%H",
+	"%P",
+	"%aN",
+	"%aE",
+	"%at",
+	"%s",
+	"%ct",
+	"%gd",
+].join(FORMAT_SEPARATOR);
 
-export const parseCommitFormat = (value: string): Omit<GitCommit, "files"> => {
+export const parseCommitFormat = (
+	value: string,
+): Omit<GitCommit, "files" | "type"> => {
 	type SplittedCommitHeader = [
 		string,
 		string,
@@ -26,9 +35,18 @@ export const parseCommitFormat = (value: string): Omit<GitCommit, "files"> => {
 		string,
 		string,
 		string,
+		string,
 	];
-	const [hash, parents, author, authorEmail, authorDate, subject, commitDate] =
-		value!.split(FORMAT_SEPARATOR) as SplittedCommitHeader;
+	const [
+		hash,
+		parents,
+		author,
+		authorEmail,
+		authorDate,
+		subject,
+		commitDate,
+		reflogSelector,
+	] = value!.split(FORMAT_SEPARATOR) as SplittedCommitHeader;
 
 	return {
 		hash,
@@ -38,5 +56,6 @@ export const parseCommitFormat = (value: string): Omit<GitCommit, "files"> => {
 		authorDate: +authorDate,
 		authorEmail,
 		commitDate: +commitDate,
+		reflogSelector: reflogSelector || undefined,
 	};
 };

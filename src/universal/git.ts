@@ -7,6 +7,9 @@ export type GitCommit = {
 	authorDate: number;
 	commitDate: number;
 	files: GitCommitFile[];
+	reflogSelector?: string;
+
+	type: "commit" | "stash";
 };
 
 export type GitRef = GitRefTag | GitRefBranch | GitRefHead | GitRefStash;

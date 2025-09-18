@@ -13,6 +13,9 @@ import { cherryPickCommand } from "./commands/cherryPick";
 import { rebaseCommand } from "./commands/rebase";
 import { mergeCommand } from "./commands/merge";
 import { tagCommand } from "./commands/tag";
+import { stashApplyCommand } from "./commands/stashApply";
+import { stashPopCommand } from "./commands/stashPop";
+import { stashDropCommand } from "./commands/stashDrop";
 
 let controller: AbortController;
 
@@ -44,6 +47,9 @@ export function activate(context: vscode.ExtensionContext) {
 		rebaseCommand,
 		mergeCommand,
 		tagCommand,
+		stashApplyCommand,
+		stashPopCommand,
+		stashDropCommand,
 	];
 
 	for (const c of commands) {

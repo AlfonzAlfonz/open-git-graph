@@ -22,49 +22,55 @@ export const gitLogCommits = (
 		parse: (stdout) => {
 			const lines = toLineGenerator(stdout);
 
-			return (async function* () {
-				let { value: value, done } = await lines.next();
-				while (true) {
-					if (done || value === undefined) {
-						return;
-					}
-
-					if (logFiles && value === "") {
-						throw new Error(
-							"invalid format, commit line expected, empty line instead",
-						);
-					}
-
-					const base = parseCommitFormat(value);
-
-					({ value, done } = await lines.next());
-
-					const files = [];
-					if (logFiles) {
-						if (value === "" && !done) {
-							while (true) {
-								({ value, done } = await lines.next());
-								if (done || !value!.startsWith(":")) break;
-
-								type SplittedCommitFile = [
-									string,
-									string,
-									string,
-									string,
-									GitFileMode,
-									string,
-								];
-								const [, , , , mode, path] = value!.split(
-									/\s+/,
-								) as SplittedCommitFile;
-								files.push({ mode, path });
-							}
-						}
-					}
-
-					yield { ...base, files };
-				}
-			})();
+			return parseLogOutput(lines, "commit", logFiles);
 		},
 	};
 };
+
+export async function* parseLogOutput(
+	lines: AsyncIterableIterator<string>,
+	type: "commit" | "stash",
+	logFiles: boolean = true,
+) {
+	let { value: value, done } = await lines.next();
+	while (true) {
+		if (done || value === undefined) {
+			return;
+		}
+
+		if (logFiles && value === "") {
+			throw new Error(
+				"invalid format, commit line expected, empty line instead",
+			);
+		}
+
+		const base = parseCommitFormat(value);
+
+		({ value, done } = await lines.next());
+
+		const files = [];
+		if (logFiles) {
+			if (value === "" && !done) {
+				while (true) {
+					({ value, done } = await lines.next());
+					if (done || !value!.startsWith(":")) break;
+
+					type SplittedCommitFile = [
+						string,
+						string,
+						string,
+						string,
+						GitFileMode,
+						string,
+					];
+					const [, , , , mode, path] = value!.split(
+						/\s+/,
+					) as SplittedCommitFile;
+					files.push({ mode, path });
+				}
+			}
+		}
+
+		yield { ...base, files, type };
+	}
+}
