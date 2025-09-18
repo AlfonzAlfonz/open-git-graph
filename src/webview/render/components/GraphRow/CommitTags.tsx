@@ -1,3 +1,4 @@
+import { branchMenuContext } from "../../../../universal/menuContext/branch";
 import { bridge } from "../../../bridge";
 import { GraphTag } from "../../../state/toGraphTags";
 import { useBridgeMutation } from "../../useBridge/useBridgeMutation";
@@ -28,37 +29,34 @@ export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 								r.label === currentBranch ? "active" : ""
 							}`}
 							data-vscode-context={
-								r.type === "branch"
-									? r.remoteOnlyBranch
-										? JSON.stringify({
-												webviewSection: "branch-remote",
-												preventDefaultContextMenuItems: true,
-												repo: repoPath,
+								repoPath &&
+								JSON.stringify(
+									!r.remoteOnlyBranch
+										? branchMenuContext("branch", {
+												repo: repoPath!,
 												branch: r.label,
 										  })
-										: JSON.stringify({
-												webviewSection: "branch",
-												preventDefaultContextMenuItems: true,
+										: branchMenuContext("branch-remote", {
 												repo: repoPath,
 												branch: r.label,
 												remotes: r.endDecorators,
-										  })
-									: undefined
+										  }),
+								)
 							}
 						>
 							<div className="content">{r.label}</div>
-							{r.endDecorators?.map((d, i) => (
+							{r.endDecorators?.map((d, ii) => (
 								<div
-									key={i}
+									key={ii}
 									className={"end-decorator"}
 									data-vscode-context={
-										r.type === "branch"
-											? JSON.stringify({
-													webviewSection: "branch-remote",
-													preventDefaultContextMenuItems: true,
-													repo: repoPath,
-													branch: `${d}/${r.label}`,
-											  })
+										r.type === "branch" && repoPath
+											? JSON.stringify(
+													branchMenuContext("branch-remote", {
+														repo: repoPath,
+														branch: `${d}/${r.label}`,
+													}),
+											  )
 											: undefined
 									}
 								>

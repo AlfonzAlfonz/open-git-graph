@@ -1,5 +1,6 @@
 import { GitCommit } from "../../../../universal/git";
-import { gitLogCommits } from "./gitLogCommits";
+import { toLineGenerator } from "../toLineGenerator";
+import { parseLogOutput } from "./gitLogCommits";
 import { GitCommand, commitFormat } from "./utils";
 
 export const gitStashList = (
@@ -15,6 +16,10 @@ export const gitStashList = (
 			"-m",
 			...(logFiles ? ["--raw"] : []),
 		],
-		parse: gitLogCommits().parse,
+		parse: (stdout) => {
+			const lines = toLineGenerator(stdout);
+
+			return parseLogOutput(lines, "stash", logFiles);
+		},
 	};
 };

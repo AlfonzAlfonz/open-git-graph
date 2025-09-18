@@ -1,9 +1,10 @@
+import { isBranchMenuContext } from "../../universal/menuContext/branch";
 import { command } from "../utils";
 
 export const checkoutCommand = command({
 	id: "open-git-graph.checkout",
 	command: (backend) => async (ctx: unknown) => {
-		if (!isValidCtx(ctx)) {
+		if (!isBranchMenuContext(ctx)) {
 			throw new Error("Invalid argument");
 		}
 
@@ -18,11 +19,3 @@ export const checkoutCommand = command({
 		await handle.checkout(ctx.branch);
 	},
 });
-
-const isValidCtx = (x: unknown): x is { branch: string; repo: string } =>
-	!!x &&
-	typeof x === "object" &&
-	"branch" in x &&
-	typeof x.branch === "string" &&
-	"repo" in x &&
-	typeof x.repo === "string";

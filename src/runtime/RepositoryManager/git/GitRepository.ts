@@ -21,11 +21,17 @@ import { gitReset, GitResetOptions } from "./commands/gitReset";
 import { gitShowCommit } from "./commands/gitShowCommit";
 import { gitShowRefFile } from "./commands/gitShowRefFile";
 import { gitShowRefs } from "./commands/gitShowRefs";
-import { gitStashList } from "./commands/gitStashList";
+import { gitStashList } from "./commands/gitLogStashes";
 import { gitStatus } from "./commands/gitStatus";
 import { gitTag, TagOptions } from "./commands/gitTag";
 import { GitCommand } from "./commands/utils";
 import { execGit } from "./execGit";
+import {
+	gitStashApply,
+	gitStashDrop,
+	gitStashPop,
+	StashOptions,
+} from "./commands/gitStash";
 
 export class GitRepository {
 	constructor(
@@ -137,6 +143,18 @@ export class GitRepository {
 
 	public async tag(commitOrObject: string, options: TagOptions) {
 		return await this.execGit(gitTag(commitOrObject, options));
+	}
+
+	public async stashApply(stash: string, options: StashOptions) {
+		return await this.execGit(gitStashApply(stash, options));
+	}
+
+	public async stashPop(stash: string, options: StashOptions) {
+		return await this.execGit(gitStashPop(stash, options));
+	}
+
+	public async stashDrop(stash: string) {
+		return await this.execGit(gitStashDrop(stash));
 	}
 
 	private execGit = <T>(cmd: GitCommand<T>): T => {

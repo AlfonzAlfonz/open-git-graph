@@ -16,6 +16,7 @@ test("renderEmptyRails - merge commit", () => {
 			authorEmail: "",
 			commitDate: 1746614032,
 			files: [],
+			type: "commit",
 		},
 		position: 1 as RailId,
 		rails: [0, 1, 2] as RailId[],
@@ -46,6 +47,7 @@ test("renderEmptyRails - merge commit 2", () => {
 			authorEmail: "",
 			commitDate: 1743525680,
 			files: [],
+			type: "commit",
 		},
 		position: 0 as RailId,
 		rails: [0, 18, 19, 20] as RailId[],
@@ -62,7 +64,7 @@ test("renderEmptyRails - merge commit 2", () => {
 	expect(colors).toEqual(["indigo", "yellow", "red", "indigo"]);
 });
 
-test.only("renderEmptyRails - index", () => {
+test("renderEmptyRails - index", () => {
 	const data = {
 		commit: {
 			hash: "63952603e189de424c9d012103736bb2587cb4c0",
@@ -73,6 +75,7 @@ test.only("renderEmptyRails - index", () => {
 			authorEmail: "",
 			commitDate: 1747354764,
 			files: [],
+			type: "commit",
 		},
 		position: 0 as RailId,
 		rails: [] as RailId[],

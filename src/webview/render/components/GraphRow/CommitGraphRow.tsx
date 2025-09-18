@@ -1,4 +1,6 @@
 import { GitCommit } from "../../../../universal/git";
+import { commitMenuContext } from "../../../../universal/menuContext/commit";
+import { stashMenuContext } from "../../../../universal/menuContext/stash";
 import { formatDate, getColor } from "../../utils";
 import { useAppContext } from "../AppContext";
 import { CommitInspector } from "../inspectors/CommitInspector";
@@ -23,12 +25,17 @@ export const CommitGraphRow = ({
 					node.commit.parents.length > 1 ? "merge" : ""
 				} ${open ? "focused" : ""} ${getColor(node.position)}`}
 				onClick={onClick}
-				data-vscode-context={JSON.stringify({
-					webviewSection: "commit",
-					preventDefaultContextMenuItems: true,
-					repo: repoPath,
-					ref: node.commit.hash,
-				})}
+				data-vscode-context={
+					repoPath &&
+					JSON.stringify(
+						node.commit.type === "commit"
+							? commitMenuContext({ repo: repoPath, hash: node.commit.hash })
+							: stashMenuContext({
+									repo: repoPath,
+									reflogSelector: node.commit.reflogSelector!,
+							  }),
+					)
+				}
 				// content
 				graph={renderRails(node)}
 				tags={tags && <CommitTags tags={tags} />}

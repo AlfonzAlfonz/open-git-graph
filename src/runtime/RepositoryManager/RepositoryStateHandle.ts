@@ -9,6 +9,7 @@ import { CherryPickOptions } from "./git/commands/gitCherryPick";
 import { MergeOptions } from "./git/commands/gitMerge";
 import { RebaseOptions } from "./git/commands/gitRebase";
 import { GitResetOptions } from "./git/commands/gitReset";
+import { gitStashApply, gitStashPop } from "./git/commands/gitStash";
 import { TagOptions } from "./git/commands/gitTag";
 import { GitRepository } from "./git/GitRepository";
 import { getCheckoutOptions } from "./options/getCheckoutOptions";
@@ -19,6 +20,8 @@ import { getMergeOptions } from "./options/getMergeOptions";
 import { getPushOptions } from "./options/getPushOptions";
 import { getRebaseOptions } from "./options/getRebaseOptions";
 import { getResetOptions } from "./options/getResetOptions";
+import { getStashDropOptions } from "./options/getStashDropOptions";
+import { getStashOptions } from "./options/getStashOptions";
 import { getTagOptions } from "./options/getTagOptions";
 
 type RepositoryState = {
@@ -242,5 +245,30 @@ export class RepositoryStateHandle {
 
 			await this.repository.push(remote!, selected.name, s);
 		}
+	}
+
+	public async stashApply(stash: string) {
+		const selected = await getStashOptions(gitStashApply)(stash, {
+			index: true,
+		});
+		if (!selected) return;
+
+		await this.repository.stashApply(stash, selected);
+	}
+
+	public async stashPop(stash: string) {
+		const selected = await getStashOptions(gitStashPop)(stash, {
+			index: true,
+		});
+		if (!selected) return;
+
+		await this.repository.stashPop(stash, selected);
+	}
+
+	public async stashDrop(stash: string) {
+		const selected = await getStashDropOptions(stash);
+		if (!selected) return;
+
+		await this.repository.stashDrop(stash);
 	}
 }

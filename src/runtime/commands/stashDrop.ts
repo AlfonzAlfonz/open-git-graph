@@ -1,10 +1,10 @@
-import { isCommitMenuContext } from "../../universal/menuContext/commit";
+import { isStashMenuContext } from "../../universal/menuContext/stash";
 import { command } from "../utils";
 
-export const resetCommand = command({
-	id: "open-git-graph.reset",
+export const stashDropCommand = command({
+	id: "open-git-graph.stash-drop",
 	command: (backend) => async (ctx: unknown) => {
-		if (!isCommitMenuContext(ctx)) {
+		if (!isStashMenuContext(ctx)) {
 			throw new Error("Invalid argument");
 		}
 
@@ -16,6 +16,6 @@ export const resetCommand = command({
 
 		const handle = backend.repositoryManager.getStateHandle(repo);
 
-		await handle.reset(ctx.hash);
+		await handle.stashDrop(ctx.reflogSelector);
 	},
 });

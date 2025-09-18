@@ -1,9 +1,10 @@
+import { isBranchMenuContext } from "../../universal/menuContext/branch";
 import { command } from "../utils";
 
 export const deleteBranchCommand = command({
 	id: "open-git-graph.delete-branch",
 	command: (backend) => async (ctx: unknown) => {
-		if (!isValidCtx(ctx)) {
+		if (!isBranchMenuContext(ctx)) {
 			throw new Error("Invalid argument");
 		}
 
@@ -18,14 +19,3 @@ export const deleteBranchCommand = command({
 		await handle.deleteBranch(ctx.branch, ctx.remotes ?? []);
 	},
 });
-
-const isValidCtx = (
-	x: unknown,
-): x is { branch: string; repo: string; remotes?: string[] } =>
-	!!x &&
-	typeof x === "object" &&
-	"branch" in x &&
-	typeof x.branch === "string" &&
-	"repo" in x &&
-	typeof x.repo === "string" &&
-	("remotes" in x ? Array.isArray(x.remotes) : true);

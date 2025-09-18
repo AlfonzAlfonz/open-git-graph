@@ -107,8 +107,6 @@ export const renderEmptyRails = (node: GraphNode, height: number) => {
 	];
 
 	let shift = 0;
-	let activeIndex = node.rails.findIndex((r) => node.position === r);
-	activeIndex = activeIndex === -1 ? node.rails.length : activeIndex;
 	const newRail = node.forks.find((f) => !node.rails.includes(f));
 	const width = node.rails.length + +!!newRail;
 

@@ -14,6 +14,7 @@ const commit = (
 	commitDate: 0,
 	authorEmail: "",
 	files: [],
+	type: "commit",
 });
 
 test("fork", () => {

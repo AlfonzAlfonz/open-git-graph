@@ -19,7 +19,7 @@
 		"clean-build": "rm -rf dist build && pnpm build:prod && pnpm run pack",
 		"pack": "node ./tools/pack.mjs",
 		"watch": "pnpm build --watch",
-		"lint": "eslint src --ext ts && prettier . -c && tsc --noEmit",
+		"lint": "eslint src --ext .ts,.tsx,.js,jsx && prettier . -c && tsc --noEmit",
 		"test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
 		"test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch --collectCoverage=false"
 	},
@@ -132,6 +132,21 @@
 					"command": "open-git-graph.reset",
 					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'commit' || webviewSection == 'branch' || webviewSection == 'branch-remote')",
 					"group": "4_commit_branch@3"
+				},
+				{
+					"command": "open-git-graph.stash-apply",
+					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'stash')",
+					"group": "5_stash@1"
+				},
+				{
+					"command": "open-git-graph.stash-pop",
+					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'stash')",
+					"group": "5_stash@2"
+				},
+				{
+					"command": "open-git-graph.stash-drop",
+					"when": "webviewId == 'open-git-graph.graph' && (webviewSection == 'stash')",
+					"group": "5_stash@3"
 				}
 			],
 			"scm/title": [
@@ -202,6 +217,18 @@
 			{
 				"command": "open-git-graph.tag",
 				"title": "Add tag"
+			},
+			{
+				"command": "open-git-graph.stash-apply",
+				"title": "Apply stash"
+			},
+			{
+				"command": "open-git-graph.stash-pop",
+				"title": "Pop stash"
+			},
+			{
+				"command": "open-git-graph.stash-drop",
+				"title": "Drop stash"
 			}
 		]
 	},

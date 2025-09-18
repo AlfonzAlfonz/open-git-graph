@@ -1,4 +1,3 @@
-import { Panel, PanelGroup } from "react-resizable-panels";
 import { GraphNode } from "../../../../runtime/GraphTabManager/createGraphNodes";
 import { GitIndex } from "../../../../universal/git";
 import { GraphRow } from "../GraphRow/GraphRow";
