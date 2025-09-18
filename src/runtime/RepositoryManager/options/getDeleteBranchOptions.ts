@@ -8,7 +8,9 @@ export const getDeleteBranchOptions = async (
 	branch: string,
 	initialValue?: DeleteBranchOptions & { remotes?: boolean },
 ): Promise<(DeleteBranchOptions & { remotes: boolean }) | undefined> => {
-	const selected = await showCommandBuilder({
+	const selected = await showCommandBuilder<
+		DeleteBranchOptions & { remotes: boolean }
+	>({
 		getPlaceholder: (o) => formatArgs(gitBranchDelete(branch, o)),
 		initialValue,
 		items: {

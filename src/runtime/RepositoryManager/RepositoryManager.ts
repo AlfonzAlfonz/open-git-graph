@@ -35,13 +35,13 @@ export class RepositoryManager {
 		const handle = new RepositoryStateHandle(repository);
 		this.state[path] = handle;
 
-		fork(async () => {
+		void fork(async () => {
 			const watcher = aggregateGitEvents(
 				watchGit(repository.getFsPath(), this.appSignal),
 			);
 
 			for await (const _ of watcher) {
-				this.state[path]?.getGraphData(true);
+				void this.state[path]?.getGraphData(true);
 			}
 		});
 

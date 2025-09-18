@@ -43,16 +43,16 @@ export function watchGit(repoPath: string, signal: AbortSignal) {
 }
 
 export async function* aggregateGitEvents(it: AsyncIterableIterator<FsEvent>) {
-	for await (const { type, path } of it) {
+	for await (const { type, path: p } of it) {
 		if (
 			type === "deleted" &&
-			path.startsWith(".git/refs/") &&
-			path.endsWith(".lock")
+			p.startsWith(".git/refs/") &&
+			p.endsWith(".lock")
 		) {
 			debug("ref-update");
 			yield { type: "ref-update" };
 		}
-		if (type === "deleted" && path === ".git/packed-refs.lock") {
+		if (type === "deleted" && p === ".git/packed-refs.lock") {
 			debug("ref-update");
 			yield { type: "ref-update" };
 		}

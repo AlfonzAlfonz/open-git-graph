@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import { GitCommit, GitIndex } from "../../../universal/git";
 import { GraphNode } from "./index";
 

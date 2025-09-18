@@ -8,7 +8,7 @@ export const getCherryPickOptions = async (
 	commit: string,
 	initialValue?: CherryPickOptions,
 ): Promise<CherryPickOptions | undefined> => {
-	const selected = await showCommandBuilder({
+	const selected = await showCommandBuilder<CherryPickOptions>({
 		getPlaceholder: (o) => formatArgs(gitCherryPick(commit, o)),
 		initialValue,
 		items: {

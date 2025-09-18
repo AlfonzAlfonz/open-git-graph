@@ -12,6 +12,7 @@ import { deleteRemoteBranchCommand } from "./commands/deleteRemoteBranch";
 import { cherryPickCommand } from "./commands/cherryPick";
 import { rebaseCommand } from "./commands/rebase";
 import { mergeCommand } from "./commands/merge";
+import { tagCommand } from "./commands/tag";
 
 let controller: AbortController;
 
@@ -42,6 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
 		cherryPickCommand,
 		rebaseCommand,
 		mergeCommand,
+		tagCommand,
 	];
 
 	for (const c of commands) {

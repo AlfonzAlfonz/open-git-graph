@@ -28,7 +28,7 @@ export class ShowFileTextDocumentContentProvider
 
 	async provideTextDocumentContent(
 		uri: vscode.Uri,
-		token: vscode.CancellationToken,
+		_token: vscode.CancellationToken,
 	): Promise<string> {
 		const ref = uri.authority;
 		if (!ref) return "";

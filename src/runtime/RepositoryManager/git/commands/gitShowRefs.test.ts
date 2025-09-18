@@ -1,6 +1,5 @@
 import { Readable } from "stream";
 import { gitShowRefs } from "./gitShowRefs";
-import { collect } from "@alfonz/async/collect";
 
 describe("gitShowRefs", () => {
 	test("should work", async () => {

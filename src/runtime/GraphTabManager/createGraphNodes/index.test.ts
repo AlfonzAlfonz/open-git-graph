@@ -148,7 +148,7 @@ test("merge2", () => {
 	expect(n4.merges).toMatchObject([]);
 });
 
-test.only("weird merge, do not create extra rail while merging", () => {
+test("weird merge, do not create extra rail while merging", () => {
 	const commits: GitCommit[] = [
 		commit("a1", ["a2"], "a1"),
 		commit("b1", ["b2"], "b1"),

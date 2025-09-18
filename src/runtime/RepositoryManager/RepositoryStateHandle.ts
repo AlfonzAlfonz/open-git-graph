@@ -9,16 +9,20 @@ import { CherryPickOptions } from "./git/commands/gitCherryPick";
 import { MergeOptions } from "./git/commands/gitMerge";
 import { RebaseOptions } from "./git/commands/gitRebase";
 import { GitResetOptions } from "./git/commands/gitReset";
+import { TagOptions } from "./git/commands/gitTag";
 import { GitRepository } from "./git/GitRepository";
 import { getCheckoutOptions } from "./options/getCheckoutOptions";
 import { getCherryPickOptions } from "./options/getCherryPickOptions";
 import { getDeleteBranchOptions } from "./options/getDeleteBranchOptions";
 import { getDeleteRemoteBranchOptions } from "./options/getDeleteRemoteBranchOptions";
 import { getMergeOptions } from "./options/getMergeOptions";
+import { getPushOptions } from "./options/getPushOptions";
 import { getRebaseOptions } from "./options/getRebaseOptions";
 import { getResetOptions } from "./options/getResetOptions";
+import { getTagOptions } from "./options/getTagOptions";
 
 type RepositoryState = {
+	remotes: string[];
 	refs: GitRef[];
 	currentBranch: string | undefined;
 
@@ -59,10 +63,11 @@ export class RepositoryStateHandle {
 
 			const commits = this.repository.getCommits();
 
-			const [refs, index, stashes] = await Promise.all([
+			const [refs, index, stashes, remotes] = await Promise.all([
 				this.repository.getRefs(),
 				this.repository.getIndex(),
 				collect(this.repository.getStashes()),
+				collect(this.repository.getRemotes()),
 			]);
 
 			const commitsWithStashes = this.repository.addStashes(commits, stashes);
@@ -83,6 +88,7 @@ export class RepositoryStateHandle {
 			this.pylon.swap({
 				graph,
 				currentBranch: index.branch,
+				remotes,
 				refs: [
 					...refs,
 					...stashes.map((s) => ({ type: "stash" as const, hash: s.hash })),
@@ -186,12 +192,12 @@ export class RepositoryStateHandle {
 			(b) => b[1],
 		);
 
-		for (const [origin, branches] of origins) {
-			const selected = await getDeleteRemoteBranchOptions(origin, branches);
+		for (const [origin, b] of origins) {
+			const selected = await getDeleteRemoteBranchOptions(origin, b);
 
 			if (!selected) continue;
 
-			await this.repository.pushDelete(origin!, branches, selected);
+			await this.repository.pushDelete(origin!, b, selected);
 		}
 	}
 
@@ -214,5 +220,27 @@ export class RepositoryStateHandle {
 		if (!selected) return;
 
 		return await this.repository.merge(upstream, selected);
+	}
+
+	public async tag(commit: string, options?: TagOptions) {
+		const state = await this.state.read();
+
+		const tagName = await vscode.window.showInputBox({
+			title: "Enter tag name",
+			placeHolder: "tag name",
+		});
+
+		const selected = await getTagOptions(commit, { name: tagName, ...options });
+		if (!selected) return;
+
+		await this.repository.tag(commit, selected);
+
+		for (const remote of state.remotes) {
+			const s = await getPushOptions(remote, selected.name);
+
+			if (!s) continue;
+
+			await this.repository.push(remote!, selected.name, s);
+		}
 	}
 }

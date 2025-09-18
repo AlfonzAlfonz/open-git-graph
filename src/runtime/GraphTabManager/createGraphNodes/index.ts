@@ -28,11 +28,11 @@ export type GraphNode<T extends GitCommit | GitIndex = GitCommit | GitIndex> = {
 export type GraphGenerator = Generator<Graph, void, Iterable<GitCommit> | void>;
 
 export function* createGraphNodes(
-	commits: Iterable<GitCommit>,
+	commitQueue: Iterable<GitCommit>,
 	index: GitIndex | undefined,
 	stashes: GitCommit[],
 ): GraphGenerator {
-	const queue = [commits];
+	const queue = [commitQueue];
 	const stashHashes = new Set(commitHashes(stashes));
 
 	const nodes = [];

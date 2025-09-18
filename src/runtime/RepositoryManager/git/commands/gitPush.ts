@@ -1,19 +1,20 @@
 import { GitError } from "../../errors/GitError";
 import { GitCommand } from "./utils";
 
-export type PushDeleteOptions = {
+export type PushOptions = {
+	forceWithLease: boolean;
 	force?: boolean;
 };
 
-export const gitPushDelete = (
+export const gitPush = (
 	remote: string,
 	refspec: string | string[],
-	{ force }: PushDeleteOptions,
+	{ forceWithLease, force }: PushOptions,
 ): GitCommand<Promise<void>> => ({
 	args: [
 		"push",
-		"--delete",
 		force ? "--force" : null,
+		forceWithLease ? "--force-with-lease" : null,
 		remote,
 		...(typeof refspec === "string" ? [refspec] : refspec),
 	],

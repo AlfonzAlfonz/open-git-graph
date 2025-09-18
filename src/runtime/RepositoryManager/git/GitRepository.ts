@@ -8,21 +8,24 @@ import {
 } from "./commands/gitBranchDelete";
 import { gitCheckout, gitCheckoutCreate } from "./commands/gitCheckout";
 import { CherryPickOptions, gitCherryPick } from "./commands/gitCherryPick";
+import { gitFetch } from "./commands/gitFetch";
 import { gitLogCommits } from "./commands/gitLogCommits";
 import { gitLogHeadHash } from "./commands/gitLogHeadHash";
+import { gitMerge, MergeOptions } from "./commands/gitMerge";
 import { gitPull } from "./commands/gitPull";
+import { gitPush, PushOptions } from "./commands/gitPush";
 import { gitPushDelete, PushDeleteOptions } from "./commands/gitPushDelete";
+import { gitRebase, RebaseOptions } from "./commands/gitRebase";
+import { gitRemote } from "./commands/gitRemote";
 import { gitReset, GitResetOptions } from "./commands/gitReset";
 import { gitShowCommit } from "./commands/gitShowCommit";
 import { gitShowRefFile } from "./commands/gitShowRefFile";
 import { gitShowRefs } from "./commands/gitShowRefs";
 import { gitStashList } from "./commands/gitStashList";
 import { gitStatus } from "./commands/gitStatus";
+import { gitTag, TagOptions } from "./commands/gitTag";
 import { GitCommand } from "./commands/utils";
 import { execGit } from "./execGit";
-import { gitRebase, RebaseOptions } from "./commands/gitRebase";
-import { gitMerge, MergeOptions } from "./commands/gitMerge";
-import { gitFetch } from "./commands/gitFetch";
 
 export class GitRepository {
 	constructor(
@@ -50,6 +53,10 @@ export class GitRepository {
 		return this.execGit(gitShowRefs());
 	}
 
+	public getRemotes() {
+		return this.execGit(gitRemote());
+	}
+
 	public async getIndex() {
 		const [status, parent] = await Promise.all([
 			this.execGit(gitStatus()),
@@ -67,10 +74,6 @@ export class GitRepository {
 	public async getLastCommitHash() {
 		return await this.execGit(gitLogHeadHash());
 	}
-
-	public trueMerge() {}
-
-	public ffMerge() {}
 
 	public async showFile(ref: string, path: string) {
 		return await this.execGit(gitShowRefFile(ref, path));
@@ -104,12 +107,20 @@ export class GitRepository {
 		return await this.execGit(gitBranchDelete(branch, options));
 	}
 
+	public async push(
+		remote: string,
+		refspec: string | string[],
+		options: PushOptions,
+	) {
+		return await this.execGit(gitPush(remote, refspec, options));
+	}
+
 	public async pushDelete(
-		origin: string,
-		branches: string | string[],
+		remote: string,
+		refspec: string | string[],
 		options: PushDeleteOptions,
 	) {
-		return await this.execGit(gitPushDelete(origin, branches, options));
+		return await this.execGit(gitPushDelete(remote, refspec, options));
 	}
 
 	public async cherryPick(commit: string, options: CherryPickOptions) {
@@ -122,6 +133,10 @@ export class GitRepository {
 
 	public async merge(upstream: string, options: MergeOptions) {
 		return await this.execGit(gitMerge(upstream, options));
+	}
+
+	public async tag(commitOrObject: string, options: TagOptions) {
+		return await this.execGit(gitTag(commitOrObject, options));
 	}
 
 	private execGit = <T>(cmd: GitCommand<T>): T => {

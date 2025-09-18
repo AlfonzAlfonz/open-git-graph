@@ -1,4 +1,3 @@
-import { MouseEvent } from "react";
 import { GraphNode } from "../../../../runtime/GraphTabManager/createGraphNodes";
 import { GitCommit, GitIndex } from "../../../../universal/git";
 import { GraphTag } from "../../../state/toGraphTags";
@@ -18,7 +17,7 @@ export const useGraphRow = <T extends GitCommit | GitIndex>({
 	const { expandedCommit } = useAppContext();
 	const id = "hash" in node.commit ? node.commit.hash : "index";
 
-	const onClick = async (e: MouseEvent) => {
+	const onClick = async () => {
 		actions.expandCommit(expandedCommit === id ? undefined : id);
 	};
 

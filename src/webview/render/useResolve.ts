@@ -27,7 +27,7 @@ export const useResolve = <T>(
 	};
 
 	useEffect(() => {
-		resolve();
+		void resolve();
 	}, deps);
 
 	return [state, resolve] as const;

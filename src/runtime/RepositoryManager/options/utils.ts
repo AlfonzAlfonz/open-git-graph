@@ -1,75 +1,112 @@
 import * as vscode from "vscode";
-import { OptionPickerItem, showOptionPicker } from "../../showOptionPicker";
+import {
+	OptionPickerItem,
+	ItemWithState,
+	showOptionPicker,
+} from "../../showOptionPicker";
 import { GitCommand } from "../git/commands/utils";
 
-interface CommandBuilderOptions<T extends string> {
+interface CommandBuilderOptions<T extends Record<string, string | boolean>> {
 	title?: string;
-	getPlaceholder: (
-		options: Record<T, boolean>,
-		flags: string[],
-		other: string[],
-	) => string;
+	getPlaceholder: (options: T) => string;
 	canSelectMany?: boolean;
 
-	initialValue?: Partial<Record<T, boolean>>;
+	initialValue?: Partial<T>;
 
-	items: Record<T, CommandBuilderItem>;
+	items: {
+		[K in keyof T]: T[K] extends string
+			? CommandBuilderItem<"input">
+			: CommandBuilderItem<"flag" | "other">;
+	};
 }
 
-interface CommandBuilderItem extends OptionPickerItem {
-	type: "flag" | "other";
+interface CommandBuilderItem<
+	TType extends "flag" | "input" | "other" = "flag" | "input" | "other",
+> extends OptionPickerItem {
+	type: TType;
 }
 
-export const showCommandBuilder = async <T extends string>({
+type WithPropertyName<T extends CommandBuilderItem> = T & {
+	property: string;
+};
+
+export const showCommandBuilder = async <
+	T extends Record<string, string | boolean>,
+>({
 	title,
 	getPlaceholder,
 	canSelectMany,
 	initialValue,
 	items,
-}: CommandBuilderOptions<T>) => {
-	const withSelected = Object.entries<CommandBuilderItem>(items).map(
-		([k, itm]) => ({
+}: CommandBuilderOptions<T>): Promise<T | undefined> => {
+	const initial = Object.entries(
+		items as Record<string, WithPropertyName<CommandBuilderItem>>,
+	).map(([k, itm]) => ({
+		...itm,
+		selected: !!initialValue?.[k] || false,
+		property: k,
+		initialValue:
+			itm.type === "input"
+				? (initialValue?.[k] as string | undefined)
+				: undefined,
+	}));
+
+	const flags = initial
+		.filter((itm) => itm.type === "flag" || itm.type === "input")
+		.map((itm) => ({
 			...itm,
-			selected: initialValue?.[k as T] || false,
-		}),
-	);
+			iconPath: new vscode.ThemeIcon(
+				itm.type === "flag" ? "flag" : "symbol-key",
+			),
+			input: itm.input ?? itm.type === "input",
+		}));
+	const other = initial
+		.filter((itm) => itm.type === "other")
+		.map((itm) => ({
+			...itm,
+			iconPath: new vscode.ThemeIcon("symbol-method"),
+		}));
 
-	const flags = withSelected.filter((itm) => itm.type === "flag");
-	const other = withSelected.filter((itm) => itm.type === "other");
-
-	const getOptions = (selected: readonly CommandBuilderItem[]) => {
-		const labels = selected.map((itm) => itm.label);
+	const getOptions = (
+		selected: readonly ItemWithState<WithPropertyName<CommandBuilderItem>>[],
+	) => {
+		const selectedProps = selected.map((itm) => itm.property);
 		return Object.fromEntries(
-			Object.entries<CommandBuilderItem>(items).map(([k, item]) => [
-				k,
-				labels.includes(item.label),
-			]),
-		) as Record<T, boolean>;
+			initial.map(
+				(item) =>
+					[
+						item.property,
+						item.type === "input"
+							? selectedProps.includes(item.property)
+								? selected.find((s) => s.property === item.property)?.value
+								: undefined
+							: selectedProps.includes(item.property),
+					] as const,
+			),
+		) as T;
 	};
 
-	const result = await showOptionPicker<CommandBuilderItem>({
-		getTitle: () => title ?? "Execute command",
-		getPlaceholder: (items) => {
-			const flags = items.filter((i) => i.type === "flag").map((i) => i.label);
-			const other = items.filter((i) => i.type === "other").map((i) => i.label);
-
-			return getPlaceholder(getOptions(items), flags, other);
+	const pickerItems = [
+		...flags,
+		{
+			label: "Other options" as never,
+			kind: vscode.QuickPickItemKind.Separator,
+			type: "other",
+			property: "---",
 		},
+		...other,
+	] as const;
+
+	const result = await showOptionPicker<WithPropertyName<CommandBuilderItem>>({
+		getTitle: () => title ?? "Execute command",
+		getPlaceholder: (x) => getPlaceholder(getOptions(x)),
 		canSelectMany,
-		items: [
-			...flags,
-			{
-				label: "Other options" as never,
-				kind: vscode.QuickPickItemKind.Separator,
-				type: "other",
-			},
-			...other,
-		],
+		items: pickerItems,
 	});
 
 	if (!result) return;
 
-	return getOptions(result);
+	return getOptions(result as any);
 };
 
 export const formatArgs = (command: GitCommand<unknown>) =>
