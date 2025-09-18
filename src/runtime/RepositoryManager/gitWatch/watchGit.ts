@@ -10,7 +10,7 @@ type FsEvent = {
 	path: string;
 };
 
-export function watchGit(repoPath: string, signal: AbortSignal) {
+export function watchGit(repoPath: string, signal: AbortSignal | undefined) {
 	const watcher = vscode.workspace.createFileSystemWatcher(
 		path.join(repoPath, ".git", "/**"),
 	);
@@ -34,7 +34,7 @@ export function watchGit(repoPath: string, signal: AbortSignal) {
 		watcher.onDidDelete(listener("deleted")),
 	];
 
-	signal.addEventListener("abort", () => {
+	signal?.addEventListener("abort", () => {
 		dis.forEach((d) => d.dispose());
 		dispatch(undefined, true);
 	});

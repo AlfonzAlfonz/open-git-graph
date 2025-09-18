@@ -84,6 +84,11 @@ export class GraphTabManager {
 				await handle.getGraphData();
 			},
 			async () => {
+				for await (const _ of handle.watch(this.appSignal)) {
+					void handle.getGraphData(true);
+				}
+			},
+			async () => {
 				for await (const update of handle.state) {
 					if (signal.aborted) break;
 

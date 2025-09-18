@@ -23,6 +23,7 @@ import { getResetOptions } from "./options/getResetOptions";
 import { getStashDropOptions } from "./options/getStashDropOptions";
 import { getStashOptions } from "./options/getStashOptions";
 import { getTagOptions } from "./options/getTagOptions";
+import { aggregateGitEvents, watchGit } from "./gitWatch/watchGit";
 
 type RepositoryState = {
 	remotes: string[];
@@ -45,6 +46,10 @@ export class RepositoryStateHandle {
 
 	get state() {
 		return this.pylon.iterator;
+	}
+
+	public async *watch(signal: AbortSignal | undefined) {
+		yield* aggregateGitEvents(watchGit(this.repository.getFsPath(), signal));
 	}
 
 	async pollGraphData() {
