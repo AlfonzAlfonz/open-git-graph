@@ -1,16 +1,16 @@
 import { branchMenuContext } from "../../../../universal/menuContext/branch";
 import { bridge } from "../../../bridge";
-import { GraphTag } from "../../../state/toGraphTags";
+import { GraphBadge } from "../../../state/toGraphBadges";
 import { useBridgeMutation } from "../../useBridge/useBridgeMutation";
 import { useAppContext } from "../AppContext";
 
-export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
+export const CommitBadges = ({ badges }: { badges: GraphBadge[] }) => {
 	const { repoPath, currentBranch } = useAppContext();
 	const [checkout] = useBridgeMutation(bridge.checkout);
 
 	return (
 		<>
-			{tags.map(
+			{badges.map(
 				(r, i) =>
 					r.type !== "head" && (
 						<div
@@ -25,7 +25,7 @@ export const CommitTags = ({ tags }: { tags: GraphTag[] }) => {
 									  }
 									: undefined
 							}
-							className={`graph-tag ${r.type} ${
+							className={`graph-badge ${r.type} ${
 								r.label === currentBranch ? "active" : ""
 							}`}
 							data-vscode-context={

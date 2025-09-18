@@ -4,18 +4,18 @@ import { stashMenuContext } from "../../../../universal/menuContext/stash";
 import { formatDate, getColor } from "../../utils";
 import { useAppContext } from "../AppContext";
 import { CommitInspector } from "../inspectors/CommitInspector";
-import { CommitTags } from "./CommitTags";
+import { CommitBadges } from "./CommitBadges";
 import { GraphRow } from "./GraphRow";
 import { renderRails } from "./renderRails";
 import { UseGraphRowOptions, useGraphRow } from "./useGraphRow";
 
 export const CommitGraphRow = ({
 	node,
-	tags,
+	badges,
 	style,
 }: UseGraphRowOptions<GitCommit> & { style: any }) => {
 	const { repoPath } = useAppContext();
-	const { open, onClick, isHead } = useGraphRow({ node, tags });
+	const { open, onClick, isHead } = useGraphRow({ node, badges });
 
 	return (
 		<div style={style}>
@@ -38,7 +38,7 @@ export const CommitGraphRow = ({
 				}
 				// content
 				graph={renderRails(node)}
-				tags={tags && <CommitTags tags={tags} />}
+				badges={badges && <CommitBadges badges={badges} />}
 				info={node.commit.subject}
 				author={node.commit.author}
 				date={formatDate(node.commit.authorDate)}
