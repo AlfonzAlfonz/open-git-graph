@@ -3,6 +3,7 @@ import { bridge } from "../../../bridge";
 import { GraphBadge } from "../../../state/toGraphBadges";
 import { useBridgeMutation } from "../../useBridge/useBridgeMutation";
 import { useAppContext } from "../AppContext";
+import { RefBadge } from "../RefBadge";
 
 export const CommitBadges = ({ badges }: { badges: GraphBadge[] }) => {
 	const { repoPath, currentBranch } = useAppContext();
@@ -13,11 +14,24 @@ export const CommitBadges = ({ badges }: { badges: GraphBadge[] }) => {
 			{badges.map(
 				(r, i) =>
 					r.type !== "head" && (
-						<div
+						<RefBadge
 							key={i}
-							onClick={(e) => {
-								e.stopPropagation();
-							}}
+							type={r.type}
+							label={r.label}
+							active={r.label === currentBranch}
+							onClick={(e) => e.stopPropagation()}
+							endDecorators={r.endDecorators?.map((d) => ({
+								label: d,
+								context:
+									r.type === "branch" && repoPath
+										? JSON.stringify(
+												branchMenuContext("branch-remote", {
+													repo: repoPath,
+													branch: `${d}/${r.label}`,
+												}),
+										  )
+										: undefined,
+							}))}
 							onDoubleClick={
 								r.type === "branch"
 									? async () => {
@@ -25,45 +39,23 @@ export const CommitBadges = ({ badges }: { badges: GraphBadge[] }) => {
 									  }
 									: undefined
 							}
-							className={`graph-badge ${r.type} ${
-								r.label === currentBranch ? "active" : ""
-							}`}
-							data-vscode-context={
-								repoPath &&
-								JSON.stringify(
-									!r.remoteOnlyBranch
-										? branchMenuContext("branch", {
-												repo: repoPath!,
-												branch: r.label,
-										  })
-										: branchMenuContext("branch-remote", {
-												repo: repoPath,
-												branch: r.label,
-												remotes: r.endDecorators,
-										  }),
-								)
-							}
-						>
-							<div className="content">{r.label}</div>
-							{r.endDecorators?.map((d, ii) => (
-								<div
-									key={ii}
-									className={"end-decorator"}
-									data-vscode-context={
-										r.type === "branch" && repoPath
-											? JSON.stringify(
-													branchMenuContext("branch-remote", {
+							context={
+								r.type === "branch" && repoPath
+									? JSON.stringify(
+											!r.remoteOnlyBranch
+												? branchMenuContext("branch", {
 														repo: repoPath,
-														branch: `${d}/${r.label}`,
-													}),
-											  )
-											: undefined
-									}
-								>
-									{d}
-								</div>
-							))}
-						</div>
+														branch: r.label,
+												  })
+												: branchMenuContext("branch-remote", {
+														repo: repoPath,
+														branch: r.label,
+														remotes: r.endDecorators,
+												  }),
+									  )
+									: undefined
+							}
+						/>
 					),
 			)}
 		</>

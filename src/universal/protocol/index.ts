@@ -14,6 +14,7 @@ export interface WebToRuntimeBridge {
 
 	expandCommit(value?: string): Promise<void>;
 	scroll(value: number): Promise<void>;
+	setRefs(refs: unknown[]): Promise<void>;
 }
 
 export type GraphData = {
@@ -28,6 +29,8 @@ export type GraphTabState = {
 	repoPath: string;
 	expandedCommit?: string;
 	scroll: number;
+
+	activeRefCommits: Set<string>;
 };
 
 export interface RuntimeToWebBridge {

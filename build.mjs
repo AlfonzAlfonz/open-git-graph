@@ -30,9 +30,6 @@ const [wv, rt] = await Promise.all([
 		external: ["vscode"],
 		platform: "node",
 		define: {
-			WEBVIEW_HTML: `"${Buffer.from(
-				fs.readFileSync("./src/webview/webview.html").toString("utf-8"),
-			).toString("base64")}"`,
 			"process.env.NODE_ENV": JSON.stringify(
 				prod ? "production" : "development",
 			),

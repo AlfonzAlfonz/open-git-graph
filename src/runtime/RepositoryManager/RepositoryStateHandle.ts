@@ -60,7 +60,7 @@ export class RepositoryStateHandle {
 		})!;
 	}
 
-	async getGraphData(force?: boolean) {
+	async getGraphData(activeRefCommits: Set<string>, force?: boolean) {
 		await this.innerState.acquire(async (value) => {
 			if (!force && this.state.readSync()) {
 				this.pylon.bump();
@@ -89,9 +89,24 @@ export class RepositoryStateHandle {
 
 			console.timeEnd("collect commits");
 
-			const graphIterator = createGraphNodes(data, index, stashes);
+			const graphIterator = createGraphNodes(
+				data,
+				index,
+				stashes,
+				activeRefCommits,
+			);
 
-			const graph = graphIterator.next().value!;
+			let graph: Graph = graphIterator.next().value!;
+
+			value.graphIterator = pipeThrough(iterator, graphIterator);
+
+			// If filters are active, sometimes we need to load more data to get the first 100 visible items
+			while (graph.nodes.length < 100) {
+				const result = await value.graphIterator.next();
+				if (result.done) break;
+
+				graph = result.value;
+			}
 
 			this.pylon.swap({
 				graph,
@@ -102,8 +117,6 @@ export class RepositoryStateHandle {
 					...stashes.map((s) => ({ type: "stash" as const, hash: s.hash })),
 				],
 			});
-
-			value.graphIterator = pipeThrough(iterator, graphIterator);
 		});
 	}
 

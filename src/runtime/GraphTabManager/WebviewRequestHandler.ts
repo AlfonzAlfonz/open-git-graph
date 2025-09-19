@@ -1,10 +1,10 @@
+import path from "path";
 import * as vscode from "vscode";
-import { GitCommit } from "../../universal/git";
+import { GitCommit, GitRefBranch, GitRefTag } from "../../universal/git";
 import { GraphTabState, WebToRuntimeBridge } from "../../universal/protocol";
 import { GitRepository } from "../RepositoryManager/git/GitRepository";
 import { RepositoryStateHandle } from "../RepositoryManager/RepositoryStateHandle";
 import { ShowFileTextDocumentContentProvider } from "../ShowFileTextDocumentContentProvider";
-import path from "path";
 
 export class WebviewRequestHandler implements WebToRuntimeBridge {
 	constructor(
@@ -14,13 +14,13 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 	) {}
 
 	async ready(_repoPath?: string | undefined) {
-		void this.handle.getGraphData();
+		void this.handle.getGraphData(this.state.activeRefCommits);
 
 		return this.state;
 	}
 
 	async reload() {
-		await this.handle.getGraphData(true);
+		await this.handle.getGraphData(this.state.activeRefCommits, true);
 	}
 
 	async fetch() {
@@ -58,5 +58,10 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 
 	async scroll(value: number) {
 		this.state.scroll = value;
+	}
+
+	async setRefs(refs: (GitRefBranch | GitRefTag)[]) {
+		this.state.activeRefCommits = new Set(refs.map((r) => r.hash));
+		await this.handle.getGraphData(this.state.activeRefCommits, true);
 	}
 }
