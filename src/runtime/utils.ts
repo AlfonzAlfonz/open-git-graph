@@ -101,7 +101,7 @@ export const debugIterator = <T, TReturn, TNext>(
 
 export async function* pipeThrough<T, U>(
 	ait: AsyncIterator<T>,
-	transform: Iterator<U, void, Iterable<T>>,
+	transform: Iterator<U, void, Iterable<T> | undefined>,
 	batchSize: number = 50,
 ) {
 	const iterator = batch({ [Symbol.asyncIterator]: () => ait }, batchSize);
@@ -109,7 +109,7 @@ export async function* pipeThrough<T, U>(
 	while (true) {
 		const batched = await iterator.next();
 
-		const result = transform.next(batched.done ? [] : batched.value);
+		const result = transform.next(batched.done ? undefined : batched.value);
 		if (result.done) {
 			return;
 		} else {

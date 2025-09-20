@@ -27,8 +27,8 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 		await this.handle.fetch();
 	}
 
-	async pollGraphData(): Promise<void> {
-		await this.handle.pollGraphData();
+	async pollGraphData(): Promise<{ done: boolean }> {
+		return await this.handle.pollGraphData();
 	}
 
 	async getCommit(hash: string): Promise<GitCommit> {
@@ -63,5 +63,9 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 	async setRefs(refs: (GitRefBranch | GitRefTag)[]) {
 		this.state.activeRefCommits = new Set(refs.map((r) => r.hash));
 		await this.handle.getGraphData(this.state.activeRefCommits, true);
+	}
+
+	async search(pattern: string): Promise<string[]> {
+		return await this.handle.search(pattern);
 	}
 }

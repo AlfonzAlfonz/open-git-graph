@@ -45,6 +45,11 @@
 		line-height: 1.65;
 	}
 
+	&.search::before {
+		content: "\ea6d";
+		line-height: 1.65;
+	}
+
 	& .content {
 		@apply px-1 h-full flex items-center whitespace-nowrap;
 	}

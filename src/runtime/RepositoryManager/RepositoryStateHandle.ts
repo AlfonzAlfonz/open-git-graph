@@ -53,10 +53,17 @@ export class RepositoryStateHandle {
 	}
 
 	async pollGraphData() {
-		await this.innerState.acquire(async (value) => {
-			const graph = (await value.graphIterator!.next()).value!;
+		return await this.innerState.acquire(async (value) => {
+			const result = await value.graphIterator!.next();
+
+			if (result.done) {
+				return { done: true };
+			}
+
+			const graph = result.value;
 
 			this.pylon.swap((s) => ({ ...s, graph }));
+			return { done: false };
 		})!;
 	}
 
@@ -288,5 +295,9 @@ export class RepositoryStateHandle {
 		if (!selected) return;
 
 		await this.repository.stashDrop(stash);
+	}
+
+	public async search(pattern: string) {
+		return await collect(this.repository.logGrep(pattern));
 	}
 }

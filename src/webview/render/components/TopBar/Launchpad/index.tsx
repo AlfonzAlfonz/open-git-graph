@@ -1,117 +1,36 @@
 import { Combobox } from "@base-ui-components/react/combobox";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { ListGraphBadge, toGraphBadgeList } from "../../../state/toGraphBadges";
-import { useAppContext } from "../AppContext";
-import { RefBadge } from "../RefBadge";
-import { useBridgeMutation } from "../../useBridge/useBridgeMutation";
-import { bridge } from "../../../bridge";
-import { GitRef, GitRefBranch, GitRefTag } from "../../../../universal/git";
-
-type CategoryType = "local" | `remote-${string}` | "tags";
-
-type BadgeItem =
-	| (ListGraphBadge & { category: CategoryType })
-	| {
-			id: string;
-			type: "category";
-			category: CategoryType;
-			label: string;
-	  };
-
-type GroupItem = {
-	value: string;
-	items: BadgeItem[];
-	category: CategoryType;
-};
-
-type GroupedItems = {
-	local: GroupItem;
-	remotes: Record<string, GroupItem>;
-	tags: GroupItem;
-};
+import { useEffect, useId, useRef, useState } from "react";
+import { GitRef, GitRefBranch, GitRefTag } from "../../../../../universal/git";
+import { useBridgeMutation } from "../../../useBridge/useBridgeMutation";
+import { useAppContext } from "../../AppContext";
+import { RefBadge } from "../../RefBadge";
+import { BadgeItem, CategoryType, GroupedItems, GroupItem } from "./types";
+import { useLaunchpadItems } from "./useLaunchpadItems";
 
 export default function Launchpad() {
 	const id = useId();
-	const { refs } = useAppContext();
+	const { refs, actions } = useAppContext();
 
 	const [setRefs] = useBridgeMutation((r: (GitRefBranch | GitRefTag)[]) =>
-		bridge.setRefs(r),
+		actions.setRefs(r),
 	);
+
+	const [search] = useBridgeMutation(actions.search);
 
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const popupRef = useRef<HTMLDivElement | null>(null);
-
 	const groupLabelsRef = useRef<Partial<Record<CategoryType, HTMLDivElement>>>(
 		{},
 	);
 
 	const [open, setOpen] = useState(false);
-
 	const [selected, setSelected] = useState<BadgeItem[]>([]);
+	const [input, setInput] = useState<string>("");
 
 	const highlightedItem = useRef<BadgeItem>();
 
-	const { grouped, items } = useMemo(() => {
-		if (!refs) return { grouped: undefined, items: undefined };
-
-		const badges = toGraphBadgeList(refs);
-
-		const local: GroupItem = {
-			value: "Local",
-			category: `local`,
-			items: [
-				{
-					id: "category:local",
-					type: "category",
-					category: "local",
-					label: "local",
-				},
-				...badges.local.map((b) => ({ ...b, category: "local" as const })),
-			],
-		};
-
-		const remotes = Object.fromEntries(
-			Object.entries(badges.remotes).map(([r, remoteItems]) => [
-				r,
-				{
-					value: r,
-					category: `remote-${r}` as const,
-					items: [
-						{
-							id: `category:remote-${r}`,
-							type: "category",
-							category: `remote-${r}`,
-							label: `${r} remote`,
-						},
-						...remoteItems.map((b) => ({
-							...b,
-							category: `remote-${r}` as const,
-						})),
-					] satisfies BadgeItem[],
-				},
-			]),
-		);
-
-		const tags: GroupItem = {
-			value: "Tags",
-			category: `tags`,
-			items: [
-				{
-					id: "category:tags",
-					type: "category",
-					category: "tags",
-					label: "tags",
-				},
-				...badges.tags.map((b) => ({ ...b, category: `tags` as const })),
-			],
-		};
-
-		return {
-			items: [local, ...Object.values(remotes), tags],
-			grouped: { local, remotes, tags },
-		};
-	}, [refs]);
+	const { grouped, items } = useLaunchpadItems(input, refs);
 
 	const onValueChange = (
 		values: BadgeItem[] | ((s: BadgeItem[]) => BadgeItem[]),
@@ -143,6 +62,16 @@ export default function Launchpad() {
 						return [...s, addedItem];
 					} else {
 						// category item is selected, unselect it and add every item from category except for the originally addItem
+
+						if (addedItem.type === "search") {
+							if (input) {
+								void search(input);
+							}
+							return [
+								...s.filter((itm) => itm.type !== "search"),
+								...(input ? [{ ...addedItem, value: input ?? "" }] : []),
+							];
+						}
 
 						const added = grouped
 							? getGroup(grouped, addedItem)!.items.filter(
@@ -193,7 +122,9 @@ export default function Launchpad() {
 			items={items}
 			multiple
 			value={selected}
+			inputValue={input}
 			onValueChange={onValueChange}
+			onInputValueChange={setInput}
 			onItemHighlighted={(itm) => {
 				highlightedItem.current = itm;
 			}}
@@ -213,10 +144,33 @@ export default function Launchpad() {
 							{(value: BadgeItem[]) => (
 								<>
 									{value.map((badge, i) =>
-										badge.type === "category" ? (
+										badge.type === "search" ? (
 											<Combobox.Chip
 												key={i}
-												// aria-label={badge.label} // TODO
+												aria-label={`Search for: ${badge.value}`}
+												className="flex items-center r-selected"
+											>
+												<RefBadge
+													label={`Search for: ${badge.value}`}
+													type="category"
+													endDecorators={[
+														{
+															label: (
+																<Combobox.ChipRemove
+																	aria-label="Remove"
+																	className="flex items-center bg-transparent border-none outline-none color-inherit"
+																>
+																	<span className="codicon codicon-close text-sm" />
+																</Combobox.ChipRemove>
+															),
+														},
+													]}
+												/>
+											</Combobox.Chip>
+										) : badge.type === "category" ? (
+											<Combobox.Chip
+												key={i}
+												aria-label={badge.label}
 												className="flex items-center r-selected"
 											>
 												<RefBadge
@@ -284,7 +238,8 @@ export default function Launchpad() {
 														  )
 														: s,
 												)
-												.map((s) => s.ref);
+												.map((s) => s.ref)
+												.filter((s): s is Extract<typeof s, {}> => !!s);
 											void setRefs(newRefs);
 										}}
 										onKeyDown={(e) => {
@@ -322,6 +277,8 @@ export default function Launchpad() {
 								</>
 							)}
 						</Combobox.Value>
+
+						<div className="absolute top-0 bottom-0 right-0">2 of 5</div>
 					</Combobox.Chips>
 					<div className="controls flex items-center pr-2">
 						<Combobox.Clear
@@ -384,7 +341,23 @@ export default function Launchpad() {
 										}
 									>
 										{group.items.map((item, i) =>
-											item.type === "category" ? (
+											item.type === "search" ? (
+												<Combobox.Item
+													key={i}
+													value={item}
+													className={(s) =>
+														(s.selected || selected.includes(group.items[0]!)
+															? "r-selected"
+															: "r-inactive") + " item"
+													}
+												>
+													<RefBadge
+														{...item}
+														label={`Search for: ${input}`}
+														endDecorators={[]}
+													/>
+												</Combobox.Item>
+											) : item.type === "category" ? (
 												<Combobox.Item
 													key={i}
 													value={item}
@@ -425,7 +398,10 @@ export default function Launchpad() {
 	);
 }
 
-const getGroup = (grouped: GroupedItems, item: BadgeItem) => {
+const getGroup = (
+	grouped: GroupedItems,
+	item: BadgeItem & { type: Exclude<BadgeItem["type"], "search"> },
+) => {
 	if (item.category.startsWith("remote-")) {
 		const name = item.category.slice("remote-".length);
 		return grouped.remotes[name];

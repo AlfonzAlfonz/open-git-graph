@@ -3,7 +3,7 @@ import { GitRef } from "../../../universal/git";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
 	label: string;
-	type: GitRef["type"] | "category";
+	type: GitRef["type"] | "category" | "search";
 	endDecorators?: { label: ReactNode; context?: any }[];
 
 	active?: boolean;

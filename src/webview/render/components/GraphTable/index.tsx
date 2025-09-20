@@ -4,8 +4,8 @@ import { ListChildComponentProps, VariableSizeList } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 import { GraphNode } from "../../../../runtime/GraphTabManager/createGraphNodes";
 import { GitCommit, GitIndex } from "../../../../universal/git";
-import { bridge } from "../../../bridge";
 import { groupBy } from "../../../../universal/groupBy";
+import { bridge } from "../../../bridge";
 import { GraphBadge, toGraphBadges } from "../../../state/toGraphBadges";
 import { useAppContext } from "../AppContext";
 import { CommitGraphRow } from "../GraphRow/CommitGraphRow";
@@ -14,6 +14,8 @@ import { HEIGHT } from "../GraphRow/renderRails";
 import { GraphTableLayout } from "./GraphTableLayout";
 
 export const GraphTable = () => {
+	const { searchResults } = useAppContext();
+
 	const initScrollRef = useRef(false);
 	const listRef = useRef<VariableSizeList>(null!);
 	const graphRef = useRef<HTMLDivElement>(null!);
@@ -33,6 +35,15 @@ export const GraphTable = () => {
 			initScrollRef.current = true;
 		}
 	});
+
+	useEffect(() => {
+		if (searchResults?.currentResult?.rowIndex) {
+			listRef.current.scrollToItem(
+				searchResults.currentResult?.rowIndex,
+				"start",
+			);
+		}
+	}, [searchResults]);
 
 	return (
 		<GraphTableLayout>
@@ -97,6 +108,7 @@ const Row = ({ data, index, style }: ListChildComponentProps<RowData>) => {
 
 	return "hash" in node.commit ? (
 		<CommitGraphRow
+			index={index}
 			node={node as GraphNode<GitCommit>}
 			badges={data.badges?.get(node.commit.hash)}
 			style={style}

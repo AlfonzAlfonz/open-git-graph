@@ -35,7 +35,7 @@
 	}
 
 	& .input {
-		@apply flex flex-1 flex-wrap gap-2 gap-y-4;
+		@apply relative flex flex-1 flex-wrap gap-2 gap-y-4;
 
 		color: var(--vscode-text-primary);
 	}

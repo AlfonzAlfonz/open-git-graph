@@ -10,11 +10,12 @@ import { renderRails } from "./renderRails";
 import { UseGraphRowOptions, useGraphRow } from "./useGraphRow";
 
 export const CommitGraphRow = ({
+	index,
 	node,
 	badges,
 	style,
-}: UseGraphRowOptions<GitCommit> & { style: any }) => {
-	const { repoPath } = useAppContext();
+}: UseGraphRowOptions<GitCommit> & { style: any; index: number }) => {
+	const { repoPath, searchResults } = useAppContext();
 	const { open, onClick, isHead } = useGraphRow({ node, badges });
 
 	return (
@@ -23,7 +24,9 @@ export const CommitGraphRow = ({
 				// div props
 				className={`graph-row ${isHead ? "head" : ""} ${
 					node.commit.parents.length > 1 ? "merge" : ""
-				} ${open ? "focused" : ""} ${getColor(node.position)}`}
+				} ${open ? "focused" : ""} ${
+					index === searchResults?.currentResult?.rowIndex ? "match" : ""
+				} ${getColor(node.position)}`}
 				onClick={onClick}
 				data-vscode-context={
 					repoPath &&

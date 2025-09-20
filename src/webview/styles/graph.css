@@ -30,7 +30,6 @@
 
 		& .graph-list {
 			overflow: scroll;
-			scrollbar-width: none;
 		}
 
 		& .graph-row {
@@ -54,6 +53,10 @@
 
 			&.head {
 				font-weight: 700;
+			}
+
+			&.match {
+				background-color: var(--vscode-editor-findMatchHighlightBackground);
 			}
 
 			& .graph-col {
