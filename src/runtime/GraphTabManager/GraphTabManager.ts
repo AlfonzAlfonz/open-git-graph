@@ -61,6 +61,7 @@ export class GraphTabManager {
 			repoPath: repository.getPath(),
 			expandedCommit: undefined,
 			scroll: 0,
+			activeRefCommits: new Set(),
 		};
 
 		panel.iconPath = vscode.Uri.joinPath(
@@ -81,7 +82,12 @@ export class GraphTabManager {
 		void fork([
 			async () => {
 				console.time("graph-data");
-				await handle.getGraphData();
+				await handle.getGraphData(state.activeRefCommits);
+			},
+			async () => {
+				for await (const _ of handle.watch(this.appSignal)) {
+					void handle.getGraphData(state.activeRefCommits, true);
+				}
 			},
 			async () => {
 				for await (const update of handle.state) {

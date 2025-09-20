@@ -32,6 +32,7 @@ import {
 	gitStashPop,
 	StashOptions,
 } from "./commands/gitStash";
+import { gitLogGrep } from "./commands/gitLogGrep";
 
 export class GitRepository {
 	constructor(
@@ -49,6 +50,10 @@ export class GitRepository {
 
 	public getCommits() {
 		return this.execGit(gitLogCommits(false));
+	}
+
+	public logGrep(pattern: string) {
+		return this.execGit(gitLogGrep(pattern));
 	}
 
 	public getStashes() {

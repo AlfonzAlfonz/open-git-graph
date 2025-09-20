@@ -4,18 +4,19 @@ import { stashMenuContext } from "../../../../universal/menuContext/stash";
 import { formatDate, getColor } from "../../utils";
 import { useAppContext } from "../AppContext";
 import { CommitInspector } from "../inspectors/CommitInspector";
-import { CommitTags } from "./CommitTags";
+import { CommitBadges } from "./CommitBadges";
 import { GraphRow } from "./GraphRow";
 import { renderRails } from "./renderRails";
 import { UseGraphRowOptions, useGraphRow } from "./useGraphRow";
 
 export const CommitGraphRow = ({
+	index,
 	node,
-	tags,
+	badges,
 	style,
-}: UseGraphRowOptions<GitCommit> & { style: any }) => {
-	const { repoPath } = useAppContext();
-	const { open, onClick, isHead } = useGraphRow({ node, tags });
+}: UseGraphRowOptions<GitCommit> & { style: any; index: number }) => {
+	const { repoPath, searchResults } = useAppContext();
+	const { open, onClick, isHead } = useGraphRow({ node, badges });
 
 	return (
 		<div style={style}>
@@ -23,7 +24,9 @@ export const CommitGraphRow = ({
 				// div props
 				className={`graph-row ${isHead ? "head" : ""} ${
 					node.commit.parents.length > 1 ? "merge" : ""
-				} ${open ? "focused" : ""} ${getColor(node.position)}`}
+				} ${open ? "focused" : ""} ${
+					index === searchResults?.currentResult?.rowIndex ? "match" : ""
+				} ${getColor(node.position)}`}
 				onClick={onClick}
 				data-vscode-context={
 					repoPath &&
@@ -38,7 +41,7 @@ export const CommitGraphRow = ({
 				}
 				// content
 				graph={renderRails(node)}
-				tags={tags && <CommitTags tags={tags} />}
+				badges={badges && <CommitBadges badges={badges} />}
 				info={node.commit.subject}
 				author={node.commit.author}
 				date={formatDate(node.commit.authorDate)}

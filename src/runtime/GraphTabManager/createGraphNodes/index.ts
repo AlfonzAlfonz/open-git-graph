@@ -31,13 +31,15 @@ export function* createGraphNodes(
 	commitQueue: Iterable<GitCommit>,
 	index: GitIndex | undefined,
 	stashes: GitCommit[],
+	/** Set of commit hashes which are pointed to by visible refs */
+	activeRefCommits: Set<string>,
 ): GraphGenerator {
 	const queue = [commitQueue];
 	const stashHashes = new Set(commitHashes(stashes));
 
 	const nodes = [];
 
-	const rails = new Rails(stashHashes);
+	const rails = new Rails(stashHashes, activeRefCommits);
 	if (index && (index.tracked.length || index.untracked.length)) {
 		nodes.push(rails.add(index)!);
 	}

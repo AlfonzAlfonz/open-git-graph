@@ -2,7 +2,7 @@ import { HTMLAttributes, ReactNode } from "react";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
 	graph: ReactNode;
-	tags?: ReactNode;
+	badges?: ReactNode;
 	info?: ReactNode;
 	author?: ReactNode;
 	date?: ReactNode;
@@ -11,7 +11,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 
 export const GraphRow = ({
 	graph,
-	tags,
+	badges,
 	info,
 	author,
 	date,
@@ -22,7 +22,7 @@ export const GraphRow = ({
 		<div {...props}>
 			<div className="graph-col graph">{graph}</div>
 			<div className="graph-col info flex gap-2 items-center">
-				{tags}
+				{badges}
 				{info && (
 					<p className="inline-block whitespace-nowrap text-ellipsis overflow-hidden leading-tight flex-grow-1">
 						{info}

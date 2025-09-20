@@ -1,22 +1,35 @@
 import { fork } from "@alfonz/async/fork";
 import debounce from "lodash-es/debounce";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Graph } from "../../runtime/GraphTabManager/createGraphNodes";
-import { GitRef } from "../../universal/git";
+import {
+	GitCommit,
+	GitRef,
+	GitRefBranch,
+	GitRefTag,
+} from "../../universal/git";
 import { GraphTabState } from "../../universal/protocol";
 import { bridge, messageQueue } from "../bridge";
-import { IAppContext } from "./components/AppContext";
 
-interface App {
-	state: IAppContext;
-}
+export type App = ReturnType<typeof useApp>;
 
-export const useApp = (): App => {
+type Search = {
+	query: string;
+
+	currentResult: { resultIndex: number; rowIndex: number } | undefined;
+	hashes: string[];
+};
+
+export const useApp = () => {
 	const [state, setState] = useState<GraphTabState>();
+
+	const currentGraphRef = useRef<Graph>();
 
 	const [graph, setGraph] = useState<Graph>();
 	const [refs, setRefs] = useState<GitRef[]>();
 	const [currentBranch, setCurrentBranch] = useState<string | undefined>();
+
+	const [searchResults, setSearchResults] = useState<Search>();
 
 	useEffect(() => {
 		const controller = new AbortController();
@@ -28,6 +41,7 @@ export const useApp = (): App => {
 
 				switch (message.type) {
 					case "graph":
+						currentGraphRef.current = message.data.graph;
 						setGraph(message.data.graph);
 						setRefs(message.data.refs);
 						setCurrentBranch(message.data.currentBranch);
@@ -48,14 +62,51 @@ export const useApp = (): App => {
 		};
 	}, []);
 
+	const selectNextResult = async (
+		currentResult: Search["currentResult"] | undefined,
+		hashes: string[],
+	) => {
+		hashes = currentResult
+			? hashes.slice(currentResult.resultIndex + 1)
+			: hashes;
+
+		let rowIndex: number = -1;
+
+		while (true) {
+			if (!currentGraphRef.current) break;
+
+			rowIndex = currentGraphRef.current.nodes.findIndex(
+				(x) => "hash" in x.commit && hashes.includes(x.commit.hash),
+			);
+
+			if (rowIndex !== -1) break;
+
+			if ((await bridge.pollGraphData()).done) break;
+		}
+
+		if (currentGraphRef.current && rowIndex !== -1) {
+			const node = currentGraphRef.current.nodes[rowIndex]!;
+
+			return {
+				resultIndex: hashes.indexOf((node?.commit as GitCommit).hash),
+				rowIndex,
+			};
+		}
+
+		return undefined;
+	};
+
 	return {
 		state: {
 			...state,
 			graph,
 			refs,
 			currentBranch,
+
+			searchResults,
+
 			actions: {
-				expandCommit: (value) => {
+				expandCommit: (value: string | undefined) => {
 					void bridge.expandCommit(value);
 					setState((s) => ({ ...s!, expandedCommit: value }));
 				},
@@ -71,6 +122,17 @@ export const useApp = (): App => {
 				fetch: async () => {
 					await bridge.fetch();
 				},
+				setRefs: async (r: (GitRefBranch | GitRefTag)[]) => {
+					await bridge.setRefs(r);
+				},
+				search: async (query: string) => {
+					const hashes = await bridge.search(query);
+
+					let currentResult = await selectNextResult(undefined, hashes);
+
+					setSearchResults({ query, currentResult, hashes });
+				},
+				clearSearch: () => setSearchResults(undefined),
 			},
 		},
 	};

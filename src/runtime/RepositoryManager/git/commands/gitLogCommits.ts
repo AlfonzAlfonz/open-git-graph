@@ -16,7 +16,7 @@ export const gitLogCommits = (
 			"--date-order",
 			`--format=${commitFormat}`,
 			"-m",
-			...(logFiles ? ["--raw"] : []),
+			logFiles ? "--raw" : null,
 			"HEAD",
 		],
 		parse: (stdout) => {

@@ -9,7 +9,7 @@ export const IndexInspector = ({ node }: { node: GraphNode<GitIndex> }) => {
 		<GraphRow
 			className="commit-inspector"
 			graph={renderEmptyRails(node, 200)}
-			tags={
+			badges={
 				<div className="w-full p-1">
 					<div>Staged changes</div>
 					<CommitFileList
