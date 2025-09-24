@@ -38,7 +38,7 @@ export class Rails {
 
 			this.state.rails.push(rail);
 
-			forks = [rail.id];
+			merges = [rail.id];
 			position = rail.id;
 		} else {
 			// If commit does have any child assign it to first child rail and mark rest as forks
@@ -79,17 +79,31 @@ export class Rails {
 			}
 		}
 
+		if (commit.parents.length === 0) {
+			merges = [];
+			this.state.rails = this.state.rails.filter((r) => r.id !== position);
+			if (children.length > 0) {
+				forks.push(position);
+			}
+		}
+
 		if ("hash" in commit) {
 			this.usedHashes.add(commit.hash);
 		}
 
-		return {
+		const node: GraphNode = {
 			commit,
 			position,
 			rails,
 			forks,
 			merges,
 		};
+
+		if (process.env.NODE_ENV !== "production") {
+			assetsNodeStructure(node);
+		}
+
+		return node;
 	}
 
 	private newId() {
@@ -106,3 +120,15 @@ export class Rails {
 		}
 	}
 }
+
+const assetsNodeStructure = (node: GraphNode) => {
+	if (node.forks.map((f) => node.rails.includes(f)).includes(false)) {
+		console.error(node);
+		throw new Error("forks is not subset of rails");
+	}
+
+	if (node.merges.filter((f) => node.rails.includes(f)).length > 1) {
+		console.error(node);
+		throw new Error("merges includes values of rails");
+	}
+};

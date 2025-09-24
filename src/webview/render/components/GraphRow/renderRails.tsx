@@ -42,24 +42,7 @@ export const renderRails = (n: GraphNode) => {
 		);
 	}
 
-	// Render new rail
-	const newRail = n.forks.find((f) => !n.rails.includes(f));
-	if (newRail !== undefined) {
-		const color = getColor(newRail);
-		const [x1, y1] = absoluteCoords(n.rails.length, CENTER);
-		const [x2, y2] = absoluteCoords(n.rails.length, 1);
-
-		rails.push(
-			<path
-				key={rails.length}
-				d={toBezier(x1, y1, x2, y2)}
-				className={color}
-			/>,
-		);
-	}
-
 	const color = getColor(n.position);
-	const newRailOffset = Number(newRail !== undefined);
 
 	// Render merged rails
 	for (const [i, m] of n.merges.entries()) {
@@ -69,7 +52,7 @@ export const renderRails = (n: GraphNode) => {
 			x = n.rails.indexOf(m);
 		} else {
 			// connect to a rail, which will be created
-			x = n.rails.length + newRailOffset - shift + i;
+			x = n.rails.length - shift + i;
 		}
 
 		const [x1, y1] = absoluteCoords(activeIndex, CENTER);
