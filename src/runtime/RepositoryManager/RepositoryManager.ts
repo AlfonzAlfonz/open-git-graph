@@ -1,10 +1,9 @@
-import { fork, Pylon, PylonIterator } from "@alfonz/async";
+import { Pylon, PylonIterator } from "@alfonz/async";
 import * as vscode from "vscode";
 import { log } from "../logger";
 import { signalDisposable } from "../utils";
 import { RepositoryStateHandle } from "./RepositoryStateHandle";
 import { GitRepository } from "./git/GitRepository";
-import { aggregateGitEvents, watchGit } from "./gitWatch/watchGit";
 import { GitExtension } from "./vscode.git/types";
 
 const debug = log("RepositoryManager");
@@ -34,16 +33,6 @@ export class RepositoryManager {
 
 		const handle = new RepositoryStateHandle(repository);
 		this.state[path] = handle;
-
-		void fork(async () => {
-			const watcher = aggregateGitEvents(
-				watchGit(repository.getFsPath(), this.appSignal),
-			);
-
-			for await (const _ of watcher) {
-				void this.state[path]?.getGraphData(true);
-			}
-		});
 
 		return handle;
 	}
