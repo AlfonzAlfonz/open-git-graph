@@ -28,6 +28,7 @@ export const useResolve = <T>(
 
 	useEffect(() => {
 		void resolve();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, deps);
 
 	return [state, resolve] as const;

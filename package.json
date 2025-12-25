@@ -19,7 +19,7 @@
 		"clean-build": "rm -rf dist build && pnpm build:prod && pnpm run pack",
 		"pack": "node ./tools/pack.mjs",
 		"watch": "pnpm build --watch",
-		"lint": "eslint src --ext .ts,.tsx,.js,jsx && prettier . -c && tsc --noEmit",
+		"lint": "eslint src --ext .ts,.tsx,.js,jsx --max-warnings 0 && prettier . -c && tsc --noEmit",
 		"test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
 		"test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch --collectCoverage=false"
 	},
@@ -49,6 +49,7 @@
 		"eslint": "^8.57.0",
 		"eslint-plugin-jest": "^29.0.1",
 		"eslint-plugin-prettier": "^5.0.0",
+		"eslint-plugin-react-hooks": "^5.2.0",
 		"glob": "^10.3.3",
 		"jest": "^29.6.4",
 		"lodash-es": "^4.17.21",
