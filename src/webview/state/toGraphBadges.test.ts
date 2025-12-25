@@ -1,7 +1,7 @@
 import { GitRef } from "../../universal/git";
-import { toGraphTags } from "./toGraphTags";
+import { toGraphBadges } from "./toGraphBadges";
 
-describe("toGraphTags", () => {
+describe("toGraphBadges", () => {
 	test("should work", () => {
 		const input: Iterable<[string, GitRef[]]> = [
 			[
@@ -122,28 +122,28 @@ describe("toGraphTags", () => {
 			],
 		];
 
-		const tags = Object.fromEntries(toGraphTags(input));
+		const badges = Object.fromEntries(toGraphBadges(input));
 
-		expect(tags["a9c432b8ef1f6ed3d70f41b8de7158a86faca325"]).toHaveLength(5);
-		expect(tags["a9c432b8ef1f6ed3d70f41b8de7158a86faca325"]![0]).toEqual({
+		expect(badges["a9c432b8ef1f6ed3d70f41b8de7158a86faca325"]).toHaveLength(5);
+		expect(badges["a9c432b8ef1f6ed3d70f41b8de7158a86faca325"]![0]).toEqual({
 			type: "branch",
 			label: "master",
 			endDecorators: ["origin"],
 		});
-		expect(tags["a9c432b8ef1f6ed3d70f41b8de7158a86faca325"]![1]).toEqual({
+		expect(badges["a9c432b8ef1f6ed3d70f41b8de7158a86faca325"]![1]).toEqual({
 			type: "branch",
 			label: "x",
 			endDecorators: [],
 		});
 
-		expect(tags["5ef678a3b92732a925991febfcacce978e12d611"]).toEqual([
+		expect(badges["5ef678a3b92732a925991febfcacce978e12d611"]).toEqual([
 			{
 				type: "branch",
 				label: "origin/add-action-telemetry",
 				remoteOnlyBranch: true,
 			},
 		]);
-		expect(tags["fb14b93b6b116af276f3655d2c56e2468a13d80c"]).toEqual([
+		expect(badges["fb14b93b6b116af276f3655d2c56e2468a13d80c"]).toEqual([
 			{ type: "tag", label: "v0.0.0" },
 		]);
 	});

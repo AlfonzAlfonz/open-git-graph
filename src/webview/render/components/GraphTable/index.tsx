@@ -6,7 +6,7 @@ import { GraphNode } from "../../../../runtime/GraphTabManager/createGraphNodes"
 import { GitCommit, GitIndex } from "../../../../universal/git";
 import { bridge } from "../../../bridge";
 import { groupBy } from "../../../../universal/groupBy";
-import { GraphTag, toGraphTags } from "../../../state/toGraphTags";
+import { GraphBadge, toGraphBadges } from "../../../state/toGraphBadges";
 import { useAppContext } from "../AppContext";
 import { CommitGraphRow } from "../GraphRow/CommitGraphRow";
 import { IndexGraphRow } from "../GraphRow/IndexGraphRow";
@@ -20,8 +20,8 @@ export const GraphTable = () => {
 
 	const { graph, refs, expandedCommit, scroll, actions } = useAppContext();
 
-	const tags = useMemo(
-		() => refs && new Map(toGraphTags(groupBy(refs, (r) => r.hash))),
+	const badges = useMemo(
+		() => refs && new Map(toGraphBadges(groupBy(refs, (r) => r.hash))),
 		[refs],
 	);
 
@@ -66,7 +66,7 @@ export const GraphTable = () => {
 									}}
 									width={width}
 									height={height}
-									itemData={{ nodes: graph?.nodes ?? [], tags }}
+									itemData={{ nodes: graph?.nodes ?? [], badges: badges }}
 									itemCount={graph?.nodes.length ?? 0}
 									children={Row}
 									onItemsRendered={onItemsRendered}
@@ -89,7 +89,7 @@ export const GraphTable = () => {
 
 interface RowData {
 	nodes: GraphNode[];
-	tags?: Map<string, GraphTag[]>;
+	badges?: Map<string, GraphBadge[]>;
 }
 
 const Row = ({ data, index, style }: ListChildComponentProps<RowData>) => {
@@ -98,7 +98,7 @@ const Row = ({ data, index, style }: ListChildComponentProps<RowData>) => {
 	return "hash" in node.commit ? (
 		<CommitGraphRow
 			node={node as GraphNode<GitCommit>}
-			tags={data.tags?.get(node.commit.hash)}
+			badges={data.badges?.get(node.commit.hash)}
 			style={style}
 		/>
 	) : (

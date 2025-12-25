@@ -6,10 +6,10 @@ import { UseGraphRowOptions, useGraphRow } from "./useGraphRow";
 
 export const IndexGraphRow = ({
 	node,
-	tags,
+	badges,
 	style,
 }: UseGraphRowOptions<GitIndex> & { style: any }) => {
-	const { open, onClick } = useGraphRow({ node, tags });
+	const { open, onClick } = useGraphRow({ node, badges });
 
 	return (
 		<div style={style}>
