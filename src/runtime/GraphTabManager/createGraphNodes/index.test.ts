@@ -17,6 +17,45 @@ const commit = (
 	type: "commit",
 });
 
+test("linear", () => {
+	const commits = [
+		commit("1", ["2"], "1"),
+		commit("2", ["3"], "2"),
+		commit("3", ["4"], "3"),
+		commit("4", [], "4"),
+	];
+
+	const { nodes } = createGraphNodes(commits, undefined, []).toArray().at(-1)!;
+
+	const [n1, n2, n3, n4] = nodes as [
+		GraphNode,
+		GraphNode,
+		GraphNode,
+		GraphNode,
+		GraphNode,
+	];
+
+	expect(n1.forks).toMatchObject([]);
+	expect(n1.rails).toMatchObject([]);
+	expect(n1.position).toBe(0);
+	expect(n1.merges).toMatchObject([0]);
+
+	expect(n2.forks).toMatchObject([]);
+	expect(n2.rails).toMatchObject([0]);
+	expect(n2.position).toBe(0);
+	expect(n2.merges).toMatchObject([]);
+
+	expect(n3.forks).toMatchObject([]);
+	expect(n3.rails).toMatchObject([0]);
+	expect(n3.position).toBe(0);
+	expect(n3.merges).toMatchObject([]);
+
+	expect(n4.forks).toMatchObject([0]);
+	expect(n4.rails).toMatchObject([0]);
+	expect(n4.position).toBe(0);
+	expect(n4.merges).toMatchObject([]);
+});
+
 test("fork", () => {
 	const commits: GitCommit[] = [
 		commit("1", ["2a"], "1"),
@@ -36,23 +75,30 @@ test("fork", () => {
 		GraphNode,
 	];
 
-	expect(n1.position).toBe(0);
-	expect(n2a.position).toBe(0);
-	expect(n2b.position).toBe(1);
-	expect(n3.position).toBe(0);
-	expect(n4.position).toBe(0);
-
+	expect(n1.forks).toMatchObject([]);
 	expect(n1.rails).toMatchObject([]);
-	expect(n2a.rails).toMatchObject([0]);
-	expect(n2b.rails).toMatchObject([0]);
-	expect(n3.rails).toMatchObject([0, 1]);
-	expect(n4.rails).toMatchObject([0]);
+	expect(n1.position).toBe(0);
+	expect(n1.merges).toMatchObject([0]);
 
-	expect(n1.forks).toMatchObject([0]);
 	expect(n2a.forks).toMatchObject([]);
-	expect(n2b.forks).toMatchObject([1]);
+	expect(n2a.rails).toMatchObject([0]);
+	expect(n2a.position).toBe(0);
+	expect(n2a.merges).toMatchObject([]);
+
+	expect(n2b.forks).toMatchObject([]);
+	expect(n2b.rails).toMatchObject([0]);
+	expect(n2b.position).toBe(1);
+	expect(n2b.merges).toMatchObject([1]);
+
 	expect(n3.forks).toMatchObject([1]);
-	expect(n4.forks).toMatchObject([]);
+	expect(n3.rails).toMatchObject([0, 1]);
+	expect(n3.position).toBe(0);
+	expect(n3.merges).toMatchObject([]);
+
+	expect(n4.forks).toMatchObject([0]);
+	expect(n4.rails).toMatchObject([0]);
+	expect(n4.position).toBe(0);
+	expect(n4.merges).toMatchObject([]);
 });
 
 test("merge", () => {
@@ -74,28 +120,29 @@ test("merge", () => {
 		GraphNode,
 	];
 
-	expect(n1.position).toBe(0);
-	expect(n2a.position).toBe(0);
-	expect(n2b.position).toBe(1);
-	expect(n3.position).toBe(0);
-	expect(n4.position).toBe(0);
-
+	expect(n1.forks).toMatchObject([]);
 	expect(n1.rails).toMatchObject([]);
-	expect(n2a.rails).toMatchObject([0, 1]);
-	expect(n2b.rails).toMatchObject([0, 1]);
-	expect(n3.rails).toMatchObject([0, 1]);
-	expect(n4.rails).toMatchObject([0]);
+	expect(n1.position).toBe(0);
+	expect(n1.merges).toMatchObject([0, 1]);
 
-	expect(n1.forks).toMatchObject([0]);
 	expect(n2a.forks).toMatchObject([]);
-	expect(n2b.forks).toMatchObject([]);
-	expect(n3.forks).toMatchObject([1]);
-	expect(n4.forks).toMatchObject([]);
-
-	expect(n1.merges).toMatchObject([1]);
+	expect(n2a.rails).toMatchObject([0, 1]);
+	expect(n2a.position).toBe(0);
 	expect(n2a.merges).toMatchObject([]);
+
+	expect(n2b.forks).toMatchObject([]);
+	expect(n2b.rails).toMatchObject([0, 1]);
+	expect(n2b.position).toBe(1);
 	expect(n2b.merges).toMatchObject([]);
+
+	expect(n3.forks).toMatchObject([1]);
+	expect(n3.rails).toMatchObject([0, 1]);
+	expect(n3.position).toBe(0);
 	expect(n3.merges).toMatchObject([]);
+
+	expect(n4.forks).toMatchObject([0]);
+	expect(n4.rails).toMatchObject([0]);
+	expect(n4.position).toBe(0);
 	expect(n4.merges).toMatchObject([]);
 });
 
@@ -120,32 +167,34 @@ test("merge2", () => {
 		GraphNode,
 	];
 
-	expect(n1.position).toBe(0);
-	expect(n2c.position).toBe(2);
-	expect(n2a.position).toBe(0);
-	expect(n2b.position).toBe(1);
-	expect(n3.position).toBe(0);
-	expect(n4.position).toBe(0);
-
+	expect(n1.forks).toMatchObject([]);
 	expect(n1.rails).toMatchObject([]);
+	expect(n1.position).toBe(0);
+	expect(n1.merges).toMatchObject([0, 1]);
+
+	expect(n2c.forks).toMatchObject([]);
 	expect(n2c.rails).toMatchObject([0, 1]);
-	expect(n2a.rails).toMatchObject([0, 1, 2]);
-	expect(n2b.rails).toMatchObject([0, 1, 2]);
-	expect(n3.rails).toMatchObject([0, 1, 2]);
-	expect(n4.rails).toMatchObject([0, 2]);
+	expect(n2c.position).toBe(2);
+	expect(n2c.merges).toMatchObject([2]);
 
-	expect(n1.forks).toMatchObject([0]);
-	expect(n2c.forks).toMatchObject([2]);
 	expect(n2a.forks).toMatchObject([]);
-	expect(n2b.forks).toMatchObject([]);
-	expect(n3.forks).toMatchObject([1]);
-	expect(n4.forks).toMatchObject([2]);
-
-	expect(n1.merges).toMatchObject([1]);
-	expect(n2c.merges).toMatchObject([]);
+	expect(n2a.rails).toMatchObject([0, 1, 2]);
+	expect(n2a.position).toBe(0);
 	expect(n2a.merges).toMatchObject([]);
+
+	expect(n2b.forks).toMatchObject([]);
+	expect(n2b.rails).toMatchObject([0, 1, 2]);
+	expect(n2b.position).toBe(1);
 	expect(n2b.merges).toMatchObject([]);
+
+	expect(n3.forks).toMatchObject([1]);
+	expect(n3.rails).toMatchObject([0, 1, 2]);
+	expect(n3.position).toBe(0);
 	expect(n3.merges).toMatchObject([]);
+
+	expect(n4.forks).toMatchObject([2, 0]);
+	expect(n4.rails).toMatchObject([0, 2]);
+	expect(n4.position).toBe(0);
 	expect(n4.merges).toMatchObject([]);
 });
 
@@ -170,52 +219,51 @@ test("weird merge, do not create extra rail while merging", () => {
 		GraphNode,
 	];
 
-	expect(a1.position).toBe(0);
-	expect(b1.position).toBe(1);
-	expect(a2.position).toBe(0);
-	expect(b2.position).toBe(1);
-	expect(a3.position).toBe(0);
-	expect(b3.position).toBe(1);
-
+	expect(a1.forks).toEqual([]);
 	expect(a1.rails).toEqual([]);
-	expect(a1.forks).toEqual([0]);
-	expect(a1.merges).toEqual([]);
+	expect(a1.position).toBe(0);
+	expect(a1.merges).toEqual([0]);
 
+	expect(b1.forks).toEqual([]);
 	expect(b1.rails).toEqual([0]);
-	expect(b1.forks).toEqual([1]);
-	expect(b1.merges).toEqual([]);
+	expect(b1.position).toBe(1);
+	expect(b1.merges).toEqual([1]);
 
-	expect(a2.rails).toEqual([0, 1]);
 	expect(a2.forks).toEqual([]);
+	expect(a2.rails).toEqual([0, 1]);
+	expect(a2.position).toBe(0);
 	expect(a2.merges).toEqual([1]);
 
-	expect(b2.rails).toEqual([0, 1]);
 	expect(b2.forks).toEqual([]);
+	expect(b2.rails).toEqual([0, 1]);
+	expect(b2.position).toBe(1);
 	expect(b2.merges).toEqual([]);
 
+	expect(a3.forks).toEqual([0]);
 	expect(a3.rails).toEqual([0, 1]);
-	expect(a3.forks).toEqual([]);
+	expect(a3.position).toBe(0);
 	expect(a3.merges).toEqual([]);
 
-	expect(b3.rails).toEqual([0, 1]);
-	expect(b3.forks).toEqual([]);
+	expect(b3.forks).toEqual([1]);
+	expect(b3.rails).toEqual([1]);
+	expect(b3.position).toBe(1);
 	expect(b3.merges).toEqual([]);
 });
 
 test("index", () => {
-	const commits: GitCommit[] = [
-		commit("1", ["2"], "1"),
-		commit("2", ["3"], "2a"),
-		commit("3", ["4"], "3"),
-		commit("4", [], "4"),
-	];
-
 	const index: GitIndex = {
 		parents: ["2"],
 		tracked: [{} as never],
 		untracked: [],
 		branch: undefined,
 	};
+
+	const commits: GitCommit[] = [
+		commit("1", ["2"], "1"),
+		commit("2", ["3"], "2"),
+		commit("3", ["4"], "3"),
+		commit("4", [], "4"),
+	];
 
 	const { nodes } = createGraphNodes(commits, index, []).toArray().at(-1)!;
 
@@ -227,23 +275,43 @@ test("index", () => {
 		GraphNode,
 	];
 
-	expect(i.position).toBe(0);
-	expect(n1.position).toBe(1);
-	expect(n2.position).toBe(0);
-	expect(n3.position).toBe(0);
-	expect(n4.position).toBe(0);
-
+	expect(i.forks).toMatchObject([]);
 	expect(i.rails).toMatchObject([]);
-	expect(n1.rails).toMatchObject([0]);
-	expect(n2.rails).toMatchObject([0, 1]);
-	expect(n3.rails).toMatchObject([0]);
-	expect(n4.rails).toMatchObject([0]);
+	expect(i.position).toBe(0);
+	expect(i.merges).toMatchObject([0]);
 
-	expect(i.forks).toMatchObject([0]);
-	expect(n1.forks).toMatchObject([1]);
+	expect(n1.forks).toMatchObject([]);
+	expect(n1.position).toBe(1);
+	expect(n1.rails).toMatchObject([0]);
+	expect(n1.merges).toMatchObject([1]);
+
 	expect(n2.forks).toMatchObject([1]);
+	expect(n2.position).toBe(0);
+	expect(n2.rails).toMatchObject([0, 1]);
+	expect(n2.merges).toMatchObject([]);
+
 	expect(n3.forks).toMatchObject([]);
-	expect(n4.forks).toMatchObject([]);
+	expect(n3.position).toBe(0);
+	expect(n3.rails).toMatchObject([0]);
+	expect(n3.merges).toMatchObject([]);
+
+	expect(n4.forks).toMatchObject([0]);
+	expect(n4.position).toBe(0);
+	expect(n4.rails).toMatchObject([0]);
+	expect(n4.merges).toMatchObject([]);
+});
+
+test("single", () => {
+	const commits: GitCommit[] = [commit("1", [], "1")];
+
+	const { nodes } = createGraphNodes(commits, undefined, []).toArray().at(-1)!;
+
+	const [n1] = nodes as [GraphNode];
+
+	expect(n1.forks).toMatchObject([]);
+	expect(n1.position).toBe(0);
+	expect(n1.rails).toMatchObject([]);
+	expect(n1.merges).toMatchObject([]);
 });
 
 describe("withPrev", () => {

@@ -18,10 +18,10 @@ export type GraphNode<T extends GitCommit | GitIndex = GitCommit | GitIndex> = {
 	/** State of rails after this commit */
 	rails: RailId[];
 
-	/** Which rails from are being created or forked from an existing one */
+	/** Which rails from are being created or forked from an existing one. Always subset of rails. Unordered */
 	forks: RailId[];
 
-	/** Which rails are being merged to this commit */
+	/** Which rails are being merged to this commit. Should not contain ids from rails, except for merging directly previous commit. Unordered */
 	merges: RailId[];
 };
 
