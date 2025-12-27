@@ -2,7 +2,7 @@ import { GitCommit } from "../../../../universal/git";
 import { commitMenuContext } from "../../../../universal/menuContext/commit";
 import { stashMenuContext } from "../../../../universal/menuContext/stash";
 import { formatDate, getColor } from "../../utils";
-import { useAppContext } from "../AppContext";
+import { useAppContext } from "../../contexts/AppContext";
 import { CommitInspector } from "../inspectors/CommitInspector";
 import { CommitBadges } from "./CommitBadges";
 import { GraphRow } from "./GraphRow";

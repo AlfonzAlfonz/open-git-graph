@@ -1,4 +1,4 @@
-import { useAppContext } from "./components/AppContext";
+import { useAppContext } from "./contexts/AppContext";
 
 export const WIP = () => {
 	const { graph } = useAppContext();

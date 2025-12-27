@@ -1,4 +1,4 @@
-import { useAppContext } from "../AppContext";
+import { useAppContext } from "../../contexts/AppContext";
 
 export const TopBar = () => {
 	const { actions, currentBranch } = useAppContext();

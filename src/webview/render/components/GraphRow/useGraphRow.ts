@@ -1,7 +1,7 @@
 import { GraphNode } from "../../../../runtime/GraphTabManager/createGraphNodes";
 import { GitCommit, GitIndex } from "../../../../universal/git";
 import { GraphBadge } from "../../../state/toGraphBadges";
-import { useAppContext } from "../AppContext";
+import { useAppContext } from "../../contexts/AppContext";
 
 export type UseGraphRowOptions<T extends GitCommit | GitIndex> = {
 	node: GraphNode<T>;

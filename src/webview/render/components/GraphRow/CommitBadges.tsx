@@ -2,7 +2,7 @@ import { branchMenuContext } from "../../../../universal/menuContext/branch";
 import { bridge } from "../../../bridge";
 import { GraphBadge } from "../../../state/toGraphBadges";
 import { useBridgeMutation } from "../../useBridge/useBridgeMutation";
-import { useAppContext } from "../AppContext";
+import { useAppContext } from "../../contexts/AppContext";
 import { RefBadge } from "../RefBadge";
 
 export const CommitBadges = ({ badges }: { badges: GraphBadge[] }) => {
