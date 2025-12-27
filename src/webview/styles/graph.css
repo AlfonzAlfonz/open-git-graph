@@ -30,7 +30,6 @@
 
 		& .graph-list {
 			overflow: scroll;
-			scrollbar-width: none;
 		}
 
 		& .graph-row {
@@ -113,68 +112,6 @@
 				stroke: var(--rail-color, white);
 				stroke-width: 2px;
 				filter: drop-shadow(2px 2px 2px rgb(0 0 0 / 0.4));
-			}
-		}
-	}
-
-	.graph-badge {
-		@apply rounded-sm flex items-center flex-shrink-0;
-		color: var(--text-primary);
-		background: var(--vscode-input-background);
-		border: 1px solid
-			var(--vscode-input-border, var(--vscode-sideBarSectionHeader-border));
-		height: 18px;
-		font-size: 0.85rem;
-		font-weight: 400;
-		user-select: none;
-
-		&::before {
-			@apply flex items-center justify-center codicon rounded-l-sm;
-			width: 18px;
-			height: 18px;
-			margin-left: -1px;
-			padding-left: 1px;
-			background: var(--rail-color, white);
-			color: var(--vscode-editor-background);
-			font-size: 0.9rem;
-			line-height: 1.6;
-			font-weight: 700;
-			flex-shrink: 0;
-		}
-
-		&.tag::before {
-			content: "\ea66";
-		}
-
-		&.branch::before {
-			content: "\ea68";
-		}
-
-		&.head::before {
-			content: "\ea68";
-		}
-
-		&.stash::before {
-			content: "\eb09";
-			line-height: 1.65;
-		}
-
-		& .content {
-			@apply px-1 h-full flex items-center whitespace-nowrap;
-		}
-
-		& .end-decorator {
-			@apply px-1 h-full flex items-center italic;
-			border-left: 1px solid
-				var(--vscode-input-border, var(--vscode-sideBarSectionHeader-border));
-		}
-
-		&.active {
-			font-weight: 600;
-			&,
-			& .end-decorator {
-				border-color: var(--rail-color, white);
-				border-width: 1px;
 			}
 		}
 	}

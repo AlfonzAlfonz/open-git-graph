@@ -4,7 +4,9 @@ import { GraphNode } from "./index";
 
 export type RailsState = {
 	rails: Rail[];
-	nextId: number;
+	hidden: Hidden[];
+	nextRailId: number;
+	nextHiddenId: number;
 };
 
 export type Rail = {
@@ -12,29 +14,66 @@ export type Rail = {
 	next: string;
 };
 
-declare const idBrand: unique symbol;
-export type RailId = number & { [idBrand]: typeof idBrand };
+export type Hidden = {
+	id: HiddenId;
+	next: string[];
+};
+
+declare const railBrand: unique symbol;
+export type RailId = number & { [railBrand]: typeof railBrand };
+
+declare const hiddenBrand: unique symbol;
+export type HiddenId = number & { [hiddenBrand]: typeof hiddenBrand };
 
 export class Rails {
 	private usedHashes = new Set<string>();
-	public readonly state: RailsState = { rails: [], nextId: 0 };
+	public readonly state: RailsState = {
+		rails: [],
+		hidden: [],
+		nextRailId: 0,
+		nextHiddenId: 1_000_000, // Use a large number so the hidden ids do not overlap with the rail ids
+	};
 
-	public constructor(private stashHashes: Set<string>) {}
+	public constructor(
+		private stashHashes: Set<string>,
+		private activeRefHashes: Set<string>,
+	) {}
 
-	add(commit: GitCommit | GitIndex, next?: GitCommit): GraphNode | undefined {
+	add(
+		commit: GitCommit | GitIndex,
+
+		next?: GitCommit,
+	): GraphNode | undefined {
 		if ("hash" in commit && this.usedHashes.has(commit.hash)) {
 			return undefined;
 		}
 
 		const children = [...this.getChildren(commit)];
+
 		const rails = this.state.rails.map((r) => r.id);
 		let position: RailId;
 		let forks: RailId[] = [];
 		let merges: RailId[] = [];
 
 		if (children.length === 0) {
-			// If commit does not have any children create a new rail
-			const rail = { next: commit.parents[0]!, id: this.newId() };
+			if (
+				"hash" in commit &&
+				this.activeRefHashes.size &&
+				!this.activeRefHashes.has(commit.hash)
+			) {
+				// If the commit isn't in existing rail and isn't pointed to by a visible ref, hide it
+				if (!this.isHidden(commit)) {
+					this.state.hidden.push({
+						id: this.newHiddenId(),
+						next: commit.parents,
+					});
+				}
+
+				return undefined;
+			}
+
+			// If the commit isn't in existing rail, create a new rail
+			const rail = { next: commit.parents[0]!, id: this.newRailId() };
 
 			this.state.rails.push(rail);
 
@@ -73,7 +112,7 @@ export class Rails {
 						continue;
 					}
 				}
-				const rail = { next: parent, id: this.newId() };
+				const rail = { next: parent, id: this.newRailId() };
 				this.state.rails.push(rail);
 				merges.push(rail.id);
 			}
@@ -106,16 +145,30 @@ export class Rails {
 		return node;
 	}
 
-	private newId() {
-		return this.state.nextId++ as RailId;
+	private newRailId() {
+		return this.state.nextRailId++ as RailId;
 	}
 
-	*getChildren(commit: GitCommit | GitIndex) {
+	private newHiddenId() {
+		return this.state.nextHiddenId++ as HiddenId;
+	}
+
+	private *getChildren(commit: GitCommit | GitIndex) {
 		if (!("hash" in commit)) return;
 
 		for (const r of this.state.rails) {
 			if (r.next === commit.hash) {
 				yield r.id;
+			}
+		}
+	}
+
+	private isHidden(commit: GitCommit | GitIndex) {
+		if (!("hash" in commit)) return;
+
+		for (const h of this.state.hidden) {
+			if (h.next.includes(commit.hash)) {
+				return true;
 			}
 		}
 	}

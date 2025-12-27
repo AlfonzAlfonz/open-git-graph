@@ -1,4 +1,11 @@
-import { GitRef } from "../../../../universal/git";
+import {
+	BRANCH_PREFIX,
+	getPrefixedId,
+	GitRef,
+	GitRefFullname,
+	REMOTE_BRANCH_PREFIX,
+	TAG_PREFIX,
+} from "../../../../universal/git";
 import { toLineGenerator } from "../toLineGenerator";
 import { GitCommand } from "./utils";
 
@@ -8,7 +15,7 @@ export const gitShowRefs = () =>
 		parse: async function (stdout) {
 			const lines = toLineGenerator(stdout);
 
-			const refs = new Map<string, GitRef>();
+			const refs = new Map<GitRefFullname | "head", GitRef>();
 
 			while (true) {
 				const { value: ln, done } = await lines.next();
@@ -24,37 +31,45 @@ export const gitShowRefs = () =>
 					});
 				}
 				if (name.startsWith(TAG_PREFIX) && !name.endsWith("^{}")) {
-					const prev = refs.get(name);
+					const fullname = getPrefixedId(TAG_PREFIX, name);
+					const prev = refs.get(fullname);
 					if (prev) {
 						continue;
 					}
-					refs.set(name, {
+					refs.set(fullname, {
 						hash,
+						fullname,
 						type: "tag",
 						name: name.slice(TAG_PREFIX.length),
 					});
 				}
 				if (name.startsWith(TAG_PREFIX) && name.endsWith("^{}")) {
-					refs.set(name.slice(0, -3), {
+					const fullname = getPrefixedId(TAG_PREFIX, name);
+					refs.set(fullname, {
 						hash,
+						fullname,
 						type: "tag",
 						name: name.slice(TAG_PREFIX.length, -3),
 					});
 				}
 
 				if (name.startsWith(BRANCH_PREFIX)) {
-					refs.set(name, {
+					const fullname = getPrefixedId(BRANCH_PREFIX, name);
+					refs.set(fullname, {
 						hash,
+						fullname,
 						type: "branch",
 						name: name.slice(BRANCH_PREFIX.length),
 					});
 				}
 				if (name.startsWith(REMOTE_BRANCH_PREFIX)) {
+					const fullname = getPrefixedId(REMOTE_BRANCH_PREFIX, name);
 					const [remote, ...b] = name
 						.slice(REMOTE_BRANCH_PREFIX.length)
 						.split("/");
-					refs.set(name, {
+					refs.set(fullname, {
 						hash,
+						fullname,
 						type: "branch",
 						name: b.join("/"),
 						remote,
@@ -62,10 +77,6 @@ export const gitShowRefs = () =>
 				}
 			}
 
-			return refs.values();
+			return refs;
 		},
-	}) satisfies GitCommand<Promise<IterableIterator<GitRef>>>;
-
-const TAG_PREFIX = "refs/tags/";
-const BRANCH_PREFIX = "refs/heads/";
-const REMOTE_BRANCH_PREFIX = "refs/remotes/";
+	}) satisfies GitCommand<Promise<Map<GitRefFullname | "head", GitRef>>>;

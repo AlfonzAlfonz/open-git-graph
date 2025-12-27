@@ -24,81 +24,95 @@ describe("gitShowRefs", () => {
 
 		const refs = await gitShowRefs().parse(Readable.from(input));
 
-		expect([...refs]).toEqual([
+		expect([...refs.values()]).toEqual([
 			{
 				hash: "bb56f269ff11efca520d5d1cf571804e9b7e7302",
 				type: "head",
 			},
 			{
+				fullname: "refs/heads/alfonz/actions",
 				hash: "bb56f269ff11efca520d5d1cf571804e9b7e7302",
 				name: "alfonz/actions",
 				type: "branch",
 			},
 			{
+				fullname: "refs/heads/alfonz/ci",
 				hash: "c23c8b01a37962f9a68fa09ed9b8ce1430e59d9f",
 				name: "alfonz/ci",
 				type: "branch",
 			},
 			{
+				fullname: "refs/heads/asxnc",
 				hash: "3e41175b337b38927336f135eb850e02575f48f6",
 				name: "asxnc",
 				type: "branch",
 			},
 			{
+				fullname: "refs/heads/feat/github-ci",
 				hash: "421ebc20daedb6b88dcae84de0ff3a9c7ef85ee8",
 				name: "feat/github-ci",
 				type: "branch",
 			},
 			{
+				fullname: "refs/heads/main",
 				hash: "bb56f269ff11efca520d5d1cf571804e9b7e7302",
 				name: "main",
 				type: "branch",
 			},
 			{
+				fullname: "refs/heads/move",
 				hash: "22c1e74e005cb67fa2339ac5cf3ea29ebbfcfcac",
 				name: "move",
 				type: "branch",
 			},
 			{
+				fullname: "refs/heads/search",
 				hash: "e94685eb670e9d6ffdaf69d2c1c6ab1ff2028d06",
 				name: "search",
 				type: "branch",
 			},
 			{
+				fullname: "refs/heads/x",
 				hash: "d7c2929f1e67d843c66604ab3a0b46c40d103e82",
 				name: "x",
 				type: "branch",
 			},
 			{
+				fullname: "refs/heads/y",
 				hash: "5b4278c0407d184b02b2ef52a9ea9a5ce6bb42da",
 				name: "y",
 				type: "branch",
 			},
 			{
+				fullname: "refs/remotes/origin/alfonz/ci",
 				hash: "c23c8b01a37962f9a68fa09ed9b8ce1430e59d9f",
 				name: "alfonz/ci",
 				remote: "origin",
 				type: "branch",
 			},
 			{
+				fullname: "refs/remotes/origin/asxnc",
 				hash: "1dff5431c26874bd5425102f94f861567c1a9d3d",
 				name: "asxnc",
 				remote: "origin",
 				type: "branch",
 			},
 			{
+				fullname: "refs/remotes/origin/feat/github-ci",
 				hash: "421ebc20daedb6b88dcae84de0ff3a9c7ef85ee8",
 				name: "feat/github-ci",
 				remote: "origin",
 				type: "branch",
 			},
 			{
+				fullname: "refs/remotes/origin/main",
 				hash: "bb56f269ff11efca520d5d1cf571804e9b7e7302",
 				name: "main",
 				remote: "origin",
 				type: "branch",
 			},
 			{
+				fullname: "refs/remotes/origin/move",
 				hash: "ed8fb9be983a5d21f5279f49231b1fb18fc1956e",
 				name: "move",
 				remote: "origin",
@@ -122,7 +136,9 @@ describe("gitShowRefs", () => {
 
 		const refs = await gitShowRefs().parse(Readable.from(input));
 
-		expect([...refs].map((r) => r.type === "tag" && [r.hash, r.name])).toEqual([
+		expect(
+			[...refs.values()].map((r) => r.type === "tag" && [r.hash, r.name]),
+		).toEqual([
 			["ea49c1d4976359c6754d47f94534289e8fe5f3ef", "v15.6.1"],
 			["3d4db18ca9bcb45bdad640e697e3f3e06270dbe2", "v15.6.2"],
 			["4711075d2f2abb266400ed33a6ccab5313224b34", "v15.6.3"],

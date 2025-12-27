@@ -22,6 +22,14 @@ export class GraphTabManager {
 		private repositoryManager: RepositoryManager,
 	) {}
 
+	openSearch() {
+		for (const tab of this.tabs.values()) {
+			if (tab[0].active) {
+				tab[0].webview.postMessage(runtimeMessage("open-search", {}));
+			}
+		}
+	}
+
 	openOrFocus(repository: GitRepository) {
 		if (this.tabs.has(repository.getPath())) {
 			const panel = this.tabs.get(repository.getPath())![0];
@@ -61,6 +69,7 @@ export class GraphTabManager {
 			repoPath: repository.getPath(),
 			expandedCommit: undefined,
 			scroll: 0,
+			activeRefs: [],
 		};
 
 		panel.iconPath = vscode.Uri.joinPath(
@@ -81,11 +90,11 @@ export class GraphTabManager {
 		void fork([
 			async () => {
 				console.time("graph-data");
-				await handle.getGraphData();
+				await handle.getGraphData(state.activeRefs);
 			},
 			async () => {
 				for await (const _ of handle.watch(this.appSignal)) {
-					void handle.getGraphData(true);
+					void handle.getGraphData(state.activeRefs, true);
 				}
 			},
 			async () => {
@@ -93,7 +102,9 @@ export class GraphTabManager {
 					if (signal.aborted) break;
 
 					console.timeEnd("graph-data");
-					panel.webview.postMessage(runtimeMessage("graph", update));
+					panel.webview.postMessage(
+						runtimeMessage("graph", { ...update, state }),
+					);
 				}
 			},
 		]);

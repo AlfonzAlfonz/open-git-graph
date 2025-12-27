@@ -1,35 +1,21 @@
 import { createRoot } from "react-dom/client";
-import { ErrorBoundary } from "./ErrorBoundary";
-import { AppContext } from "./components/AppContext";
+import { App } from "./App";
 import { GraphTable } from "./components/GraphTable";
 import { LoadingModal } from "./components/LoadingModal";
-import { useApp } from "./useApp";
+import { AppContext } from "./contexts/AppContext";
 
 export const render = () => {
-	createRoot(document.querySelector("#root")!).render(<App />);
+	createRoot(document.querySelector("#root")!).render(<Root />);
 };
 
-const App = () => {
-	const app = useApp();
-
+const Root = () => {
 	return (
-		<AppContext.Provider value={app.state}>
-			<ErrorBoundary
-				handle={async (e, errorInfo) => {
-					console.error(e, errorInfo);
-					// await bridge.logError(errorToString(e));
-					// await bridge.logError(errorToString(errorInfo));
-				}}
-				fallback={
-					<div className="w-[100vw] h-[100vh] flex items-center justify-center">
-						<h1>Error happened :(</h1>
-					</div>
-				}
-			>
+		<AppContext>
+			<App>
 				<LoadingModal>
 					<GraphTable />
 				</LoadingModal>
-			</ErrorBoundary>
-		</AppContext.Provider>
+			</App>
+		</AppContext>
 	);
 };

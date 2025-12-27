@@ -1,5 +1,6 @@
 @import "@vscode/codicons/dist/codicon.css";
 @import "./graph.css";
+@import "./ref-badge.css";
 @import "./commit-inspector.css";
 @import "./topbar.css";
 @import "./ui.css";
@@ -15,11 +16,16 @@
 }
 
 @layer base {
-	*,
-	body {
+	* {
 		margin: 0;
 		padding: 0;
 		box-sizing: border-box;
+		color: inherit;
+	}
+
+	body {
+		margin: 0;
+		padding: 0;
 	}
 
 	html {
@@ -62,6 +68,10 @@
 
 	.yellow {
 		--rail-color: oklch(68.1% 0.162 75.834); /* yellow 600 */
+	}
+
+	.r-primary {
+		--rail-color: var(--vscode-button-background);
 	}
 
 	.codicon {

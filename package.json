@@ -25,6 +25,7 @@
 	},
 	"devDependencies": {
 		"@alfonz/async": "^0.1.0",
+		"@base-ui/react": "1.0.0",
 		"@jest/globals": "^29.7.0",
 		"@types/debug": "^4.1.12",
 		"@types/jest": "^29.5.4",
@@ -87,6 +88,13 @@
 		"vscode.git"
 	],
 	"contributes": {
+		"keybindings": [
+			{
+				"command": "open-git-graph.search",
+				"key": "ctrl+f",
+				"mac": "cmd+f"
+			}
+		],
 		"menus": {
 			"webview/context": [
 				{
@@ -172,6 +180,11 @@
 					"dark": "./assets/logo-dark.svg",
 					"light": "./assets/logo-light.svg"
 				}
+			},
+			{
+				"command": "open-git-graph.search",
+				"title": "Open git graph search",
+				"when": "false"
 			},
 			{
 				"command": "open-git-graph.merge",

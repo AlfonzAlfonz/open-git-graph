@@ -4,10 +4,10 @@ import { ListChildComponentProps, VariableSizeList } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 import { GraphNode } from "../../../../runtime/GraphTabManager/createGraphNodes";
 import { GitCommit, GitIndex } from "../../../../universal/git";
-import { bridge } from "../../../bridge";
 import { groupBy } from "../../../../universal/groupBy";
+import { bridge } from "../../../bridge";
 import { GraphBadge, toGraphBadges } from "../../../state/toGraphBadges";
-import { useAppContext } from "../AppContext";
+import { useAppContext } from "../../contexts/AppContext";
 import { CommitGraphRow } from "../GraphRow/CommitGraphRow";
 import { IndexGraphRow } from "../GraphRow/IndexGraphRow";
 import { HEIGHT } from "../GraphRow/renderRails";
@@ -21,11 +21,14 @@ export const GraphTable = () => {
 	const { graph, refs, expandedCommit, scroll, actions } = useAppContext();
 
 	const badges = useMemo(
-		() => refs && new Map(toGraphBadges(groupBy(refs, (r) => r.hash))),
+		() =>
+			refs.state === "ready"
+				? new Map(toGraphBadges(groupBy(refs.value, (r) => r.hash)))
+				: undefined,
 		[refs],
 	);
 
-	useEffect(() => listRef.current?.resetAfterIndex(0), [expandedCommit]);
+	useEffect(() => listRef.current?.resetAfterIndex(0), [expandedCommit, graph]);
 
 	useEffect(() => {
 		if (listRef.current && !initScrollRef.current && scroll !== undefined) {

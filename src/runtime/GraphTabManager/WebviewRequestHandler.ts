@@ -1,10 +1,10 @@
+import path from "path";
 import * as vscode from "vscode";
-import { GitCommit } from "../../universal/git";
+import { GitCommit, GitRefFullname } from "../../universal/git";
 import { GraphTabState, WebToRuntimeBridge } from "../../universal/protocol";
 import { GitRepository } from "../RepositoryManager/git/GitRepository";
 import { RepositoryStateHandle } from "../RepositoryManager/RepositoryStateHandle";
 import { ShowFileTextDocumentContentProvider } from "../ShowFileTextDocumentContentProvider";
-import path from "path";
 
 export class WebviewRequestHandler implements WebToRuntimeBridge {
 	constructor(
@@ -14,21 +14,21 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 	) {}
 
 	async ready(_repoPath?: string | undefined) {
-		void this.handle.getGraphData();
+		void this.handle.getGraphData(this.state.activeRefs);
 
 		return this.state;
 	}
 
 	async reload() {
-		await this.handle.getGraphData(true);
+		await this.handle.getGraphData(this.state.activeRefs, true);
 	}
 
 	async fetch() {
 		await this.handle.fetch();
 	}
 
-	async pollGraphData(): Promise<void> {
-		await this.handle.pollGraphData();
+	async pollGraphData(): Promise<{ done: boolean }> {
+		return await this.handle.pollGraphData();
 	}
 
 	async getCommit(hash: string): Promise<GitCommit> {
@@ -58,5 +58,10 @@ export class WebviewRequestHandler implements WebToRuntimeBridge {
 
 	async scroll(value: number) {
 		this.state.scroll = value;
+	}
+
+	async setRefs(refs: GitRefFullname[]) {
+		this.state.activeRefs = refs;
+		await this.handle.getGraphData(this.state.activeRefs, true);
 	}
 }

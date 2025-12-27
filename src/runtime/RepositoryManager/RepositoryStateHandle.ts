@@ -1,6 +1,11 @@
 import { collect, Mutex, Pylon } from "@alfonz/async";
 import vscode from "vscode";
-import { GitCommit, GitRef, GitRefBranch } from "../../universal/git";
+import {
+	GitCommit,
+	GitRef,
+	GitRefBranch,
+	GitRefFullname,
+} from "../../universal/git";
 import { groupBy } from "../../universal/groupBy";
 import { createGraphNodes, Graph } from "../GraphTabManager/createGraphNodes";
 import { pipeThrough, take } from "../utils";
@@ -24,6 +29,7 @@ import { getStashDropOptions } from "./options/getStashDropOptions";
 import { getStashOptions } from "./options/getStashOptions";
 import { getTagOptions } from "./options/getTagOptions";
 import { aggregateGitEvents, watchGit } from "./gitWatch/watchGit";
+import { resolveActiveRefs } from "../../universal/resolveActiveRefs";
 
 type RepositoryState = {
 	remotes: string[];
@@ -53,14 +59,21 @@ export class RepositoryStateHandle {
 	}
 
 	async pollGraphData() {
-		await this.innerState.acquire(async (value) => {
-			const graph = (await value.graphIterator!.next()).value!;
+		return await this.innerState.acquire(async (value) => {
+			const result = await value.graphIterator!.next();
+
+			if (result.done) {
+				return { done: true };
+			}
+
+			const graph = result.value;
 
 			this.pylon.swap((s) => ({ ...s, graph }));
+			return { done: false };
 		})!;
 	}
 
-	async getGraphData(force?: boolean) {
+	async getGraphData(activeRefs: GitRefFullname[], force?: boolean) {
 		await this.innerState.acquire(async (value) => {
 			if (!force && this.state.readSync()) {
 				this.pylon.bump();
@@ -89,21 +102,34 @@ export class RepositoryStateHandle {
 
 			console.timeEnd("collect commits");
 
-			const graphIterator = createGraphNodes(data, index, stashes);
+			const graphIterator = createGraphNodes(
+				data,
+				index,
+				stashes,
+				new Set(resolveActiveRefs(activeRefs, refs).map((ref) => ref.hash)),
+			);
 
-			const graph = graphIterator.next().value!;
+			let graph: Graph = graphIterator.next().value!;
+
+			value.graphIterator = pipeThrough(iterator, graphIterator);
+
+			// If filters are active, sometimes we need to load more data to get the first 100 visible items
+			while (graph.nodes.length < 100) {
+				const result = await value.graphIterator.next();
+				if (result.done) break;
+
+				graph = result.value;
+			}
 
 			this.pylon.swap({
 				graph,
 				currentBranch: index.branch,
 				remotes,
 				refs: [
-					...refs,
+					...refs.values(),
 					...stashes.map((s) => ({ type: "stash" as const, hash: s.hash })),
 				],
 			});
-
-			value.graphIterator = pipeThrough(iterator, graphIterator);
 		});
 	}
 

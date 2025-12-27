@@ -4,3 +4,93 @@
 	width: 100%;
 	top: 0;
 }
+
+.launchpad-wrapper {
+	overflow: hidden;
+	height: 35px;
+
+	& .controls {
+		height: 35px;
+	}
+
+	&:focus-within {
+		overflow: visible;
+
+		& .controls {
+			height: initial;
+		}
+	}
+}
+
+.launchpad {
+	@apply relative z-50 flex gap-1 text-sm leading-5;
+
+	border: 1px solid var(--vscode-input-border);
+	background-color: var(--vscode-input-background);
+
+	&:focus,
+	&:focus-within,
+	&.active-search {
+		outline: 1px solid var(--vscode-inputOption-activeBorder);
+		outline-offset: -1px;
+	}
+
+	& .input {
+		@apply relative flex flex-1 flex-wrap gap-2 gap-y-4;
+
+		color: var(--vscode-text-primary);
+	}
+}
+
+.launchpad-popup {
+	background-color: var(--vscode-sideBar-background);
+	border: 1px solid var(--vscode-sideBarSectionHeader-border);
+	border-top: none;
+
+	.tab-container {
+		border-right: 1px solid var(--vscode-sideBarSectionHeader-border);
+		min-width: 130px;
+
+		.tab {
+			@apply flex gap-2 p-3 cursor-pointer uppercase text-[11px] font-bold;
+
+			&:hover {
+				background-color: var(--vscode-toolbar-hoverBackground);
+				outline: 1px dashed var(--vscode-toolbar-hoverOutline);
+			}
+
+			&:focus,
+			&:focus-within {
+				background-color: var(--vscode-list-activeSelectionBackground);
+				outline: 1px solid var(--vscode-inputOption-activeBorder);
+			}
+		}
+	}
+
+	.group-label {
+		@apply sticky top-0 z-10 flex gap-2 items-center font-bold uppercase p-2 cursor-pointer;
+		border-top: 1px solid var(--vscode-sideBarSectionHeader-border);
+		background-color: var(--vscode-sideBar-background);
+
+		&.pinned {
+			box-shadow: 0 2px 3px -1px var(--vscode-sideBarStickyScroll-shadow);
+		}
+
+		&[data-highlighted],
+		&.hl {
+			background-color: var(--vscode-list-hoverBackground);
+		}
+	}
+
+	.item {
+		@apply flex p-2 cursor-pointer outline-none select-none gap-2 text-base items-center;
+
+		scroll-margin-top: 64px;
+
+		&[data-highlighted],
+		&.hl {
+			@apply relative z-0 before:absolute before:inset-x-2 before:inset-y-0 before:z-[-1];
+			background-color: var(--vscode-list-hoverBackground);
+		}
+	}
+}
