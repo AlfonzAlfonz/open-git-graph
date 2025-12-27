@@ -1,4 +1,9 @@
-import { GitRef } from "../../universal/git";
+import {
+	GitRef,
+	GitRefBranch,
+	GitRefFullname,
+	GitRefTag,
+} from "../../universal/git";
 
 export type GraphBadge = {
 	label: string;
@@ -48,4 +53,51 @@ export function* toGraphBadges(refs: Iterable<[string, GitRef[]]>) {
 
 		yield [k, badges] as [string, GraphBadge[]];
 	}
+}
+
+export type ListGraphBadge = {
+	id: GitRefFullname;
+
+	type: GitRef["type"];
+	label: string;
+	remote?: string;
+
+	ref: GitRefBranch | GitRefTag;
+};
+
+export function toGraphBadgeList(refs: GitRef[]) {
+	const local: ListGraphBadge[] = [];
+	const remotes: Record<string, ListGraphBadge[]> = {};
+	const tags: ListGraphBadge[] = [];
+
+	for (const r of refs) {
+		if (r.type === "head" || r.type === "stash") continue;
+
+		const name = "remote" in r && r.remote ? `${r.remote}/${r.name}` : r.name;
+
+		const badge = {
+			id: r.fullname,
+			type: r.type,
+			label: name,
+			remote: "remote" in r ? r.remote : undefined,
+			ref: r,
+		};
+
+		if (r.type === "tag") {
+			tags.push(badge);
+		} else {
+			if (r.remote) {
+				remotes[r.remote] ??= [];
+				remotes[r.remote]!.push(badge);
+			} else {
+				local.push(badge);
+			}
+		}
+	}
+
+	return {
+		local,
+		remotes,
+		tags,
+	};
 }

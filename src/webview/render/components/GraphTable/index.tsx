@@ -21,11 +21,14 @@ export const GraphTable = () => {
 	const { graph, refs, expandedCommit, scroll, actions } = useAppContext();
 
 	const badges = useMemo(
-		() => refs && new Map(toGraphBadges(groupBy(refs, (r) => r.hash))),
+		() =>
+			refs.state === "ready"
+				? new Map(toGraphBadges(groupBy(refs.value, (r) => r.hash)))
+				: undefined,
 		[refs],
 	);
 
-	useEffect(() => listRef.current?.resetAfterIndex(0), [expandedCommit]);
+	useEffect(() => listRef.current?.resetAfterIndex(0), [expandedCommit, graph]);
 
 	useEffect(() => {
 		if (listRef.current && !initScrollRef.current && scroll !== undefined) {

@@ -3,9 +3,11 @@ import debounce from "lodash-es/debounce";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAppContext } from ".";
 import { Graph } from "../../../../runtime/GraphTabManager/createGraphNodes";
-import { GitRef } from "../../../../universal/git";
+import { GitRef, GitRefFullname } from "../../../../universal/git";
 import { GraphTabState } from "../../../../universal/protocol";
 import { bridge, messageQueue } from "../../../bridge";
+import { LaunchpadInput } from "../../components/TopBar/Launchpad";
+import { Resource } from "../../../state/Resource";
 
 export type AppValue = ReturnType<typeof useApp>;
 
@@ -23,8 +25,10 @@ export const useApp = () => {
 	const currentGraphRef = useRef<Graph>();
 
 	const [graph, setGraph] = useState<Graph>();
-	const [refs, setRefs] = useState<GitRef[] | undefined>(undefined);
+	const [refs, setRefs] = useState<Resource<GitRef[]>>(Resource.loading());
 	const [currentBranch, setCurrentBranch] = useState<string | undefined>();
+
+	const launchpadInputRef = useRef<LaunchpadInput>();
 
 	useEffect(() => {
 		const controller = new AbortController();
@@ -38,11 +42,15 @@ export const useApp = () => {
 					case "graph":
 						currentGraphRef.current = message.data.graph;
 						setGraph(message.data.graph);
-						setRefs(message.data.refs);
+						setRefs(Resource.ready(message.data.refs));
 						setCurrentBranch(message.data.currentBranch);
+						setState({ ...message.data.state });
 						break;
 					case "graph-poll":
 						setGraph(message.data.graph);
+						break;
+					case "open-search":
+						launchpadInputRef.current?.focus();
 						break;
 					default:
 						message satisfies never;
@@ -69,11 +77,14 @@ export const useApp = () => {
 			}, 100),
 			reload: async () => {
 				setGraph(undefined);
-				setRefs(undefined);
+				setRefs(Resource.loading());
 				await bridge.reload();
 			},
 			fetch: async () => {
 				await bridge.fetch();
+			},
+			setRefs: async (r: GitRefFullname[]) => {
+				await bridge.setRefs(r);
 			},
 		}),
 		[],
@@ -87,6 +98,8 @@ export const useApp = () => {
 			currentBranch,
 
 			currentGraphRef,
+
+			launchpadInputRef,
 
 			actions,
 		};

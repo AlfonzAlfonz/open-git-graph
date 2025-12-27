@@ -51,10 +51,20 @@ export async function* aggregateGitEvents(it: AsyncIterableIterator<FsEvent>) {
 		) {
 			debug("ref-update");
 			yield { type: "ref-update" };
+			continue;
 		}
 		if (type === "deleted" && p === ".git/packed-refs.lock") {
 			debug("ref-update");
 			yield { type: "ref-update" };
+			continue;
 		}
+
+		if (type === "deleted" && p === ".git/index.lock") {
+			debug("index-update");
+			yield { type: "index-update" };
+			continue;
+		}
+
+		debug(`ignoring fs event ${type} at ${p}`);
 	}
 }

@@ -39,7 +39,6 @@ describe("utils", () => {
 	});
 
 	describe("pipeThrough", () => {
-		// TODO: fix this test
 		test("basic", async () => {
 			async function* base() {
 				for (const i of [...Array(20)].keys()) {
@@ -47,10 +46,12 @@ describe("utils", () => {
 				}
 			}
 
-			function* transform(): Generator<number[], void, number[]> {
+			function* transform(): Generator<number[], void, number[] | undefined> {
 				let result: number[] = [];
 				while (true) {
 					const batched = yield result;
+					if (batched === undefined) break;
+
 					result = batched.map((n) => n * 2);
 					if (result.length === 0) {
 						return;

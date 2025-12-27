@@ -25,7 +25,9 @@ test("linear", () => {
 		commit("4", [], "4"),
 	];
 
-	const { nodes } = createGraphNodes(commits, undefined, []).toArray().at(-1)!;
+	const { nodes } = createGraphNodes(commits, undefined, [], new Set())
+		.toArray()
+		.at(-1)!;
 
 	const [n1, n2, n3, n4] = nodes as [
 		GraphNode,
@@ -65,7 +67,9 @@ test("fork", () => {
 		commit("4", [], "4"),
 	];
 
-	const { nodes } = createGraphNodes(commits, undefined, []).toArray().at(-1)!;
+	const { nodes } = createGraphNodes(commits, undefined, [], new Set())
+		.toArray()
+		.at(-1)!;
 
 	const [n1, n2a, n2b, n3, n4] = nodes as [
 		GraphNode,
@@ -110,7 +114,9 @@ test("merge", () => {
 		commit("4", [], "4"),
 	];
 
-	const { nodes } = createGraphNodes(commits, undefined, []).toArray().at(-1)!;
+	const { nodes } = createGraphNodes(commits, undefined, [], new Set())
+		.toArray()
+		.at(-1)!;
 
 	const [n1, n2a, n2b, n3, n4] = nodes as [
 		GraphNode,
@@ -156,7 +162,9 @@ test("merge2", () => {
 		commit("4", [], "4"),
 	];
 
-	const { nodes } = createGraphNodes(commits, undefined, []).toArray().at(-1)!;
+	const { nodes } = createGraphNodes(commits, undefined, [], new Set())
+		.toArray()
+		.at(-1)!;
 
 	const [n1, n2c, n2a, n2b, n3, n4] = nodes as [
 		GraphNode,
@@ -208,7 +216,9 @@ test("weird merge, do not create extra rail while merging", () => {
 		commit("b3", [], "b3"),
 	];
 
-	const { nodes } = createGraphNodes(commits, undefined, []).toArray().at(-1)!;
+	const { nodes } = createGraphNodes(commits, undefined, [], new Set())
+		.toArray()
+		.at(-1)!;
 
 	const [a1, b1, a2, b2, a3, b3] = nodes as [
 		GraphNode,
@@ -265,7 +275,9 @@ test("index", () => {
 		commit("4", [], "4"),
 	];
 
-	const { nodes } = createGraphNodes(commits, index, []).toArray().at(-1)!;
+	const { nodes } = createGraphNodes(commits, index, [], new Set())
+		.toArray()
+		.at(-1)!;
 
 	const [i, n1, n2, n3, n4] = nodes as [
 		GraphNode,
@@ -304,7 +316,9 @@ test("index", () => {
 test("single", () => {
 	const commits: GitCommit[] = [commit("1", [], "1")];
 
-	const { nodes } = createGraphNodes(commits, undefined, []).toArray().at(-1)!;
+	const { nodes } = createGraphNodes(commits, undefined, [], new Set())
+		.toArray()
+		.at(-1)!;
 
 	const [n1] = nodes as [GraphNode];
 
@@ -343,5 +357,78 @@ describe("withPrev", () => {
 		const result = [...withPrev(input)];
 
 		expect(result).toEqual([]);
+	});
+});
+
+describe("hidden", () => {
+	test("side branch", () => {
+		const commits: GitCommit[] = [
+			commit("1", ["2a"], "1"),
+			commit("2a", ["3"], "2a"),
+			commit("2b", ["3"], "2b"),
+			commit("3", ["4"], "3"),
+			commit("4", [], "4"),
+		];
+
+		const { nodes } = createGraphNodes(commits, undefined, [], new Set(["2b"]))
+			.toArray()
+			.at(-1)!;
+
+		const hashes = nodes.map((n) => (n.commit as GitCommit).hash);
+
+		expect(hashes).toEqual(["2b", "3", "4"]);
+	});
+
+	test("side branch - hidden first", () => {
+		const commits: GitCommit[] = [
+			commit("1", ["2a"], "1"),
+			commit("2a", ["3"], "2a"),
+			commit("2b", ["3"], "2b"),
+			commit("3", ["4"], "3"),
+			commit("4", [], "4"),
+		];
+
+		const { nodes } = createGraphNodes(commits, undefined, [], new Set(["3"]))
+			.toArray()
+			.at(-1)!;
+
+		const hashes = nodes.map((n) => (n.commit as GitCommit).hash);
+
+		expect(hashes).toEqual(["3", "4"]);
+	});
+
+	test("after hidden", () => {
+		const commits: GitCommit[] = [
+			commit("1", ["2"], "1"),
+			commit("2", ["3"], "2"),
+			commit("3", ["4"], "3"),
+			commit("4", [], "4"),
+		];
+
+		const { nodes } = createGraphNodes(commits, undefined, [], new Set(["2"]))
+			.toArray()
+			.at(-1)!;
+
+		const hashes = nodes.map((n) => (n.commit as GitCommit).hash);
+
+		expect(hashes).toEqual(["2", "3", "4"]);
+	});
+
+	test("merge", () => {
+		const commits: GitCommit[] = [
+			commit("1", ["2a", "2b"], "1"),
+			commit("2a", ["3"], "2a"),
+			commit("2b", ["3"], "2b"),
+			commit("3", ["4"], "3"),
+			commit("4", [], "4"),
+		];
+
+		const { nodes } = createGraphNodes(commits, undefined, [], new Set(["1"]))
+			.toArray()
+			.at(-1)!;
+
+		const hashes = nodes.map((n) => (n.commit as GitCommit).hash);
+
+		expect(hashes).toEqual(["1", "2a", "2b", "3", "4"]);
 	});
 });

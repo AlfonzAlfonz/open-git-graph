@@ -30,7 +30,6 @@
 
 		& .graph-list {
 			overflow: scroll;
-			scrollbar-width: none;
 		}
 
 		& .graph-row {

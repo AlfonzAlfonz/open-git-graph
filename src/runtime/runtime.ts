@@ -16,6 +16,7 @@ import { tagCommand } from "./commands/tag";
 import { stashApplyCommand } from "./commands/stashApply";
 import { stashPopCommand } from "./commands/stashPop";
 import { stashDropCommand } from "./commands/stashDrop";
+import { openSearchCommand } from "./commands/openSearch";
 
 let controller: AbortController;
 
@@ -39,6 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const commands = [
 		graphCommand,
+		openSearchCommand,
 		checkoutCommand,
 		resetCommand,
 		deleteBranchCommand,

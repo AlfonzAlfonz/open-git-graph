@@ -1,5 +1,6 @@
 import { Graph } from "../runtime/GraphTabManager/createGraphNodes";
 import { GitRef } from "./git";
+import { GraphTabState } from "./protocol";
 
 type GraphMessage = AnyRuntimeMessage<
 	"graph",
@@ -7,6 +8,7 @@ type GraphMessage = AnyRuntimeMessage<
 		graph: Graph;
 		refs: GitRef[];
 		currentBranch: string | undefined;
+		state: GraphTabState;
 	}
 >;
 
@@ -17,7 +19,12 @@ type GraphPollMessage = AnyRuntimeMessage<
 	}
 >;
 
-export type RuntimeMessage = GraphMessage | GraphPollMessage;
+type OpenSearchMessage = AnyRuntimeMessage<"open-search", {}>;
+
+export type RuntimeMessage =
+	| GraphMessage
+	| GraphPollMessage
+	| OpenSearchMessage;
 
 interface AnyRuntimeMessage<TKey, T> {
 	message: true;
