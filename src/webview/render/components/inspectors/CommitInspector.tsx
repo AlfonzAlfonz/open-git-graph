@@ -20,7 +20,7 @@ export const CommitInspector = ({ node }: { node: GraphNode<GitCommit> }) => {
 		<GraphRow
 			className="commit-inspector"
 			graph={renderEmptyRails(node, 200)}
-			tags={
+			badges={
 				<PanelGroup direction="horizontal" className="-mx-2">
 					<Panel className="p-2" style={{ overflow: "auto" }}>
 						<table>

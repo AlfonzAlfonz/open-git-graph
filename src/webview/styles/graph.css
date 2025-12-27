@@ -117,7 +117,7 @@
 		}
 	}
 
-	.graph-tag {
+	.graph-badge {
 		@apply rounded-sm flex items-center flex-shrink-0;
 		color: var(--text-primary);
 		background: var(--vscode-input-background);

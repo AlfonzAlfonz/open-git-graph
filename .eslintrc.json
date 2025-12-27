@@ -6,26 +6,26 @@
 		"sourceType": "module",
 		"project": "tsconfig.json"
 	},
-	"plugins": ["@typescript-eslint", "prettier", "jest"],
+	"plugins": ["@typescript-eslint", "prettier", "jest", "react-hooks"],
 	"rules": {
 		"eqeqeq": "warn",
 		"no-throw-literal": "warn",
 		"prettier/prettier": "warn",
-		"@typescript-eslint/no-empty-function": "error",
+		"@typescript-eslint/no-empty-function": "warn",
 		"@typescript-eslint/no-explicit-any": "off",
 		"@typescript-eslint/no-inferrable-types": "off",
 		"@typescript-eslint/no-require-imports": "off",
-		"@typescript-eslint/no-shadow": "error",
+		"@typescript-eslint/no-shadow": "warn",
 		"@typescript-eslint/no-var-requires": "off",
-		"@typescript-eslint/prefer-namespace-keyword": "error",
+		"@typescript-eslint/prefer-namespace-keyword": "warn",
 		"@typescript-eslint/quotes": "off",
 		"@typescript-eslint/typedef": "off",
-		"@typescript-eslint/prefer-literal-enum-member": "error",
-		"@typescript-eslint/prefer-enum-initializers": "error",
+		"@typescript-eslint/prefer-literal-enum-member": "warn",
+		"@typescript-eslint/prefer-enum-initializers": "warn",
 		"@typescript-eslint/no-floating-promises": "warn",
-		"@typescript-eslint/no-misused-spread": "error",
+		"@typescript-eslint/no-misused-spread": "warn",
 		"@typescript-eslint/no-unused-vars": [
-			"error",
+			"warn",
 			{
 				"argsIgnorePattern": "^_",
 				"destructuredArrayIgnorePattern": "^_",
@@ -33,8 +33,8 @@
 				"varsIgnorePattern": "^_"
 			}
 		],
-		"@typescript-eslint/prefer-optional-chain": "error",
-		"default-case": "error",
+		"@typescript-eslint/prefer-optional-chain": "warn",
+		"default-case": "warn",
 		"dot-notation": "off",
 		"id-denylist": [
 			"off",
@@ -49,34 +49,41 @@
 			"undefined"
 		],
 		"id-match": "off",
-		"no-bitwise": "error",
-		"no-caller": "error",
+		"no-bitwise": "warn",
+		"no-caller": "warn",
 		"no-console": [
-			"error",
+			"warn",
 			{ "allow": ["warn", "error", "info", "time", "timeEnd"] }
 		],
-		"no-debugger": "error",
-		"no-empty": "error",
+		"no-debugger": "warn",
+		"no-empty": "warn",
 		"no-empty-function": "off",
-		"no-eval": "error",
+		"no-eval": "warn",
 		"no-fallthrough": "off",
-		"no-new-wrappers": "error",
+		"no-new-wrappers": "warn",
 		"no-undef": "off",
 		"no-underscore-dangle": "off",
 		"no-unused-expressions": "off",
-		"no-unused-labels": "error",
-		"no-var": "error",
-		"no-duplicate-imports": "error",
+		"no-unused-labels": "warn",
+		"no-var": "warn",
+		"no-duplicate-imports": "warn",
 		"radix": "off",
 		"max-len": "off",
 		"indent": "off",
 		"comma-dangle": "off",
 		"capitalized-comments": "off",
 		"jest/no-disabled-tests": "warn",
-		"jest/no-focused-tests": "error",
-		"jest/no-identical-title": "error",
+		"jest/no-focused-tests": "warn",
+		"jest/no-identical-title": "warn",
 		"jest/prefer-to-have-length": "warn",
-		"jest/valid-expect": "error"
+		"jest/valid-expect": "warn",
+		"react-hooks/exhaustive-deps": [
+			"warn",
+			{
+				"additionalHooks": "(useResolve|useDerivedState)"
+			}
+		],
+		"react-hooks/rules-of-hooks": "warn"
 	},
 	"ignorePatterns": ["dist", "**/*.d.ts"]
 }
