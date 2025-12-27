@@ -1,5 +1,6 @@
 @import "@vscode/codicons/dist/codicon.css";
 @import "./graph.css";
+@import "./ref-badge.css";
 @import "./commit-inspector.css";
 @import "./topbar.css";
 @import "./ui.css";
